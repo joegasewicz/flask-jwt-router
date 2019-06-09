@@ -7,6 +7,7 @@ Flask JWT Router
    getting_started
    contents
    authorising_routes
+   configuration
 
 
 flask-JWT-Routes provides the following
