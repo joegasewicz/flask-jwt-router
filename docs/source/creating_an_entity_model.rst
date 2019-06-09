@@ -27,7 +27,7 @@ Pass Flask's application instance as the first argument & then the UserModel cla
 
 If the `UserModel` has a primary key other than `id`, we can declare the name::
 
-    JwtRoutes(app, entity_model=UserModel, entity_key="user_id")
+    app.config["ENTITY_KEY"] = "user_id"
 
 
 We can now access the entity on any authenticated route.
