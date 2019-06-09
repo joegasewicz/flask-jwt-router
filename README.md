@@ -87,6 +87,10 @@ def get_user():
 
 ```
 
+## Authors
+
+* **joegasewicz** - *Initial work* - [@joegasewicz](https://twitter.com/joegasewicz)
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
