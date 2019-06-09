@@ -21,7 +21,6 @@ Option Name           Type                  Description
 ==================   ===================   ========================
 app                   Flask App instance    Required
 entity_model          SQLAlchemy Model      Optional
-entity_key            `string`              Optional. Default is set to `id`
 ==================   ===================   ========================
 
 Options for `RouteHelpers` class
