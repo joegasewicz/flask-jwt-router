@@ -2,10 +2,10 @@ from flask import request, abort, g
 import jwt
 import inspect
 
-from .FlaskJwtRoutes import FlaskJwtRoutes
+from .FlaskJwtRouter import FlaskJwtRouter
 
 
-class JwtRoutes(FlaskJwtRoutes):
+class JwtRoutes(FlaskJwtRouter):
     white_list_routes = []
     """
         :example
@@ -19,7 +19,7 @@ class JwtRoutes(FlaskJwtRoutes):
     def __init__(self, app=None, **kwargs):
         super().__init__(app, **kwargs)
 
-        self.auth_model = FlaskJwtRoutes.set_entity_model(kwargs)
+        self.auth_model = FlaskJwtRouter.set_entity_model(kwargs)
         self.white_list_routes = getattr(self.config, "WHITE_LIST_ROUTES", [])
         if self.app is not None:
             self.init_app()

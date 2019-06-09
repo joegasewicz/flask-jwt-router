@@ -12,6 +12,7 @@ twine = "*"
 flask-jwt-router = {editable = true,path = "."}
 flask = "*"
 pyjwt = "*"
+dateutil = "*"
 
 [requires]
 python_version = "3.7"

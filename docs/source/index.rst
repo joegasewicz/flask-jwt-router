@@ -24,7 +24,7 @@ Installation::
 
 Wrap your Flask app::
 
-   from flaskJWTRoutes import JwtRoutes
+   from flask_jwt_router import JwtRoutes
    app = Flask(__name__)
    JwtRoutes(app)
 

@@ -4,7 +4,7 @@ import logging
 logger = logging.getLogger()
 
 
-class FlaskJwtRoutesABC(ABC):
+class FlaskJwtRouterABC(ABC):
 
     @abstractmethod
     def get_app_config(self, app):
@@ -31,7 +31,7 @@ class FlaskJwtRoutesABC(ABC):
         pass
 
 
-class FlaskJwtRoutes(FlaskJwtRoutesABC):
+class FlaskJwtRouter(FlaskJwtRouterABC):
 
     logger = logger
     """Flask JWT Router logger"""

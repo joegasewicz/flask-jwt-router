@@ -2,10 +2,10 @@ import jwt
 from datetime import datetime
 from dateutil.relativedelta import *
 
-from .FlaskJwtRoutes import FlaskJwtRoutes
+from .FlaskJwtRouter import FlaskJwtRouter
 
 
-class RouteHelpers(FlaskJwtRoutes):
+class RouteHelpers(FlaskJwtRouter):
 
     def __init__(self, app=None, **kwargs):
         super().__init__(app, **kwargs)

@@ -8,7 +8,7 @@ Installation::
 Wrap your Flask app::
 
    from flask import Flask
-   from flaskJWTRoutes import JwtRoutes
+   from flask_jwt_router import JwtRoutes
    app = Flask(__name__)
    JwtRoutes(app)
 
@@ -26,7 +26,7 @@ White list Routes::
 
 Authorizing Routes::
 
-    from flaskJWTRoutes.flask_jwt_routes import RouteHelpers
+    from flask_jwt_router import RouteHelpers
     rh = RouteHelpers(app)
 
     # white list the routes

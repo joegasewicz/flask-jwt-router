@@ -13,7 +13,7 @@ pip install flask-jwt-router
 ## Basic Usage
  ```python
 from flask import Flask
-from flaskJWTRoutes import JwtRoutes
+from flask_jwt_router import JwtRoutes
 
 app = Flask(__name__)
 
@@ -46,7 +46,7 @@ JwtRoutes(app, entity_model=UserModel, entity_key="user_id")
 
 ## Authorization
 ```python
-from flaskJWTRoutes.flask_jwt_routes import RouteHelpers
+from flask_jwt_router import RouteHelpers
 rh = RouteHelpers(app)
 
 # white list the routes
