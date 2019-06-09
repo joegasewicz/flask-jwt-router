@@ -7,3 +7,7 @@
 
 from .JwtRoutes import JwtRoutes
 from .RouteHelpers import RouteHelpers
+
+
+if __name__ == "__main__":
+    pass
