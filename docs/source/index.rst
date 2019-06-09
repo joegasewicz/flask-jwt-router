@@ -5,6 +5,7 @@ Flask JWT Router
    :maxdepth: 2
 
    getting_started
+   contents
 
 
 flask-JWT-Routes provides the following
