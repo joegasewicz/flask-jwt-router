@@ -9,6 +9,7 @@ Flask JWT Router
    creating_an_entity_model
    assign_tokens_to_routes
    configuration
+   contents
 
 
 flask-JWT-Routes provides the following
