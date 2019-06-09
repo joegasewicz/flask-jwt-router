@@ -62,7 +62,7 @@ def login():
     })
 ```
 
-# Access your Entity flask's global context
+# Access entity on Flask's global context
 ```python
 # Example uses Marshmallow to serialize entity object
 class EntitySchema(Schema):
