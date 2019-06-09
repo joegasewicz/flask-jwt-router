@@ -47,6 +47,12 @@ JwtRoutes(app, entity_model=UserModel, entity_key="user_id")
 from flaskJWTRoutes.flask_jwt_routes import RouteHelpers
 rh = RouteHelpers(app)
 
+# white list the routes
+app.config["WHITE_LIST_ROUTES"] = [
+    ("POST", "/register"),
+    ("POST", "/login"),
+]
+
 @app.route("/register", methods=["POST"])
 def register():
     """I'm registering a new user & returning a token!"""
