@@ -5,8 +5,9 @@ Flask JWT Router
    :maxdepth: 2
 
    getting_started
-   contents
    authorising_routes
+   creating_an_entity_model
+   assign_tokens_to_routes
    configuration
 
 
