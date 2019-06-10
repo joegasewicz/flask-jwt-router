@@ -21,6 +21,7 @@ Option Name           Type                  Description
 ==================   ===================   ========================
 app                   Flask App instance    Required
 entity_model          SQLAlchemy Model      Optional
+exp                   int                   Optional (default is 30) Defines the amount of days before the token expires.
 ==================   ===================   ========================
 
 Options for `RouteHelpers` class
