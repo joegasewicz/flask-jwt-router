@@ -13,6 +13,7 @@ flask-jwt-router = {editable = true,path = "."}
 flask = "*"
 pyjwt = "*"
 dateutil = "*"
+python-dateutil = "*"
 
 [requires]
 python_version = "3.7"

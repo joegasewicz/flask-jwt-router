@@ -69,7 +69,7 @@ class FlaskJwtRouter(FlaskJwtRouterABC):
         else:
             return self.entity_key
 
-    def get_entity_id(self, kwargs):
+    def get_entity_id(self, **kwargs):
         """
         :param kwargs: Dict[str, int]
         :return: str
@@ -79,7 +79,7 @@ class FlaskJwtRouter(FlaskJwtRouterABC):
         except KeyError as _:
             return None
 
-    def get_exp(self, kwargs):
+    def get_exp(self, **kwargs):
         """
         :param kwargs: Dict[str, int]
         :return: number
@@ -108,7 +108,7 @@ class FlaskJwtRouter(FlaskJwtRouterABC):
         self._auth_model = value
 
     @staticmethod
-    def set_entity_model(kwargs):
-        if "entity_model" in kwargs and kwargs["entity_model"] is not None:
-            return kwargs["entity_model"]
+    def set_entity_model(model):
+        if "entity_model" in model and model["entity_model"] is not None:
+            return model["entity_model"]
 
