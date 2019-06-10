@@ -22,9 +22,9 @@ class JwtRoutes(FlaskJwtRouter):
         self.auth_model = FlaskJwtRouter.set_entity_model(kwargs)
         self.white_list_routes = getattr(self.config, "WHITE_LIST_ROUTES", [])
         if self.app is not None:
-            self.init_app()
+            self._init_app()
 
-    def init_app(self):
+    def _init_app(self):
         """
         :return: None
         """
@@ -41,9 +41,12 @@ class JwtRoutes(FlaskJwtRouter):
         """
         method = request.method
         path = request.path
+        print(f"here-------------> {white_routes}")
         for white_route in white_routes:
             if method == white_route[0] and path == white_route[1]:
+                print(f"here------------->1 ")
                 return False
+        print(f"here------------->2 ")
         return True
 
     def _before_middleware(self):
