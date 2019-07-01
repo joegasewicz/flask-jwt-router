@@ -5,15 +5,11 @@ verify_ssl = true
 
 [dev-packages]
 pytest = "*"
-sphinx = "*"
-twine = "*"
 
 [packages]
-flask-jwt-router = {editable = true,path = "."}
+python-dateutil = "==1.4"
 flask = "*"
-pyjwt = "*"
-dateutil = "*"
-python-dateutil = "*"
+t = "*"
 
 [requires]
-python_version = "3.7"
+python_versio = "3.7"
