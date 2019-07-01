@@ -4,12 +4,13 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+pytest = "*"
+tox = "*"
 
 [packages]
 python-dateutil = "==1.4"
 flask = "*"
 pyjwt = "*"
-pytest = "*"
 
 [requires]
 python_version = "3.7"
