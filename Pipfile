@@ -6,6 +6,7 @@ verify_ssl = true
 [dev-packages]
 pytest = "*"
 tox = "*"
+tox-pipenv = "*"
 
 [packages]
 python-dateutil = "==1.4"
