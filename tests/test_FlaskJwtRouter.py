@@ -1,5 +1,6 @@
 from flask_jwt_router.FlaskJwtRouter import FlaskJwtRouter
 
+
 class TestFlaskJwtRouter:
 
     def test_get_app_config(self):

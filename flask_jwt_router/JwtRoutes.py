@@ -41,12 +41,9 @@ class JwtRoutes(FlaskJwtRouter):
         """
         method = request.method
         path = request.path
-        print(f"here-------------> {white_routes}")
         for white_route in white_routes:
             if method == white_route[0] and path == white_route[1]:
-                print(f"here------------->1 ")
                 return False
-        print(f"here------------->2 ")
         return True
 
     def _before_middleware(self):

@@ -4,16 +4,12 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-pytest = "*"
-sphinx = "*"
-twine = "*"
 
 [packages]
-flask-jwt-router = {editable = true,path = "."}
+python-dateutil = "==1.4"
 flask = "*"
 pyjwt = "*"
-dateutil = "*"
-python-dateutil = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.7"
