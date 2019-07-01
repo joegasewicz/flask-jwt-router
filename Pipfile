@@ -5,13 +5,11 @@ verify_ssl = true
 
 [dev-packages]
 pytest = "*"
-tox = "*"
-tox-pipenv = "*"
 
 [packages]
 python-dateutil = "==1.4"
 flask = "*"
-pyjwt = "*"
+t = "*"
 
 [requires]
-python_version = "3.7"
+python_versio = "3.7"
