@@ -8,9 +8,9 @@ pytest = "*"
 twine = "*"
 
 [packages]
-python-dateutil = "==1.4"
 flask = "*"
 t = "*"
+python-dateutil = "==2.8.0"
 
 [requires]
-python_versio = "3.7"
+python_version = "3.7"
