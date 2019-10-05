@@ -33,7 +33,7 @@ class FlaskJwtRouterABC(ABC):
 
 class FlaskJwtRouter(FlaskJwtRouterABC):
 
-    logger = logger
+    logger = logging
     """Flask JWT Router logger"""
     config = {}
     """Flask Configuration object"""
@@ -111,4 +111,5 @@ class FlaskJwtRouter(FlaskJwtRouterABC):
     def set_entity_model(model):
         if "entity_model" in model and model["entity_model"] is not None:
             return model["entity_model"]
+
 

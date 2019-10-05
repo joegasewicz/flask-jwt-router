@@ -1,5 +1,6 @@
 [![PyPI version](https://badge.fury.io/py/flask-jwt-router.svg)](https://badge.fury.io/py/flask-jwt-router)
 
+![Greenprint](logo.png?raw=true "Title")
 
 # Flask JWT Router
 
@@ -7,7 +8,7 @@ Flask JWT Router is a Python library that adds authorised routes to a Flask app.
 
 Read the Documentation here: [Flask-JWT-Router](https://flask-jwt-router.readthedocs.io/en/latest/) 
 
-## Installation
+## Installaxxtion
 
 ```bash
 pip install flask-jwt-router
