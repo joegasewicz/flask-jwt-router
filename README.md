@@ -101,5 +101,11 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 Please make sure to update tests as appropriate.
 
+To run tests use:
+```bash
+ pip install -e .
+ pytest -vv
+```
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
