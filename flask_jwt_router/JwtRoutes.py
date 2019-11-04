@@ -7,6 +7,7 @@ from .FlaskJwtRouter import FlaskJwtRouter
 
 class JwtRoutes(FlaskJwtRouter):
     white_list_routes = []
+    _api_name = None  # JWT_ROUTER_API_NAME
     """
         :example
             white_list_routes = [
@@ -31,16 +32,35 @@ class JwtRoutes(FlaskJwtRouter):
         # Initiate middleware
         self.app.before_request(self._before_middleware)
 
+    def _prefix_api_name(self, w_routes=[]):
+        """
+        If the config has JWT_ROUTER_API_NAME defined then
+        update each white listed route with an api name
+        :example: "/user" -> "/api/v1/user"
+        :param w_routes:
+        :return List[str]:
+        """
+        api_name = self.config.get("JWT_ROUTER_API_NAME")
+        if not api_name:
+            return w_routes
+        # Prepend the api name to the white listed route
+        named_white_routes = []
+        for route_name in w_routes:
+            verb, path = route_name
+            named_white_routes.append((verb, f"{api_name}{path}"))
+        return named_white_routes
+
     def _allow_public_routes(self, white_routes):
         """
         Create a list of tuples ie [("POST", "/users")] as public routes.
         Returns False if current route and verb are white listed.
-        :param flask_request,
-        :param white_routes: List[Tuple]
-        :returns bool
+        :param flask_request:
+        :param white_routes: List[Tuple]:
+        :returns bool:
         """
         method = request.method
         path = request.path
+        white_routes = self._prefix_api_name(white_routes)
         for white_route in white_routes:
             if method == white_route[0] and path == white_route[1]:
                 return False
@@ -61,6 +81,7 @@ class JwtRoutes(FlaskJwtRouter):
                     bearer = request.headers.get("Authorization")
                     token = bearer.split("Bearer ")[1]
             except Exception as err:
+                print("here----->", self.config)
                 self.logger.error(err)
                 return abort(401)
 

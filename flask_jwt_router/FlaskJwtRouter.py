@@ -7,6 +7,10 @@ logger = logging.getLogger()
 class FlaskJwtRouterABC(ABC):
 
     @abstractmethod
+    def init_app(selfself, app):
+        pass
+
+    @abstractmethod
     def get_app_config(self, app):
         pass
 
@@ -49,6 +53,18 @@ class FlaskJwtRouter(FlaskJwtRouterABC):
     """ An SQLAlchemy Model entity instance"""
 
     def __init__(self, app=None, **kwargs):
+        """
+        - If there app is None then self.init_app(app=None, **kwargs) need to be called
+            inside the Flask app factory pattern
+        :param app:
+        :param kwargs:
+        """
+        if app:
+            self.app = app
+            config = self.get_app_config(app)
+            self.config = config
+
+    def init_app(self, app, **kwargs):
         self.app = app
         config = self.get_app_config(app)
         self.config = config
@@ -58,7 +74,8 @@ class FlaskJwtRouter(FlaskJwtRouterABC):
         :param app: Flask Application Instance
         :return: Dict[str, Any]
         """
-        return getattr(app, "config", {})
+        config = getattr(app, "config", {})
+        return config
 
     def get_entity_key(self):
         """

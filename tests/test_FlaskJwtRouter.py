@@ -3,6 +3,21 @@ from flask_jwt_router.FlaskJwtRouter import FlaskJwtRouter
 
 class TestFlaskJwtRouter:
 
+    def test_init_app(self):
+        class App:
+            config = {
+                "ENTITY_KEY": "user_id"
+            }
+
+        class User:
+            self.name = ""
+
+        app = App()
+        flask_jwt_router = FlaskJwtRouter()
+        flask_jwt_router.init_app(app, entity_model=User)
+
+        assert isinstance(flask_jwt_router.app, App)
+
     def test_get_app_config(self):
         white_list = [("POST", "/test")]
         class App:
@@ -71,3 +86,4 @@ class TestFlaskJwtRouter:
             pass
         result = FlaskJwtRouter.set_entity_model({"entity_model":AuthModel})
         assert result == AuthModel
+

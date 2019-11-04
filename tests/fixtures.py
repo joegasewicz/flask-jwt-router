@@ -16,6 +16,28 @@ def jwt_router_client(request):
     JwtRoutes(app)
     app.config["TESTING"] = True
     client = app.test_client()
+    ctx = app.app_context()
+    ctx.push()
 
     yield client
+
+    ctx.pop()
+
+
+flask_app = Flask(__name__)
+
+
+@flask_app.route("/api/v1/test", methods=["GET"])
+def test_two():
+    return "/test"
+
+
+@pytest.fixture(scope='module')
+def test_client():
+    testing_client = flask_app.test_client()
+    ctx = flask_app.app_context()
+    ctx.push()
+    yield testing_client
+    ctx.pop()
+
 

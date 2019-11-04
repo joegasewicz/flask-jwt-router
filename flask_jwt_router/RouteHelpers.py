@@ -41,7 +41,7 @@ class RouteHelpers(FlaskJwtRouter):
         """
         return self.encode_jwt(**kwargs)
 
-    def update_entity(self, **kwargs):
+    def update_entity(self, **kwargs):  # TODO remove, duplicate method!
         """
         :param kwargs:
         :return: str

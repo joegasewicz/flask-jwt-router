@@ -24,6 +24,13 @@ app = Flask(__name__)
 
 JwtRoutes(app)
 
+# If you're using the Flask factory function pattern:
+jwt_routes = JwtRoutes()
+
+def create_app(config):
+    ...
+    jwt_routes.init_app(app)
+
 ```
 
 ## White list Routes
@@ -35,6 +42,20 @@ app.config["WHITE_LIST_ROUTES"] = [
 @app.route("/register", methods=["POST"])
 def register():
     return "I don't need authorizing!"
+```
+
+# Prefix your api name to whitelisted routes
+```python
+    # All routes will
+    app.config["JWT_ROUTER_API_NAME"] = "/api/v1"
+    app.config["WHITE_LIST_ROUTES"] = [
+    ("POST", "/register"),
+]
+
+@app.route("/api/v1/register", methods=["POST"])
+def register():
+    return "I don't need authorizing!"
+   
 ```
 
 ## Declare an entity model
