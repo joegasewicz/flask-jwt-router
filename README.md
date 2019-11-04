@@ -47,8 +47,8 @@ def register():
 # Prefix your api name to whitelisted routes
 ```python
     # All routes will
-    app.config["JWT_ROUTER_API_NAME"] = "/api/v1"
-    app.config["WHITE_LIST_ROUTES"] = [
+app.config["JWT_ROUTER_API_NAME"] = "/api/v1"
+app.config["WHITE_LIST_ROUTES"] = [
     ("POST", "/register"),
 ]
 
