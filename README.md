@@ -1,4 +1,5 @@
 [![PyPI version](https://badge.fury.io/py/flask-jwt-router.svg)](https://badge.fury.io/py/flask-jwt-router)
+[![Build Status](https://travis-ci.org/joegasewicz/Flask-JWT-Router.svg?branch=master)](https://travis-ci.org/joegasewicz/Flask-JWT-Router)
 
 ![Greenprint](logo.png?raw=true "Title")
 
@@ -100,6 +101,12 @@ def get_user():
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
+
+To run tests use:
+```bash
+ pip install -e .
+ pytest -vv
+```
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)

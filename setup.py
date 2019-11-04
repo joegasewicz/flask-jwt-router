@@ -13,9 +13,13 @@ setup(
         "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
         "Operating System :: OS Independent",
     ],
+    py_modules=["flask_jwt_router"],
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/joegasewicz/Flask-JWT-Router",
     author="Joe Gasewicz",
-    author_email="joegasewicz@gmail.com"
+    author_email="joegasewicz@gmail.com",
+    install_requires=[
+        "Flask"
+    ]
 )

@@ -8,5 +8,4 @@ install:
   - pip install tox
 
 script:
-  - tox
-
+  - tox -v -e py
