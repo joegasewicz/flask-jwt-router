@@ -125,8 +125,8 @@ Please make sure to update tests as appropriate.
 
 To run tests use:
 ```bash
- pip install -e .
- pytest -vv
+ pipnv install -e .
+ pipenv shell
 ```
 
 ## License
