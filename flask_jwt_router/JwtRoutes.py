@@ -81,7 +81,6 @@ class JwtRoutes(FlaskJwtRouter):
                     bearer = request.headers.get("Authorization")
                     token = bearer.split("Bearer ")[1]
             except Exception as err:
-                print("here----->", self.config)
                 self.logger.error(err)
                 return abort(401)
 
