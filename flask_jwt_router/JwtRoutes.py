@@ -77,7 +77,7 @@ class JwtRoutes(FlaskJwtRouter):
         """
         method = request.method
         path = request.path
-        if self._add_static_routes(path, self.config):
+        if self._add_static_routes(path):
             return False
         white_routes = self._prefix_api_name(white_routes)
         for white_route in white_routes:
