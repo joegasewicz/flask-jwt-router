@@ -50,7 +50,7 @@ class JwtRoutes(FlaskJwtRouter):
             named_white_routes.append((verb, f"{api_name}{path}"))
         return named_white_routes
 
-    def _add_static_routes(self, path: str, config):
+    def _add_static_routes(self, path: str):
         """
         Always allow /static/ in path and handle static_url_path from Flask **kwargs
         :param path:
