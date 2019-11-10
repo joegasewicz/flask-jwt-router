@@ -2,7 +2,7 @@ import pytest
 from flask_jwt_router.JwtRoutes import JwtRoutes
 
 from flask_jwt_router.JwtRoutes import JwtRoutes
-from tests.fixtures import jwt_router_client, test_client
+from tests.fixtures import jwt_router_client, test_client, test_client_static
 
 
 class UserModel:
@@ -31,6 +31,14 @@ class TestJwtRoutes:
         test_client.config = config
 
         rv = test_client.get("/api/v1/test")
+        assert "200" in str(rv.status)
+
+    def test_static_routes(self, test_client, test_client_static):
+
+        rv = test_client.get("/static/images/Group.jpg")
+        assert "200" in str(rv.status)
+
+        rv = test_client_static.get("/static_copy/images/Group.jpg")
         assert "200" in str(rv.status)
 
 

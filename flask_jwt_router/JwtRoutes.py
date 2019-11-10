@@ -50,6 +50,23 @@ class JwtRoutes(FlaskJwtRouter):
             named_white_routes.append((verb, f"{api_name}{path}"))
         return named_white_routes
 
+    def _add_static_routes(self, path: str, config):
+        """
+        Always allow /static/ in path and handle static_url_path from Flask **kwargs
+        :param path:
+        :return:
+        """
+        if path == "favicon.ico":
+            return True
+
+        paths = path.split("/")
+        if paths[1] == "static":
+            return True
+
+        defined_static = self.app.static_url_path[1:]
+        if paths[1] == defined_static:
+            return True
+
     def _allow_public_routes(self, white_routes):
         """
         Create a list of tuples ie [("POST", "/users")] as public routes.
@@ -60,6 +77,8 @@ class JwtRoutes(FlaskJwtRouter):
         """
         method = request.method
         path = request.path
+        if self._add_static_routes(path, self.config):
+            return False
         white_routes = self._prefix_api_name(white_routes)
         for white_route in white_routes:
             if method == white_route[0] and path == white_route[1]:

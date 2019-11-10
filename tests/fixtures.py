@@ -41,3 +41,13 @@ def test_client():
     ctx.pop()
 
 
+@pytest.fixture(scope='module')
+def test_client_static():
+    flask_app_static = Flask(__name__, static_folder="static_copy")
+    testing_client = flask_app_static.test_client()
+    ctx = flask_app_static.app_context()
+    ctx.push()
+    yield testing_client
+    ctx.pop()
+
+
