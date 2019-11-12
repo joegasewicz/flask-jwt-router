@@ -25,6 +25,11 @@ Pass Flask's application instance as the first argument & then the UserModel cla
 
     JwtRoutes(app, entity_model=UserModel)
 
+    or with Flask's factory pattern:
+    jwt_routes = JwtRoutes(entity_model=UserModel)
+    ...
+    jwt_routes.init_app(app)
+
 If the `UserModel` has a primary key other than `id`, we can declare the name::
 
     app.config["ENTITY_KEY"] = "user_id"
