@@ -67,6 +67,29 @@ class JwtRoutes(FlaskJwtRouter):
         if paths[1] == defined_static:
             return True
 
+    def _handle_query_params(self, white_route: str, path: str):
+        """
+        Handles dynamic query params
+        All we care about that a path segment has no url conversion.
+        We compare it's the same as the whitelist segment & let Flask
+        / Werkzeug handle the url matching
+        :param white_route:
+        :param path:
+        :return bool:
+        """
+        if "<" not in white_route:
+            return False
+
+        route_segments = white_route.split("/")
+        path_segments = path.split("/")
+
+        for r, p in zip(route_segments, path_segments):
+            if len(r):
+                if r[0] != "<":
+                    if r != p:
+                        return False
+        return True
+
     def _allow_public_routes(self, white_routes):
         """
         Create a list of tuples ie [("POST", "/users")] as public routes.
@@ -80,8 +103,13 @@ class JwtRoutes(FlaskJwtRouter):
         if self._add_static_routes(path):
             return False
         white_routes = self._prefix_api_name(white_routes)
+
         for white_route in white_routes:
-            if method == white_route[0] and path == white_route[1]:
+            if method != white_route[0]:
+                return True
+            if path == white_route[1]:
+                return False
+            if self._handle_query_params(white_route[1], path):
                 return False
         return True
 

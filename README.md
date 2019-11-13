@@ -25,7 +25,7 @@ app = Flask(__name__)
 JwtRoutes(app)
 
 # If you're using the Flask factory pattern:
-jwt_routes = JwtRoutes()
+jwt_routes = JwtRoutes(entity_model=UserModel)  # Example with *entity_model - see below
 
 def create_app(config):
     ...
