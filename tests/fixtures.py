@@ -34,17 +34,17 @@ def test_two():
 
 @flask_app.route("/api/v1/bananas/sub", methods=["GET"])
 def test_sub():
-    return {"data": "sub"}
+    return {"data": "sub"}, 200
 
 
 @flask_app.route("/api/v1/test/sub_two", methods=["GET"])
 def test_sub_two():
-    return {"data": "sub2"}
+    return {"data": "sub2"}, 200
 
 
 @flask_app.route("/api/v1/apples/sub/<int:user_id>", methods=["GET"])
-def test_sub_three(user_id):
-    return {"data": user_id}
+def test_sub_three(user_id=1):
+    return {"data": user_id}, 200
 
 
 @pytest.fixture(scope='module')
