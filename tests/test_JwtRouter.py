@@ -16,6 +16,7 @@ class TestJwtRoutes:
             ({"WHITE_LIST_ROUTES": [("GET", "/test")]}, None, "200"),
             ({"WHITE_LIST_ROUTES": []}, None, "401"),
             ({"WHITE_LIST_ROUTES": [("POST", "/test")]}, None, "401"),
+            ({}, None, "401"),
         ], indirect=["jwt_router_client"]
     )
     def test_jwt_route(self, jwt_router_client, entity_model, expected):
@@ -38,11 +39,11 @@ class TestJwtRoutes:
         rv = test_client.put("/api/v1/apples/sub/1")
         assert "200" in str(rv.status)
 
-        # rv = test_client.get("/api/v1/apples/sub/")
-        # assert "404" in str(rv.status)
-        #
-        # rv = test_client.get("/api/v1/apples/sub/hello")
-        # assert "404" in str(rv.status)
+        rv = test_client.get("/api/v1/apples/sub/")
+        assert "401" in str(rv.status)
+
+        rv = test_client.get("/api/v1/apples/sub/hello")
+        assert "401" in str(rv.status)
 
     def test_static_routes(self, test_client, test_client_static):
         """

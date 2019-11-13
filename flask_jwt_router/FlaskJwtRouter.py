@@ -6,13 +6,13 @@ class _Config:
     """
     :param secret_key:
     :param entity_key:
-    :param entity_model:
     :param whitelist_routes:
     :param api_name:
+    :param entity_model:
     """
     def __init__(self,
                  secret_key=None,
-                 entity_key=None,
+                 entity_key="id",
                  whitelist_routes=None,
                  api_name=None,
                  entity_model=None,
@@ -20,9 +20,9 @@ class _Config:
 
         self.secret_key = secret_key
         self.entity_key = entity_key
-        self.entity_model = entity_model
         self.whitelist_routes = whitelist_routes
         self.api_name = api_name
+        self.entity_model = entity_model
 
 
 class FlaskJwtRouter:
@@ -31,8 +31,6 @@ class FlaskJwtRouter:
     config = {}
     app = None
     exp = 30
-    secret_key = "DEFAULT_SECRET_KEY"
-    entity_key = "id"
     _auth_model = None
     extensions: _Config
 
@@ -44,16 +42,13 @@ class FlaskJwtRouter:
         :param kwargs:
         """
         if app:
-            self.app = app
-            config = self.get_app_config(app)
-            self.config = config
-            self.extensions = self.init_flask_jwt_router(config)
+            self.init_app(app)
 
     def init_flask_jwt_router(self, config, entity_model=None):
         config = _Config(
-            config.get("SECRET_KEY"),
+            config.get("SECRET_KEY") or "DEFAULT_SECRET_KEY",
             config.get("ENTITY_KEY"),
-            config.get("WHITE_LIST_ROUTES"),
+            config.get("WHITE_LIST_ROUTES") or [],
             config.get("JWT_ROUTER_API_NAME"),
             entity_model,
         )
@@ -69,6 +64,7 @@ class FlaskJwtRouter:
         self.app = app
         config = self.get_app_config(app)
         self.config = config
+        self.extensions = self.init_flask_jwt_router(config)
 
     def get_app_config(self, app):
         """
@@ -77,15 +73,6 @@ class FlaskJwtRouter:
         """
         config = getattr(app, "config", {})
         return config
-
-    def get_entity_key(self):
-        """
-        :return: str
-        """
-        if "ENTITY_KEY" in self.config and self.config["ENTITY_KEY"] is not None:
-            return self.config["ENTITY_KEY"]
-        else:
-            return self.entity_key
 
     def get_entity_id(self, **kwargs):
         """
@@ -115,7 +102,7 @@ class FlaskJwtRouter:
             return self.config["SECRET_KEY"]
         else:
             self.logger.warning("Warning: Danger! You have't set a SECRET_KEY in your flask app.config")
-            return self.secret_key
+            return self.extensions.secret_key
 
     @property
     def auth_model(self):
