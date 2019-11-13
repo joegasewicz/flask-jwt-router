@@ -42,7 +42,7 @@ def test_sub_two():
     return jsonify({"data": "sub2"})
 
 
-@flask_app.route("/api/v1/apples/sub/<int:user_id>", methods=["GET"])
+@flask_app.route("/api/v1/apples/sub/<int:user_id>", methods=["PUT"])
 def test_sub_three(user_id=1):
     return jsonify({"data": user_id})
 
@@ -52,7 +52,7 @@ def test_client():
     flask_app.config["WHITE_LIST_ROUTES"] = [
         ("GET", "/test"),
         ("GET", "/bananas/sub"),
-        ("GET", "/apples/sub/<int:user_id>")
+        ("PUT", "/apples/sub/<int:user_id>")
     ]
     flask_app.config["JWT_ROUTER_API_NAME"] = "/api/v1"
     JwtRoutes(flask_app)

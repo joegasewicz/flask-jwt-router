@@ -102,14 +102,18 @@ class JwtRoutes(FlaskJwtRouter):
         path = request.path
         if self._add_static_routes(path):
             return False
+
+        print(f"here------>1 {white_routes}")
         white_routes = self._prefix_api_name(white_routes)
+        print(f"here------>2 {white_routes}")
 
         for white_route in white_routes:
-            if method != white_route[0]:
-                return True
-            if path == white_route[1]:
+            print(f"here------> {method}")
+            print(f"here------> {white_route[0]}")
+            print(f"here------> {white_route[1]}")
+            if method == white_route[0] and path == white_route[1]:
                 return False
-            if self._handle_query_params(white_route[1], path):
+            if method == white_route[0] and self._handle_query_params(white_route[1], path):
                 return False
         return True
 
