@@ -16,9 +16,9 @@ class RouteHelpers(FlaskJwtRouter):
         :param kwargs:
         :return: str
         """
-        entity_key = self.get_entity_key()
+        entity_key = self.extensions.entity_key
         exp = self.get_exp(kwargs)
-        secret_key = self.get_secret_key()
+        secret_key = self.extensions.secret_key
 
         if self.get_entity_id(kwargs):
             entity_id = self.get_entity_id(kwargs)
@@ -26,7 +26,7 @@ class RouteHelpers(FlaskJwtRouter):
             raise KeyError("Entity id not in kwargs")
 
         encoded = jwt.encode({
-            f"{entity_key}": entity_id,
+            entity_key: entity_id,
             "exp": datetime.utcnow() + relativedelta(days=+exp)  # TODO options for different time types
         },
             secret_key,

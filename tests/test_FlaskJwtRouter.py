@@ -14,7 +14,7 @@ class TestFlaskJwtRouter:
 
         app = App()
         flask_jwt_router = FlaskJwtRouter()
-        flask_jwt_router.init_app(app, entity_model=User)
+        flask_jwt_router.init_app(app)
 
         assert isinstance(flask_jwt_router.app, App)
 
@@ -29,25 +29,6 @@ class TestFlaskJwtRouter:
         config = flask_jwt_router.get_app_config(app)
         assert config["WHITE_LIST_ROUTES"] == white_list
 
-    def test_get_entity_key(self):
-        class App:
-            config = {
-                "ENTITY_KEY": "user_id"
-            }
-
-        app = App()
-        flask_jwt_router = FlaskJwtRouter(app)
-        result = flask_jwt_router.get_entity_key()
-        assert result == "user_id"
-
-        class AppTwo:
-            config = {}
-
-        app_two = AppTwo()
-
-        flask_jwt_router_two = FlaskJwtRouter(app_two)
-        result_two = flask_jwt_router_two.get_entity_key()
-        assert result_two == "id"
 
     def test_get_entity_id(self):
 
@@ -71,14 +52,14 @@ class TestFlaskJwtRouter:
             }
         app = App()
         flask_jwt_router = FlaskJwtRouter(app)
-        result = flask_jwt_router.get_secret_key()
+        result = flask_jwt_router.extensions.secret_key
         assert result == "123abc"
 
         class App:
             config = {}
         app = App()
         flask_jwt_router_two = FlaskJwtRouter(app)
-        result_two = flask_jwt_router_two.get_secret_key()
+        result_two = flask_jwt_router_two.extensions.secret_key
         assert result_two == "DEFAULT_SECRET_KEY"
 
     def test_auth_model(self):

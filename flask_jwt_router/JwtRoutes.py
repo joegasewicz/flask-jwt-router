@@ -6,8 +6,6 @@ from .FlaskJwtRouter import FlaskJwtRouter
 
 
 class JwtRoutes(FlaskJwtRouter):
-    white_list_routes = []
-    _api_name = None  # JWT_ROUTER_API_NAME
     """
         :example
             white_list_routes = [
@@ -21,7 +19,6 @@ class JwtRoutes(FlaskJwtRouter):
         super().__init__(app, **kwargs)
 
         self.auth_model = FlaskJwtRouter.set_entity_model(kwargs)
-        self.white_list_routes = getattr(self.config, "WHITE_LIST_ROUTES", [])
         if self.app is not None:
             self._init_app()
 
@@ -40,7 +37,7 @@ class JwtRoutes(FlaskJwtRouter):
         :param w_routes:
         :return List[str]:
         """
-        api_name = self.config.get("JWT_ROUTER_API_NAME")
+        api_name = self.extensions.api_name
         if not api_name:
             return w_routes
         # Prepend the api name to the white listed route
@@ -119,7 +116,7 @@ class JwtRoutes(FlaskJwtRouter):
             - Checks to see that the route is white listed.
         :return: Callable or None
         """
-        if self._allow_public_routes(self.config["WHITE_LIST_ROUTES"]):
+        if self._allow_public_routes(self.extensions.whitelist_routes):
             try:
                 if request.args.get("auth"):
                     token = request.args.get("auth")
@@ -131,7 +128,11 @@ class JwtRoutes(FlaskJwtRouter):
                 return abort(401)
 
             try:
-                decoded_token = jwt.decode(token, self.get_secret_key(), algorithms="HS256")
+                decoded_token = jwt.decode(
+                    token,
+                    self.extensions.secret_key,
+                    algorithms="HS256"
+                )
             except Exception as err:
                 self.logger.error(err)
                 return abort(401)
@@ -148,7 +149,7 @@ class JwtRoutes(FlaskJwtRouter):
         :param entity_id:
         :return: Any - TODO correct return type
         """
-        entity_key: str = self.get_entity_key()
+        entity_key: str = self.extensions.entity_key
         result = self.auth_model.query.filter_by(**{entity_key: entity_id}).one()
         return result
 
@@ -158,7 +159,7 @@ class JwtRoutes(FlaskJwtRouter):
         :return: user Dict[str, Any] or None - TODO correct type
         """
         self._set_auth_model()
-        result = self.auth_model.__get_entity__(token[self.get_entity_key()])
+        result = self.auth_model.__get_entity__(token[self.extensions.entity_key])
         return result
 
     def _set_auth_model(self):

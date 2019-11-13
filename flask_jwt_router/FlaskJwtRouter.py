@@ -1,73 +1,66 @@
-from abc import ABC, abstractmethod
-
 import logging
 logger = logging.getLogger()
 
 
-class FlaskJwtRouterABC(ABC):
+class _Config:
+    """
+    :param secret_key: Defaults to `DEFAULT_SECRET_KEY`
+    :param entity_key: The name of the model's entity attribute
+    :param whitelist_routes: List of tuple pairs of verb & url path
+    :param api_name: the api name prefix e.g `/api/v1`
+    """
+    def __init__(self,
+                 secret_key=None,
+                 entity_key="id",
+                 whitelist_routes=None,
+                 api_name=None
+                 ):
 
-    @abstractmethod
-    def init_app(selfself, app):
-        pass
-
-    @abstractmethod
-    def get_app_config(self, app):
-        pass
-
-    @abstractmethod
-    def get_entity_key(self):
-        pass
-
-    @abstractmethod
-    def get_entity_id(self, kwargs):
-        pass
-
-    @abstractmethod
-    def get_exp(self, kwargs):
-        pass
-
-    @abstractmethod
-    def get_secret_key(self):
-        pass
-
-    @staticmethod
-    def set_entity_model(kwargs):
-        pass
+        self.secret_key = secret_key
+        self.entity_key = entity_key
+        self.whitelist_routes = whitelist_routes
+        self.api_name = api_name
 
 
-class FlaskJwtRouter(FlaskJwtRouterABC):
+class FlaskJwtRouter:
 
     logger = logging
-    """Flask JWT Router logger"""
     config = {}
-    """Flask Configuration object"""
     app = None
-    """Flask app instance"""
     exp = 30
-    """Default exp"""
-    secret_key = "DEFAULT_SECRET_KEY"
-    """Default secret key"""
-    entity_key = "id"
-    """Primary key for the entity id"""
     _auth_model = None
-    """ An SQLAlchemy Model entity instance"""
+    extensions: _Config
 
     def __init__(self, app=None, **kwargs):
         """
-        - If there app is None then self.init_app(app=None, **kwargs) need to be called
-            inside the Flask app factory pattern
+        If there app is None then self.init_app(app=None, **kwargs) need to be called
+        inside the Flask app factory pattern
         :param app:
         :param kwargs:
         """
         if app:
-            self.app = app
-            config = self.get_app_config(app)
-            self.config = config
+            self.init_app(app)
 
-    def init_app(self, app, **kwargs):
+    def init_flask_jwt_router(self, config):
+        config = _Config(
+            config.get("SECRET_KEY") or "DEFAULT_SECRET_KEY",
+            config.get("ENTITY_KEY"),
+            config.get("WHITE_LIST_ROUTES") or [],
+            config.get("JWT_ROUTER_API_NAME")
+        )
+        return config
+
+    def init_app(self, app):
+        """
+        You can use this to set up your config at runtime
+        :param app:
+        :param kwargs:
+        :return:
+        """
         self.app = app
         config = self.get_app_config(app)
         self.config = config
+        self.extensions = self.init_flask_jwt_router(config)
 
     def get_app_config(self, app):
         """
@@ -76,15 +69,6 @@ class FlaskJwtRouter(FlaskJwtRouterABC):
         """
         config = getattr(app, "config", {})
         return config
-
-    def get_entity_key(self):
-        """
-        :return: str
-        """
-        if "ENTITY_KEY" in self.config and self.config["ENTITY_KEY"] is not None:
-            return self.config["ENTITY_KEY"]
-        else:
-            return self.entity_key
 
     def get_entity_id(self, **kwargs):
         """
@@ -114,7 +98,7 @@ class FlaskJwtRouter(FlaskJwtRouterABC):
             return self.config["SECRET_KEY"]
         else:
             self.logger.warning("Warning: Danger! You have't set a SECRET_KEY in your flask app.config")
-            return self.secret_key
+            return self.extensions.secret_key
 
     @property
     def auth_model(self):
@@ -128,5 +112,3 @@ class FlaskJwtRouter(FlaskJwtRouterABC):
     def set_entity_model(model):
         if "entity_model" in model and model["entity_model"] is not None:
             return model["entity_model"]
-
-
