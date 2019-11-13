@@ -11,11 +11,12 @@ class _Config:
     :param api_name:
     """
     def __init__(self,
-            secret_key=None,
-            entity_key=None,
-            entity_model=None,
-            whitelist_routes=None,
-            api_name=None):
+                 secret_key=None,
+                 entity_key=None,
+                 whitelist_routes=None,
+                 api_name=None,
+                 entity_model=None,
+                 ):
 
         self.secret_key = secret_key
         self.entity_key = entity_key
@@ -33,6 +34,7 @@ class FlaskJwtRouter:
     secret_key = "DEFAULT_SECRET_KEY"
     entity_key = "id"
     _auth_model = None
+    extensions: _Config
 
     def __init__(self, app=None, **kwargs):
         """
@@ -45,8 +47,25 @@ class FlaskJwtRouter:
             self.app = app
             config = self.get_app_config(app)
             self.config = config
+            self.extensions = self.init_flask_jwt_router(config)
 
-    def init_app(self, app, **kwargs):
+    def init_flask_jwt_router(self, config, entity_model=None):
+        config = _Config(
+            config.get("SECRET_KEY"),
+            config.get("ENTITY_KEY"),
+            config.get("WHITE_LIST_ROUTES"),
+            config.get("JWT_ROUTER_API_NAME"),
+            entity_model,
+        )
+        return config
+
+    def init_app(self, app):
+        """
+        You can use this to set up your config at runtime
+        :param app:
+        :param kwargs:
+        :return:
+        """
         self.app = app
         config = self.get_app_config(app)
         self.config = config
