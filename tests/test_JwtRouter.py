@@ -26,7 +26,6 @@ class TestJwtRoutes:
         rv = test_client.get("/api/v1/test")
         assert "200" in str(rv.status)
 
-    @pytest.mark.one
     def test_sub_paths(self, test_client):
         rv = test_client.get("/api/v1/bananas/sub")
         assert "200" in str(rv.status)
