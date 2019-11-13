@@ -14,15 +14,13 @@ class _Config:
                  secret_key=None,
                  entity_key="id",
                  whitelist_routes=None,
-                 api_name=None,
-                 entity_model=None,
+                 api_name=None
                  ):
 
         self.secret_key = secret_key
         self.entity_key = entity_key
         self.whitelist_routes = whitelist_routes
         self.api_name = api_name
-        self.entity_model = entity_model
 
 
 class FlaskJwtRouter:
@@ -44,13 +42,12 @@ class FlaskJwtRouter:
         if app:
             self.init_app(app)
 
-    def init_flask_jwt_router(self, config, entity_model=None):
+    def init_flask_jwt_router(self, config):
         config = _Config(
             config.get("SECRET_KEY") or "DEFAULT_SECRET_KEY",
             config.get("ENTITY_KEY"),
             config.get("WHITE_LIST_ROUTES") or [],
-            config.get("JWT_ROUTER_API_NAME"),
-            entity_model,
+            config.get("JWT_ROUTER_API_NAME")
         )
         return config
 
