@@ -50,8 +50,8 @@ def test_sub_three(user_id):
 @pytest.fixture(scope='module')
 def test_client():
     flask_app.config["WHITE_LIST_ROUTES"] = [
-        # ("GET", "/test"),
-        # ("GET", "/bananas/sub"),
+        ("GET", "/test"),
+        ("GET", "/bananas/sub"),
         ("GET", "/apples/sub/<int:user_id>")
     ]
     flask_app.config["JWT_ROUTER_API_NAME"] = "/api/v1"

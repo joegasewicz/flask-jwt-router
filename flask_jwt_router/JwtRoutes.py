@@ -1,5 +1,4 @@
 from flask import request, abort, g
-from werkzeug import routing, urls
 import jwt
 import inspect
 
@@ -71,8 +70,8 @@ class JwtRoutes(FlaskJwtRouter):
     def _handle_query_params(self, white_route: str, path: str):
         """
         Handles dynamic query params
-        All we care about is that if a path segment has no url conversion
-        then we compare it's the same as out whitelist segment & let Flask
+        All we care about that a path segment has no url conversion.
+        We compare it's the same as the whitelist segment & let Flask
         / Werkzeug handle the url matching
         :param white_route:
         :param path:
@@ -89,8 +88,7 @@ class JwtRoutes(FlaskJwtRouter):
                 if r[0] != "<":
                     if r != p:
                         return False
-            else:
-                return True
+        return True
 
     def _allow_public_routes(self, white_routes):
         """
