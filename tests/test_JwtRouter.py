@@ -23,18 +23,33 @@ class TestJwtRoutes:
         assert expected in str(rv.status)
 
     def test_api_named_routes(self, test_client):
-        config = {
-                 "WHITE_LIST_ROUTES": [("GET", "/test222")],
-                 "JWT_ROUTER_API_NAME": "/api/v1",
-                 "DEBUG": True
-        }
-        test_client.config = config
-
         rv = test_client.get("/api/v1/test")
         assert "200" in str(rv.status)
 
-    def test_static_routes(self, test_client, test_client_static):
+    @pytest.mark.one
+    def test_sub_paths(self, test_client):
+        rv = test_client.get("/api/v1/bananas/sub")
+        assert "200" in str(rv.status)
+        assert rv.get_json()["data"] == "sub"
 
+        rv = test_client.get("/api/v1/test/sub_two")
+        assert "401" in str(rv.status)
+
+    def test_dynamic_params(self, test_client):
+        rv = test_client.get("/api/v1/apples/sub/1")
+        assert "200" in str(rv.status)
+
+        rv = test_client.get("/api/v1/apples/sub/")
+        assert "404" in str(rv.status)
+
+        rv = test_client.get("/api/v1/apples/sub/hello")
+        assert "404" in str(rv.status)
+
+    def test_static_routes(self, test_client, test_client_static):
+        """
+        Tests if the static path is handled both by default and
+        if the path is past to the static_folder kwarg
+        """
         rv = test_client.get("/static/images/Group.jpg")
         assert "200" in str(rv.status)
 
