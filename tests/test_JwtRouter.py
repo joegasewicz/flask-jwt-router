@@ -28,9 +28,9 @@ class TestJwtRoutes:
         assert "200" in str(rv.status)
 
     def test_sub_paths(self, test_client):
-        # rv = test_client.get("/api/v1/bananas/sub")
-        # assert "200" in str(rv.status)
-        # assert rv.get_json()["data"] == "sub"
+        rv = test_client.get("/api/v1/bananas/sub")
+        assert "200" in str(rv.status)
+        assert rv.get_json()["data"] == "sub"
 
         rv = test_client.get("/api/v1/test/sub_two")
         assert "401" in str(rv.status)
@@ -53,10 +53,17 @@ class TestJwtRoutes:
         rv = test_client.get("/static/images/Group.jpg")
         assert "200" in str(rv.status)
 
+        rv = test_client.get("/")
+        assert "200" in str(rv.status)
+
     def test_static_client(self, test_client_static):
         rv = test_client_static.get("/static_copy/images/Group.jpg")
         assert "200" in str(rv.status)
 
     def test_ignored_routes(self, test_client):
         rv = test_client.get("/ignore")
+        assert "200" in str(rv.status)
+
+    def test_ignored_route_path(self, test_client):
+        rv = test_client.get("/")
         assert "200" in str(rv.status)

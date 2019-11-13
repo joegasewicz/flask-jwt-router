@@ -41,8 +41,7 @@ class FlaskJwtRouter:
         :param app:
         :param kwargs:
         """
-        if app:
-            self.init_app(app)
+        pass
 
     def init_flask_jwt_router(self, config):
         config = _Config(
@@ -53,18 +52,6 @@ class FlaskJwtRouter:
             config.get("IGNORED_ROUTES") or [],
         )
         return config
-
-    def init_app(self, app):
-        """
-        You can use this to set up your config at runtime
-        :param app:
-        :param kwargs:
-        :return:
-        """
-        self.app = app
-        config = self.get_app_config(app)
-        self.config = config
-        self.extensions = self.init_flask_jwt_router(config)
 
     def get_app_config(self, app):
         """
