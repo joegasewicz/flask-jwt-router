@@ -32,7 +32,7 @@ def test_two():
     return "/test"
 
 
-@flask_app.route("/api/v1/test/sub", methods=["GET"])
+@flask_app.route("/api/v1/bananas/sub", methods=["GET"])
 def test_sub():
     return {"data": "sub"}
 
@@ -42,7 +42,7 @@ def test_sub_two():
     return {"data": "sub2"}
 
 
-@flask_app.route("/api/v1/test/sub/<user_id>", methods=["GET"])
+@flask_app.route("/api/v1/apples/sub/<int:user_id>", methods=["GET"])
 def test_sub_three(user_id):
     return {"data": user_id}
 
@@ -50,9 +50,9 @@ def test_sub_three(user_id):
 @pytest.fixture(scope='module')
 def test_client():
     flask_app.config["WHITE_LIST_ROUTES"] = [
-        ("GET", "/test"),
-        ("GET", "/test/sub"),
-        ("GET", "/test/sub/<user_id>")
+        # ("GET", "/test"),
+        # ("GET", "/bananas/sub"),
+        ("GET", "/apples/sub/<int:user_id>")
     ]
     flask_app.config["JWT_ROUTER_API_NAME"] = "/api/v1"
     JwtRoutes(flask_app)
