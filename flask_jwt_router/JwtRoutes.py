@@ -97,10 +97,6 @@ class JwtRoutes(FlaskJwtRouter):
         """
         method = request.method
         path = request.path
-        if self._add_static_routes(path):
-            return False
-
-        white_routes = self._prefix_api_name(white_routes)
 
         for white_route in white_routes:
             if method == white_route[0] and path == white_route[1]:
@@ -111,38 +107,59 @@ class JwtRoutes(FlaskJwtRouter):
 
     def _before_middleware(self):
         """
-            TODO exception from jwt
-            - Checks the headers contain a Bearer string OR params.
-            - Checks to see that the route is white listed.
+        Handles ignored & whitelisted & static routes with api name
+        If it's not static, ignored whitelisted then authorize
         :return: Callable or None
         """
-        if self._allow_public_routes(self.extensions.whitelist_routes):
+        path = request.path
+        is_static = self._add_static_routes(path)
+        if not is_static:
+
+            # Handle ignored routes
+            is_ignored = False
+            ignored_routes = self.extensions.ignored_routes
+            if len(ignored_routes):
+                is_ignored = not self._allow_public_routes(ignored_routes)
+            if not is_ignored:
+                white_routes = self._prefix_api_name(self.extensions.whitelist_routes)
+                not_whitelist = self._allow_public_routes(white_routes)
+
+                if not_whitelist:
+                    self._handle_token()
+
+    def _handle_token(self):
+        """
+        TODO exception from jwt
+        Checks the headers contain a Bearer string OR params.
+        Checks to see that the route is white listed.
+        :return None:
+        """
+        try:
+            if request.args.get("auth"):
+                token = request.args.get("auth")
+            else:
+                bearer = request.headers.get("Authorization")
+                token = bearer.split("Bearer ")[1]
+        except Exception as err:
+            self.logger.error(err)
+            return abort(401)
+
+        try:
+            decoded_token = jwt.decode(
+                token,
+                self.extensions.secret_key,
+                algorithms="HS256"
+            )
+        except Exception as err:
+            self.logger.error(err)
+            return abort(401)
+
+        if self.auth_model is not None:
             try:
-                if request.args.get("auth"):
-                    token = request.args.get("auth")
-                else:
-                    bearer = request.headers.get("Authorization")
-                    token = bearer.split("Bearer ")[1]
+                g.entity = self._update_model_entity(decoded_token)
             except Exception as err:
                 self.logger.error(err)
                 return abort(401)
-
-            try:
-                decoded_token = jwt.decode(
-                    token,
-                    self.extensions.secret_key,
-                    algorithms="HS256"
-                )
-            except Exception as err:
-                self.logger.error(err)
-                return abort(401)
-
-            if self.auth_model is not None:
-                try:
-                    g.entity = self._update_model_entity(decoded_token)
-                except Exception as err:
-                    self.logger.error(err)
-                    return abort(401)
 
     def _get_user_from_auth_model(self, entity_id):
         """

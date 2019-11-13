@@ -44,7 +44,7 @@ def register():
     return "I don't need authorizing!"
 ```
 
-# Prefix your api name to whitelisted routes
+## Prefix your api name to whitelisted routes
 ```python
     # All routes will
 app.config["JWT_ROUTER_API_NAME"] = "/api/v1"
@@ -56,6 +56,15 @@ app.config["WHITE_LIST_ROUTES"] = [
 def register():
     return "I don't need authorizing!"
    
+```
+
+## Allow roots to bypass Flask-JWT-Router completely
+```python
+    # Define homepage template routes for example on JWT_IGNORE_ROUTES 
+    # & still get to use the api name on request handle returning resources
+    app.config["JWT_IGNORE_ROUTES"] = [
+        ("GET", "/")
+    ]
 ```
 
 ## Declare an entity model
