@@ -5,19 +5,12 @@ logger = logging.getLogger()
 class FlaskJwtRouter:
 
     logger = logging
-    """Flask JWT Router logger"""
     config = {}
-    """Flask Configuration object"""
     app = None
-    """Flask app instance"""
     exp = 30
-    """Default exp"""
     secret_key = "DEFAULT_SECRET_KEY"
-    """Default secret key"""
     entity_key = "id"
-    """Primary key for the entity id"""
     _auth_model = None
-    """ An SQLAlchemy Model entity instance"""
 
     def __init__(self, app=None, **kwargs):
         """
