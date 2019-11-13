@@ -52,6 +52,11 @@ def test_sub_four():
     return jsonify({"data": "ignore"})
 
 
+@flask_app.route("/", methods=["GET"])
+def test_sub_five():
+    return jsonify({"data": "/"})
+
+
 @pytest.fixture(scope='module')
 def test_client():
     flask_app.config["WHITE_LIST_ROUTES"] = [
@@ -60,6 +65,7 @@ def test_client():
         ("PUT", "/apples/sub/<int:user_id>")
     ]
     flask_app.config["IGNORED_ROUTES"] = [
+        ("GET", "/"),
         ("GET", "/ignore"),
     ]
     flask_app.config["JWT_ROUTER_API_NAME"] = "/api/v1"

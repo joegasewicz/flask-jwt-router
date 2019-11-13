@@ -6,27 +6,25 @@ from .FlaskJwtRouter import FlaskJwtRouter
 
 
 class JwtRoutes(FlaskJwtRouter):
-    """
-        :example
-            white_list_routes = [
-                ("GET", "/users"),
-                ("POST", f"api/v1/complaints"),
-                ("PUT", f"api/v1/visitor_emails"),
-                ("DELETE", f"api/v1/spam"),
-            ]
-    """
+
     def __init__(self, app=None, **kwargs):
         super().__init__(app, **kwargs)
 
         self.auth_model = FlaskJwtRouter.set_entity_model(kwargs)
-        if self.app is not None:
-            self._init_app()
+        if app:
+            self.init_app(app)
 
-    def _init_app(self):
+    def init_app(self, app):
         """
-        :return: None
+        You can use this to set up your config at runtime
+        :param app:
+        :param kwargs:
+        :return:
         """
-        # Initiate middleware
+        self.app = app
+        config = self.get_app_config(app)
+        self.config = config
+        self.extensions = self.init_flask_jwt_router(config)
         self.app.before_request(self._before_middleware)
 
     def _prefix_api_name(self, w_routes=[]):
@@ -111,14 +109,16 @@ class JwtRoutes(FlaskJwtRouter):
         If it's not static, ignored whitelisted then authorize
         :return: Callable or None
         """
+        print('here-------> ')
         path = request.path
         is_static = self._add_static_routes(path)
         if not is_static:
-
             # Handle ignored routes
             is_ignored = False
             ignored_routes = self.extensions.ignored_routes
+            print('here-------> ', ignored_routes)
             if len(ignored_routes):
+                print('here-------> ')
                 is_ignored = not self._allow_public_routes(ignored_routes)
             if not is_ignored:
                 white_routes = self._prefix_api_name(self.extensions.whitelist_routes)
