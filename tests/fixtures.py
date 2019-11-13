@@ -1,5 +1,5 @@
 import pytest
-from flask import Flask
+from flask import Flask, jsonify
 from flask_jwt_router.JwtRoutes import JwtRoutes
 
 app = Flask(__name__)
@@ -34,17 +34,17 @@ def test_two():
 
 @flask_app.route("/api/v1/bananas/sub", methods=["GET"])
 def test_sub():
-    return {"data": "sub"}, 200
+    return jsonify({"data": "sub"})
 
 
 @flask_app.route("/api/v1/test/sub_two", methods=["GET"])
 def test_sub_two():
-    return {"data": "sub2"}, 200
+    return jsonify({"data": "sub2"})
 
 
 @flask_app.route("/api/v1/apples/sub/<int:user_id>", methods=["GET"])
 def test_sub_three(user_id=1):
-    return {"data": user_id}, 200
+    return jsonify({"data": user_id})
 
 
 @pytest.fixture(scope='module')
