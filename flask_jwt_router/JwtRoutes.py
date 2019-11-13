@@ -109,16 +109,13 @@ class JwtRoutes(FlaskJwtRouter):
         If it's not static, ignored whitelisted then authorize
         :return: Callable or None
         """
-        print('here-------> ')
         path = request.path
         is_static = self._add_static_routes(path)
         if not is_static:
             # Handle ignored routes
             is_ignored = False
             ignored_routes = self.extensions.ignored_routes
-            print('here-------> ', ignored_routes)
             if len(ignored_routes):
-                print('here-------> ')
                 is_ignored = not self._allow_public_routes(ignored_routes)
             if not is_ignored:
                 white_routes = self._prefix_api_name(self.extensions.whitelist_routes)
