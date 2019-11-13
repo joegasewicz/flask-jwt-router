@@ -1,41 +1,8 @@
-from abc import ABC, abstractmethod
-
 import logging
 logger = logging.getLogger()
 
 
-class FlaskJwtRouterABC(ABC):
-
-    @abstractmethod
-    def init_app(selfself, app):
-        pass
-
-    @abstractmethod
-    def get_app_config(self, app):
-        pass
-
-    @abstractmethod
-    def get_entity_key(self):
-        pass
-
-    @abstractmethod
-    def get_entity_id(self, kwargs):
-        pass
-
-    @abstractmethod
-    def get_exp(self, kwargs):
-        pass
-
-    @abstractmethod
-    def get_secret_key(self):
-        pass
-
-    @staticmethod
-    def set_entity_model(kwargs):
-        pass
-
-
-class FlaskJwtRouter(FlaskJwtRouterABC):
+class FlaskJwtRouter:
 
     logger = logging
     """Flask JWT Router logger"""
