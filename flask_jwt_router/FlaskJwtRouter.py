@@ -4,11 +4,10 @@ logger = logging.getLogger()
 
 class _Config:
     """
-    :param secret_key:
-    :param entity_key:
-    :param whitelist_routes:
-    :param api_name:
-    :param entity_model:
+    :param secret_key: Defaults to `DEFAULT_SECRET_KEY`
+    :param entity_key: The name of the model's entity attribute
+    :param whitelist_routes: List of tuple pairs of verb & url path
+    :param api_name: the api name prefix e.g `/api/v1`
     """
     def __init__(self,
                  secret_key=None,
