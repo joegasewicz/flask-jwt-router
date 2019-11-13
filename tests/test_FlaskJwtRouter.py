@@ -73,6 +73,8 @@ class TestFlaskJwtRouter:
                 "IGNORED_ROUTES": IGNORED_ROUTES,
                 "WHITE_LIST_ROUTES": WHITE_LIST_ROUTES,
             }
+            def before_request(self, t):
+                pass
         flask_jwt_router = JwtRoutes(App())
         assert flask_jwt_router.extensions.ignored_routes == IGNORED_ROUTES
         assert flask_jwt_router.extensions.whitelist_routes == WHITE_LIST_ROUTES
