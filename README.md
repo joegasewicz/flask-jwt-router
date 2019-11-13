@@ -62,7 +62,7 @@ def register():
 ```python
     # Define homepage template routes for example on JWT_IGNORE_ROUTES 
     # & still get to use the api name on request handle returning resources
-    app.config["JWT_IGNORE_ROUTES"] = [
+    app.config["IGNORED_ROUTES"] = [
         ("GET", "/")
     ]
 ```
