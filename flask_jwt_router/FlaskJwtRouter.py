@@ -2,6 +2,28 @@ import logging
 logger = logging.getLogger()
 
 
+class _Config:
+    """
+    :param secret_key:
+    :param entity_key:
+    :param entity_model:
+    :param whitelist_routes:
+    :param api_name:
+    """
+    def __init__(self,
+            secret_key=None,
+            entity_key=None,
+            entity_model=None,
+            whitelist_routes=None,
+            api_name=None):
+
+        self.secret_key = secret_key
+        self.entity_key = entity_key
+        self.entity_model = entity_model
+        self.whitelist_routes = whitelist_routes
+        self.api_name = api_name
+
+
 class FlaskJwtRouter:
 
     logger = logging
@@ -14,8 +36,8 @@ class FlaskJwtRouter:
 
     def __init__(self, app=None, **kwargs):
         """
-        - If there app is None then self.init_app(app=None, **kwargs) need to be called
-            inside the Flask app factory pattern
+        If there app is None then self.init_app(app=None, **kwargs) need to be called
+        inside the Flask app factory pattern
         :param app:
         :param kwargs:
         """
