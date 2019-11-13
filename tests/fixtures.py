@@ -1,5 +1,5 @@
 import pytest
-from flask import Flask, jsonify
+from flask import Flask, jsonify, copy_current_request_context
 from flask_jwt_router.JwtRoutes import JwtRoutes
 
 app = Flask(__name__)
@@ -43,8 +43,13 @@ def test_sub_two():
 
 
 @flask_app.route("/api/v1/apples/sub/<int:user_id>", methods=["PUT"])
-def test_sub_three(user_id=1):
+def test_three(user_id=1):
     return jsonify({"data": user_id})
+
+
+@flask_app.route("/ignore", methods=["GET"])
+def test_sub_four():
+    return jsonify({"data": "ignore"})
 
 
 @pytest.fixture(scope='module')
@@ -53,6 +58,9 @@ def test_client():
         ("GET", "/test"),
         ("GET", "/bananas/sub"),
         ("PUT", "/apples/sub/<int:user_id>")
+    ]
+    flask_app.config["IGNORED_ROUTES"] = [
+        ("GET", "/ignore"),
     ]
     flask_app.config["JWT_ROUTER_API_NAME"] = "/api/v1"
     JwtRoutes(flask_app)
@@ -63,13 +71,13 @@ def test_client():
     ctx.pop()
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def test_client_static():
     flask_app_static = Flask(__name__, static_folder="static_copy")
     flask_app_static.config["WHITE_LIST_ROUTES"] = [("GET", "/anything")]
     JwtRoutes(flask_app_static)
-    testing_client = flask_app_static.test_client()
+    static_client = flask_app_static.test_client()
     ctx = flask_app_static.app_context()
     ctx.push()
-    yield testing_client
+    yield static_client
     ctx.pop()
