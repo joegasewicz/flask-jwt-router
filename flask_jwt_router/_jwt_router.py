@@ -27,7 +27,7 @@ class FlaskJWTRouter:
         self.entity: BaseEntity = Entity(self.extensions, Entity.set_entity_model(kwargs))
         self.ext: BaseExtension = Extensions()
         self.routing: BaseRouting = Routing()
-        self.auth: BaseAuthStrategy = JWTAuthStrategy(self.entity)
+        self.auth = BaseAuthStrategy()
 
         if app:
             self.init_app(app)
@@ -89,17 +89,30 @@ class FlaskJWTRouter:
 
     @auth_model.setter
     def auth_model(self, value):
+        """
+        :param value:
+        :return:
+        """
         self._auth_model = value
 
     def register_entity(self, **kwargs):
+        """
+        :param kwargs:
+        :return:
+        """
         self.auth.register_entity(**kwargs)
 
     def update_entity(self, **kwargs):
+        """
+        :param kwargs:
+        :return:
+        """
         self.auth.update_entity(**kwargs)
 
-    def encode_token(self, extensions: Config, **kwargs):
+    def encode_token(self, extensions, **kwargs):
+        """
+        :param extensions:
+        :param kwargs:
+        :return:
+        """
         self.auth.encode_token(extensions, **kwargs)
-
-
-
-
