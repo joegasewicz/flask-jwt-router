@@ -1,6 +1,8 @@
 from flask import request, abort, g
 import jwt
 from abc import ABC, abstractmethod
+import logging
+logger = logging.getLogger()
 
 
 class BaseRouting(ABC):
@@ -11,8 +13,10 @@ class BaseRouting(ABC):
 
 
 class Routing(BaseRouting):
-    def __int__(self):
-        pass
+    def __init__(self, app, extensions):
+        self.app = app
+        self.extensions = extensions
+        self.logger = logger
 
     def _prefix_api_name(self, w_routes=[]):
         """

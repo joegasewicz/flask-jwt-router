@@ -8,7 +8,6 @@ from flask_jwt_router._entity import Entity
 
 class TestFlaskJwtRouter:
 
-    @pytest.mark.test
     def test_get_app_config(self):
         white_list = [("POST", "/test")]
         class App:
@@ -20,7 +19,6 @@ class TestFlaskJwtRouter:
         config = flask_jwt_router.get_app_config(app)
         assert config["WHITE_LIST_ROUTES"] == white_list
 
-    @pytest.mark.test
     def test_get_entity_id(self):
 
         flask_jwt_router = JwtRoutes()
@@ -28,8 +26,7 @@ class TestFlaskJwtRouter:
         assert result == 1
         result_two = flask_jwt_router.get_entity_id()
         assert result_two is None
-
-    @pytest.mark.test
+    
     def test_get_exp(self):
         flask_jwt_router = JwtRoutes()
         result = flask_jwt_router.get_exp(exp=10)
@@ -37,7 +34,6 @@ class TestFlaskJwtRouter:
         result = flask_jwt_router.get_exp()
         assert result == 30
 
-    @pytest.mark.test
     def test_get_secret_key(self):
         class App:
             config = {
@@ -59,15 +55,13 @@ class TestFlaskJwtRouter:
         flask_jwt_router_two = JwtRoutes(app)
         result_two = flask_jwt_router_two.extensions.secret_key
         assert result_two == "DEFAULT_SECRET_KEY"
-
-    @pytest.mark.test
+    
     def test_auth_model(self):
         class AuthModel:
             pass
         result = Entity.set_entity_model({"entity_model":AuthModel})
         assert result == AuthModel
 
-    @pytest.mark.test
     def test_config(self):
         IGNORED_ROUTES = [
             ("GET", "/"),

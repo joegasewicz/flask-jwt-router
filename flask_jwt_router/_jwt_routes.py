@@ -19,7 +19,9 @@ from flask_jwt_router._authentication import JWTAuthStrategy
 
 
 class JwtRoutes(FlaskJWTRouter):
-
+    """
+    :param: app
+    """
     def __int__(self):
         super(JwtRoutes, self).__init__()
         self.auth = JWTAuthStrategy()

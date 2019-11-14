@@ -1,6 +1,7 @@
 import pytest
 from flask import Flask, jsonify, copy_current_request_context
-from flask_jwt_router.JwtRoutes import JwtRoutes
+# from flask_jwt_router.JwtRoutes import JwtRoutes
+from flask_jwt_router._jwt_routes import JwtRoutes
 
 app = Flask(__name__)
 

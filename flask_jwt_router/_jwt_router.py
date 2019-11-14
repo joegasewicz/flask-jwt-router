@@ -9,7 +9,12 @@ logger = logging.getLogger()
 
 
 class FlaskJWTRouter:
-
+    """
+    If there app is None then self.init_app(app=None, **kwargs) need to be called
+    inside the Flask app factory pattern
+    :param app:
+    :param kwargs:
+    """
     logger = logging
     config = {}
     app = None
@@ -17,16 +22,12 @@ class FlaskJWTRouter:
     _auth_model = None
     extensions: Config
     auth: BaseAuthStrategy
+    entity: BaseEntity
+    routing: BaseRouting
+    ext: BaseExtension
 
     def __init__(self, app=None, **kwargs):
-        """
-        If there app is None then self.init_app(app=None, **kwargs) need to be called
-        inside the Flask app factory pattern
-        :param app:
-        :param kwargs:
-        """
-        self.ext: BaseExtension = Extensions()
-        self.routing: BaseRouting = Routing()
+        self.ext = Extensions()
 
         if app:
             self.init_app(app)
@@ -42,7 +43,8 @@ class FlaskJWTRouter:
         config = self.get_app_config(app)
         self.config = config
         self.extensions = self.ext.init_extensions(config)
-        self.entity: BaseEntity = Entity(self.extensions, Entity.set_entity_model())
+        self.entity = Entity(self.extensions, Entity.set_entity_model())
+        self.routing = Routing(self.app, self.extensions)
         self.app.before_request(self.routing.before_middleware)
 
     def get_app_config(self, app):
