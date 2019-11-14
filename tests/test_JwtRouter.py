@@ -1,7 +1,5 @@
 import pytest
-from flask_jwt_router.JwtRoutes import JwtRoutes
 
-from flask_jwt_router.JwtRoutes import JwtRoutes
 from tests.fixtures import jwt_router_client, test_client, test_client_static
 
 
@@ -19,9 +17,11 @@ class TestJwtRoutes:
             ({}, None, "401"),
         ], indirect=["jwt_router_client"]
     )
+
     def test_jwt_route(self, jwt_router_client, entity_model, expected):
         rv = jwt_router_client.get("/test")
         assert expected in str(rv.status)
+
 
     def test_api_named_routes(self, test_client):
         rv = test_client.get("/api/v1/test")
@@ -44,6 +44,7 @@ class TestJwtRoutes:
 
         rv = test_client.get("/api/v1/apples/sub/hello")
         assert "401" in str(rv.status)
+
 
     def test_static_routes(self, test_client):
         """

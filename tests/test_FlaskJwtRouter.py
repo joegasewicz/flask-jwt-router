@@ -1,7 +1,7 @@
 import pytest
 
-from flask_jwt_router.JwtRoutes import JwtRoutes
-from flask_jwt_router.FlaskJwtRouter import FlaskJwtRouter
+from flask_jwt_router._jwt_routes import JwtRoutes
+from flask_jwt_router._entity import Entity
 
 class TestFlaskJwtRouter:
 
@@ -23,7 +23,7 @@ class TestFlaskJwtRouter:
         assert result == 1
         result_two = flask_jwt_router.get_entity_id()
         assert result_two is None
-
+    
     def test_get_exp(self):
         flask_jwt_router = JwtRoutes()
         result = flask_jwt_router.get_exp(exp=10)
@@ -31,8 +31,7 @@ class TestFlaskJwtRouter:
         result = flask_jwt_router.get_exp()
         assert result == 30
 
-
-    def test_get_secret_key(self, monkeypatch):
+    def test_get_secret_key(self):
         class App:
             config = {
                 "SECRET_KEY": "123abc"
@@ -53,11 +52,11 @@ class TestFlaskJwtRouter:
         flask_jwt_router_two = JwtRoutes(app)
         result_two = flask_jwt_router_two.extensions.secret_key
         assert result_two == "DEFAULT_SECRET_KEY"
-
+    
     def test_auth_model(self):
         class AuthModel:
             pass
-        result = JwtRoutes.set_entity_model({"entity_model":AuthModel})
+        result = Entity.set_entity_model({"entity_model":AuthModel})
         assert result == AuthModel
 
     def test_config(self):
