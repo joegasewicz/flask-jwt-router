@@ -76,6 +76,6 @@ class Entity(BaseEntity):
         )
 
     @staticmethod
-    def set_entity_model(model):
-        if "entity_model" in model and model["entity_model"] is not None:
+    def set_entity_model(model=None):
+        if model and "entity_model" in model and model["entity_model"] is not None:
             return model["entity_model"]

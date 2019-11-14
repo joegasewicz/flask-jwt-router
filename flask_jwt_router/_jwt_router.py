@@ -3,7 +3,7 @@ import logging
 from flask_jwt_router._extensions import BaseExtension, Extensions, Config
 from flask_jwt_router._entity import BaseEntity, Entity
 from flask_jwt_router._routing import BaseRouting, Routing
-from flask_jwt_router._authentication import BaseAuthStrategy, JWTAuthStrategy, SSHAuthStrategy
+from flask_jwt_router._authentication import BaseAuthStrategy
 
 logger = logging.getLogger()
 
@@ -16,6 +16,7 @@ class FlaskJWTRouter:
     exp = 30
     _auth_model = None
     extensions: Config
+    auth: BaseAuthStrategy
 
     def __init__(self, app=None, **kwargs):
         """
@@ -24,10 +25,8 @@ class FlaskJWTRouter:
         :param app:
         :param kwargs:
         """
-        self.entity: BaseEntity = Entity(self.extensions, Entity.set_entity_model(kwargs))
         self.ext: BaseExtension = Extensions()
         self.routing: BaseRouting = Routing()
-        self.auth = BaseAuthStrategy()
 
         if app:
             self.init_app(app)
@@ -43,6 +42,7 @@ class FlaskJWTRouter:
         config = self.get_app_config(app)
         self.config = config
         self.extensions = self.ext.init_extensions(config)
+        self.entity: BaseEntity = Entity(self.extensions, Entity.set_entity_model())
         self.app.before_request(self.routing.before_middleware)
 
     def get_app_config(self, app):
