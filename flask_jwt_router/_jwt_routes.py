@@ -4,15 +4,6 @@
     The main public API for flask-jwt-router with methods to
     handle JSON web tokens.
 
-    For example we can create an version of JWTRoutes using SSH key pairs:
-
-    class SshRoutes(FlaskJWTRouter):
-
-    def __int__(self):
-        super(SshRoutes, self).__init__()
-        self.auth = SSHAuthStrategy()
-
-
 """
 from ._jwt_router import FlaskJWTRouter
 from ._authentication import JWTAuthStrategy

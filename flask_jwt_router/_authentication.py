@@ -2,6 +2,18 @@
     AuthStrategy class are strategies with public methods
     defined in BaseAuthStrategy. Currently only 2 of the
     3 methods are used publicly but the intention is there...
+
+    Example with different algorithms:
+    class AnotherAuthStrategy(BaseAuthStrategy):
+    def encode_token(self, extensions: Config, **kwargs):
+        pass
+
+    def register_entity(self):
+        pass
+
+    def update_entity(self):
+        pass
+
 """
 from abc import ABC, abstractmethod
 import jwt
@@ -84,14 +96,3 @@ class JWTAuthStrategy(BaseAuthStrategy):
         :return: str
         """
         return JWTAuthStrategy.encode_token(**kwargs)
-
-
-class SSHAuthStrategy(BaseAuthStrategy):
-    def encode_token(self, extensions: Config, **kwargs):
-        pass
-
-    def register_entity(self):
-        pass
-
-    def update_entity(self):
-        pass
