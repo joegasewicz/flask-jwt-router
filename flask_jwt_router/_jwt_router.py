@@ -3,6 +3,7 @@ import logging
 from flask_jwt_router._extensions import BaseExtension, Extensions, Config
 from flask_jwt_router._entity import BaseEntity, Entity
 from flask_jwt_router._routing import BaseRouting, Routing
+from flask_jwt_router._authentication import BaseAuthStrategy, JWTAuthStrategy, SSHAuthStrategy
 
 logger = logging.getLogger()
 
@@ -26,6 +27,7 @@ class FlaskJWTRouter:
         self.entity: BaseEntity = Entity(self.extensions, Entity.set_entity_model(kwargs))
         self.ext: BaseExtension = Extensions()
         self.routing: BaseRouting = Routing()
+        self.auth: BaseAuthStrategy = JWTAuthStrategy(self.entity)
 
         if app:
             self.init_app(app)
@@ -88,6 +90,16 @@ class FlaskJWTRouter:
     @auth_model.setter
     def auth_model(self, value):
         self._auth_model = value
+
+    def register_entity(self, **kwargs):
+        self.auth.register_entity(**kwargs)
+
+    def update_entity(self, **kwargs):
+        self.auth.update_entity(**kwargs)
+
+    def encode_token(self, extensions: Config, **kwargs):
+        self.auth.encode_token(extensions, **kwargs)
+
 
 
 
