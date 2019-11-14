@@ -1,8 +1,16 @@
 from flask import request, abort, g
 import jwt
+from abc import ABC, abstractmethod
 
 
-class Routing:
+class BaseRouting(ABC):
+
+    @abstractmethod
+    def before_middleware(self) -> None:
+        pass
+
+
+class Routing(BaseRouting):
     def __int__(self):
         pass
 
@@ -82,7 +90,7 @@ class Routing:
                 return False
         return True
 
-    def _before_middleware(self):
+    def before_middleware(self) -> None:
         """
         Handles ignored & whitelisted & static routes with api name
         If it's not static, ignored whitelisted then authorize

@@ -1,8 +1,8 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import Dict, Any
 
 
-class _Config:
+class Config:
     """
     :param secret_key: Defaults to `DEFAULT_SECRET_KEY`
     :param entity_key: The name of the model's entity attribute
@@ -15,7 +15,7 @@ class _Config:
                  entity_key="id",
                  whitelist_routes=None,
                  api_name=None,
-                 ignored_routes=None
+                 ignored_routes=None,
                  ):
 
         self.secret_key = secret_key
@@ -30,10 +30,10 @@ class BaseExtension(ABC):
         pass
 
 
-class _Extensions(BaseExtension):
+class Extensions(BaseExtension):
 
-    def init_extensions(self, config) -> _Config:
-        return _Config(
+    def init_extensions(self, config: Any) -> Config:
+        return Config(
             config.get("SECRET_KEY") or "DEFAULT_SECRET_KEY",
             config.get("ENTITY_KEY"),
             config.get("WHITE_LIST_ROUTES") or [],

@@ -8,7 +8,7 @@ import jwt
 from datetime import datetime
 from dateutil.relativedelta import *
 
-from flask_jwt_router._extensions import _Extensions
+from flask_jwt_router._extensions import BaseExtension
 from flask_jwt_router._entity import BaseEntity
 
 
@@ -37,7 +37,7 @@ class BaseAuthStrategy(ABC):
 
     @staticmethod
     @abstractmethod
-    def encode_token(extensions: _Extensions, **kwargs):
+    def encode_token(extensions: BaseExtension, **kwargs):
         pass
 
 
