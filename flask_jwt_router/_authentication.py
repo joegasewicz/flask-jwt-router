@@ -3,7 +3,8 @@
     defined in BaseAuthStrategy. Currently only 2 of the
     3 methods are used publicly but the intention is there...
 
-    Example with different algorithms:
+    Example with different cryptographic signing Algorithm:
+
     class AnotherAuthStrategy(BaseAuthStrategy):
     def encode_token(self, extensions: Config, **kwargs):
         pass
@@ -53,6 +54,9 @@ class BaseAuthStrategy(ABC):
 
 
 class JWTAuthStrategy(BaseAuthStrategy):
+    """
+        Uses SHA-256 hash algorithm
+    """
 
     def __init__(self):
         super(JWTAuthStrategy, self).__init__()
@@ -96,3 +100,4 @@ class JWTAuthStrategy(BaseAuthStrategy):
         :return: str
         """
         return JWTAuthStrategy.encode_token(**kwargs)
+

@@ -5,7 +5,7 @@
     -  Optional Authenticated entity available on flask's g object
 
     This pkg creates JwtRouter objects with specific behaviour
-    based on the authentication type.
+    based on the cryptographic signing Algorithm.
 
     Public API:
 
