@@ -1,4 +1,8 @@
-class _Extensions:
+from abc import ABC, abstractmethod
+from typing import Dict, Any
+
+
+class _Config:
     """
     :param secret_key: Defaults to `DEFAULT_SECRET_KEY`
     :param entity_key: The name of the model's entity attribute
@@ -20,3 +24,19 @@ class _Extensions:
         self.api_name = api_name
         self.ignored_routes = ignored_routes
 
+
+class BaseExtension(ABC):
+    def init_extensions(self, config: Dict[str, Any]):
+        pass
+
+
+class _Extensions(BaseExtension):
+
+    def init_extensions(self, config) -> _Config:
+        return _Config(
+            config.get("SECRET_KEY") or "DEFAULT_SECRET_KEY",
+            config.get("ENTITY_KEY"),
+            config.get("WHITE_LIST_ROUTES") or [],
+            config.get("JWT_ROUTER_API_NAME"),
+            config.get("IGNORED_ROUTES") or [],
+        )

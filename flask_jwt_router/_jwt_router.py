@@ -2,7 +2,7 @@ import logging
 logger = logging.getLogger()
 
 from flask_jwt_router._extensions import _Extensions
-
+from flask_jwt_router._entity import BaseEntity, Entity
 
 class FlaskJWTRouter:
 
@@ -12,6 +12,7 @@ class FlaskJWTRouter:
     exp = 30
     _auth_model = None
     extensions: _Extensions
+    entity: BaseEntity
 
     def __init__(self, app=None, **kwargs):
         """
@@ -20,7 +21,11 @@ class FlaskJWTRouter:
         :param app:
         :param kwargs:
         """
-        self.auth_model = FlaskJwtRouter.set_entity_model(kwargs)
+        self.entity = Entity(
+            self.extensions,
+            Entity.set_entity_model(kwargs)
+        )
+
         if app:
             self.init_app(app)
 
@@ -93,9 +98,5 @@ class FlaskJWTRouter:
     def auth_model(self, value):
         self._auth_model = value
 
-    @staticmethod
-    def set_entity_model(model):
-        if "entity_model" in model and model["entity_model"] is not None:
-            return model["entity_model"]
 
 

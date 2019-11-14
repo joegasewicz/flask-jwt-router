@@ -13,6 +13,11 @@ class BaseEntity(ABC):
     def get_entity_id(self, **kwargs) -> Union[str, None]:
         pass
 
+    @staticmethod
+    @abstractmethod
+    def set_entity_model(model) -> Any:
+        pass
+
 
 class Entity(BaseEntity):
     """
@@ -67,3 +72,8 @@ class Entity(BaseEntity):
             "__get_entity__",
             self._get_user_from_auth_model
         )
+
+    @staticmethod
+    def set_entity_model(model):
+        if "entity_model" in model and model["entity_model"] is not None:
+            return model["entity_model"]
