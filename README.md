@@ -82,8 +82,7 @@ JwtRoutes(app, entity_model=UserModel)
 
 ## Authorization
 ```python
-from flask_jwt_router import RouteHelpers
-rh = RouteHelpers(app)
+from your_app import jwt_routes
 
 # white list the routes
 app.config["WHITE_LIST_ROUTES"] = [
@@ -95,14 +94,14 @@ app.config["WHITE_LIST_ROUTES"] = [
 def register():
     """I'm registering a new user & returning a token!"""
     return jsonify({
-        "token": rh.register_entity(entity_id=1)
+        "token": jwt_routes.register_entity(entity_id=1)
     })
 
 @app.route("/login", methods=["POST"])
 def login():
     """I'm authorized & updating my token!"""
     return jsonify({
-        "token": rh.update_entity(entity_id=1)
+        "token": jwt_routes.update_entity(entity_id=1)
     })
 ```
 
