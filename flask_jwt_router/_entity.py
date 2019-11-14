@@ -9,6 +9,7 @@ from typing import Union, Any, ClassVar
 
 class BaseEntity(ABC):
 
+    @staticmethod
     @abstractmethod
     def get_entity_id(self, **kwargs) -> Union[str, None]:
         pass
@@ -29,7 +30,8 @@ class Entity(BaseEntity):
         self.extensions = extensions
         self.auth_model = auth_model
 
-    def get_entity_id(self, **kwargs) -> Union[str, None]:
+    @staticmethod
+    def get_entity_id(**kwargs) -> Union[str, None]:
         """
         :param kwargs: Dict[str, int]
         :return: Union[str, None]

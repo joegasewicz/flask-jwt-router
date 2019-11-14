@@ -8,8 +8,8 @@ import jwt
 from datetime import datetime
 from dateutil.relativedelta import *
 
-from flask_jwt_router._extensions import BaseExtension, Config
-from flask_jwt_router._entity import BaseEntity
+from flask_jwt_router._extensions import Config
+from flask_jwt_router._entity import Entity
 
 
 class _AuthUtility:
@@ -42,10 +42,8 @@ class BaseAuthStrategy(ABC):
 
 class JWTAuthStrategy(BaseAuthStrategy):
 
-    def __init__(self, entity: BaseEntity):
+    def __init__(self):
         super(JWTAuthStrategy, self).__init__()
-
-        self.entity = entity
 
     def encode_token(self, extensions: Config, **kwargs):
         """
@@ -59,8 +57,8 @@ class JWTAuthStrategy(BaseAuthStrategy):
 
         secret_key = extensions.secret_key
 
-        if self.entity.get_entity_id(**kwargs):
-            entity_id = self.entity.get_entity_id(**kwargs)
+        if Entity.get_entity_id(**kwargs):
+            entity_id = Entity.get_entity_id(**kwargs)
         else:
             raise KeyError("Entity id not in kwargs")
 
@@ -89,6 +87,9 @@ class JWTAuthStrategy(BaseAuthStrategy):
 
 
 class SSHAuthStrategy(BaseAuthStrategy):
+    def encode_token(self, extensions: Config, **kwargs):
+        pass
+
     def register_entity(self):
         pass
 
