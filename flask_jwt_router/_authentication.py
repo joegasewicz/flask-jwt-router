@@ -8,8 +8,8 @@ import jwt
 from datetime import datetime
 from dateutil.relativedelta import *
 
-from flask_jwt_router._extensions import Config
-from flask_jwt_router._entity import Entity
+from ._extensions import Config
+from ._entity import Entity
 
 
 class _AuthUtility:

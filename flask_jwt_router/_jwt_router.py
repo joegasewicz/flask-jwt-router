@@ -1,9 +1,9 @@
 import logging
 
-from flask_jwt_router._extensions import BaseExtension, Extensions, Config
-from flask_jwt_router._entity import BaseEntity, Entity
-from flask_jwt_router._routing import BaseRouting, Routing
-from flask_jwt_router._authentication import BaseAuthStrategy
+from ._extensions import BaseExtension, Extensions, Config
+from ._entity import BaseEntity, Entity
+from ._routing import BaseRouting, Routing
+from ._authentication import BaseAuthStrategy
 
 logger = logging.getLogger()
 

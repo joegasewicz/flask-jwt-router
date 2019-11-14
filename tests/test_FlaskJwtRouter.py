@@ -1,8 +1,5 @@
 import pytest
 
-# from flask_jwt_router.JwtRoutes import JwtRoutes
-from flask_jwt_router.FlaskJwtRouter import FlaskJwtRouter
-
 from flask_jwt_router._jwt_routes import JwtRoutes
 from flask_jwt_router._entity import Entity
 

@@ -14,8 +14,8 @@
 
 
 """
-from flask_jwt_router._jwt_router import FlaskJWTRouter
-from flask_jwt_router._authentication import JWTAuthStrategy
+from ._jwt_router import FlaskJWTRouter
+from ._authentication import JWTAuthStrategy
 
 
 class JwtRoutes(FlaskJWTRouter):
