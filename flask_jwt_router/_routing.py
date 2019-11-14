@@ -1,31 +1,10 @@
 from flask import request, abort, g
 import jwt
-import inspect
-
-from .FlaskJwtRouter import FlaskJwtRouter
 
 
-class JwtRoutes(FlaskJwtRouter):
-
-    def __init__(self, app=None, **kwargs):
-        super().__init__(app, **kwargs)
-
-        self.auth_model = FlaskJwtRouter.set_entity_model(kwargs)
-        if app:
-            self.init_app(app)
-
-    def init_app(self, app):
-        """
-        You can use this to set up your config at runtime
-        :param app:
-        :param kwargs:
-        :return:
-        """
-        self.app = app
-        config = self.get_app_config(app)
-        self.config = config
-        self.extensions = self.init_extensions(config)
-        self.app.before_request(self._before_middleware)
+class Routing:
+    def __int__(self):
+        pass
 
     def _prefix_api_name(self, w_routes=[]):
         """
@@ -157,37 +136,3 @@ class JwtRoutes(FlaskJwtRouter):
             except Exception as err:
                 self.logger.error(err)
                 return abort(401)
-
-    def _get_user_from_auth_model(self, entity_id):
-        """
-        :param entity_id:
-        :return: Any - TODO correct return type
-        """
-        entity_key: str = self.extensions.entity_key
-        result = self.auth_model.query.filter_by(**{entity_key: entity_id}).one()
-        return result
-
-    def _update_model_entity(self, token):
-        """
-        :param token:
-        :return: user Dict[str, Any] or None - TODO correct type
-        """
-        self._set_auth_model()
-        result = self.auth_model.__get_entity__(token[self.extensions.entity_key])
-        return result
-
-    def _set_auth_model(self):
-        """
-        Check if __get__entity__ doesn't already exists & attach
-        the method onto the entity model
-        :return: None
-        """
-        methods = inspect.getmembers(self.auth_model, predicate=inspect.ismethod)
-        for m in methods:
-            if m == "__get_entity__":
-                raise ValueError("__get_entity__ method already exists")
-        setattr(
-            self.auth_model,
-            "__get_entity__",
-            self._get_user_from_auth_model
-        )
