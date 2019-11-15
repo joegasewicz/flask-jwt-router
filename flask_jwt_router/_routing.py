@@ -129,7 +129,6 @@ class Routing(BaseRouting):
                 bearer = request.headers.get("Authorization")
                 token = bearer.split("Bearer ")[1]
         except Exception as err:
-            self.logger.error(err)
             return abort(401)
 
         try:
@@ -139,12 +138,10 @@ class Routing(BaseRouting):
                 algorithms="HS256"
             )
         except Exception as err:
-            self.logger.error(err)
             return abort(401)
 
         if self.auth_model is not None:
             try:
                 g.entity = self._update_model_entity(decoded_token)
             except Exception as err:
-                self.logger.error(err)
                 return abort(401)
