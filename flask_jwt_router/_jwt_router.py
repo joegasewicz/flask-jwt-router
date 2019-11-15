@@ -16,7 +16,6 @@ class FlaskJWTRouter:
     :param kwargs:
     """
     logger = logging
-    config = {}
     app = None
     exp = 30
     _auth_model = None
@@ -41,7 +40,6 @@ class FlaskJWTRouter:
         """
         self.app = app
         config = self.get_app_config(app)
-        self.config = config
         self.extensions = self.ext.init_extensions(config)
         self.entity = Entity(self.extensions, Entity.set_entity_model())
         self.routing = Routing(self.app, self.extensions)
