@@ -58,10 +58,10 @@ def register():
    
 ```
 
-## Allow roots to bypass Flask-JWT-Router completely
+## Bypass Flask-JWT-Router on specified routes
 ```python
     # Define homepage template routes for example on JWT_IGNORE_ROUTES 
-    # & still get to use the api name on request handle returning resources
+    # & still get to use the api name on request handlers returning resources
     app.config["IGNORED_ROUTES"] = [
         ("GET", "/")
     ]
