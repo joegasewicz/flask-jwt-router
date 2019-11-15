@@ -75,16 +75,6 @@ class FlaskJWTRouter:
         except KeyError as _:
             return 30
 
-    def get_secret_key(self):
-        """
-        :return: str
-        """
-        if "SECRET_KEY" in self.config and self.config["SECRET_KEY"] is not None:
-            return self.config["SECRET_KEY"]
-        else:
-            self.logger.warning("Warning: Danger! You have't set a SECRET_KEY in your flask app.config")
-            return self.extensions.secret_key
-
     @property
     def auth_model(self):
         return self._auth_model
