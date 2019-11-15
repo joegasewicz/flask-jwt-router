@@ -16,7 +16,6 @@ class FlaskJWTRouter:
     :param kwargs:
     """
     logger = logging
-    config = {}
     app = None
     exp = 30
     _auth_model = None
@@ -41,7 +40,6 @@ class FlaskJWTRouter:
         """
         self.app = app
         config = self.get_app_config(app)
-        self.config = config
         self.extensions = self.ext.init_extensions(config)
         self.entity = Entity(self.extensions, Entity.set_entity_model())
         self.routing = Routing(self.app, self.extensions)
@@ -74,16 +72,6 @@ class FlaskJWTRouter:
             return kwargs['exp']
         except KeyError as _:
             return 30
-
-    def get_secret_key(self):
-        """
-        :return: str
-        """
-        if "SECRET_KEY" in self.config and self.config["SECRET_KEY"] is not None:
-            return self.config["SECRET_KEY"]
-        else:
-            self.logger.warning("Warning: Danger! You have't set a SECRET_KEY in your flask app.config")
-            return self.extensions.secret_key
 
     @property
     def auth_model(self):
