@@ -33,7 +33,7 @@ def create_app(config):
 
 ```
 
-## White list Routes
+## Whitelist Routes
 ```python
 app.config["WHITE_LIST_ROUTES"] = [
     ("POST", "/register"),
