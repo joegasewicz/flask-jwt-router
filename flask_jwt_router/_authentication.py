@@ -57,10 +57,6 @@ class JWTAuthStrategy(BaseAuthStrategy):
         entity_key = extensions.entity_key
         secret_key = extensions.secret_key
 
-        print(f"exp------> {exp}")
-        print(f"entity_id------> {entity_id}")
-        print(f"entity_key------> {entity_key}")
-
         encoded = jwt.encode({
             entity_key: entity_id,
             "exp": datetime.utcnow() + relativedelta(days=+exp)  # TODO options for different time types
