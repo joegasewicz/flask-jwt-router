@@ -18,38 +18,24 @@
 """
 from abc import ABC, abstractmethod
 import jwt
+from typing import Any
 from datetime import datetime
 from dateutil.relativedelta import *
 
 from ._extensions import Config
-from ._entity import Entity
-
-
-class _AuthUtility:
-    @staticmethod
-    def get_exp(**kwargs):
-        """
-        :param kwargs: Dict[str, int]
-        :return: number
-        """
-        try:
-            return kwargs['exp']
-        except KeyError as _:
-            return 30
 
 
 class BaseAuthStrategy(ABC):
 
     @abstractmethod
-    def register_entity(self, **kwargs):
+    def register_entity(self, extensions: Config, exp: Any, **kwargs):
         pass
 
     @abstractmethod
-    def update_entity(self, **kwargs):
+    def update_entity(self, extensions: Config, exp: Any, **kwargs):
         pass
 
-    @abstractmethod
-    def encode_token(self, extensions: Config, **kwargs):
+    def encode_token(self, extensions: Config, entity_id: Any, exp: Any):
         pass
 
 
@@ -61,22 +47,15 @@ class JWTAuthStrategy(BaseAuthStrategy):
     def __init__(self):
         super(JWTAuthStrategy, self).__init__()
 
-    def encode_token(self, extensions: Config, **kwargs):
+    def encode_token(self, extensions: Config, entity_id: Any, exp: Any):
         """
         :param extensions:
-        :param kwargs:
+        :param entity_id:
+        :param exp:
         :return:
         """
         entity_key = extensions.entity_key
-
-        exp = _AuthUtility.get_exp(**kwargs)
-
         secret_key = extensions.secret_key
-
-        if Entity.get_entity_id(**kwargs):
-            entity_id = Entity.get_entity_id(**kwargs)
-        else:
-            raise KeyError("Entity id not in kwargs")
 
         encoded = jwt.encode({
             entity_key: entity_id,
@@ -87,17 +66,32 @@ class JWTAuthStrategy(BaseAuthStrategy):
         ).decode("utf-8")
         return encoded
 
-    def register_entity(self, **kwargs):
+    def register_entity(self, extensions: Config, exp: Any, **kwargs):
         """
+        :param extensions:
+        :param exp:
         :param kwargs:
-        :return: str
+        :return:
         """
-        return JWTAuthStrategy.encode_token(**kwargs)
+        entity_id = kwargs.get("entity_id", None)
+        if entity_id:
+            token = self.encode_token(extensions, exp, entity_id)
+            return token
+        else:
+            return None
 
-    def update_entity(self, **kwargs):  # TODO remove, duplicate method!
+    def update_entity(self, extensions: Config, exp: Any, **kwargs):
         """
+        :param extensions:
+        :param exp:
         :param kwargs:
-        :return: str
+        :return:
         """
-        return JWTAuthStrategy.encode_token(**kwargs)
+        entity_id = kwargs.get("entity_id", None)
+        if entity_id:
+            token = self.encode_token(extensions, exp, entity_id)
+            return token
+        else:
+            return None
+
 
