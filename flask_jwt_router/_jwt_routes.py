@@ -13,6 +13,6 @@ class JwtRoutes(FlaskJWTRouter):
     """
     :param: app
     """
-    def __int__(self):
+    def __init__(self):
         super(JwtRoutes, self).__init__()
         self.auth = JWTAuthStrategy()
