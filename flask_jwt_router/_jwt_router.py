@@ -85,24 +85,23 @@ class FlaskJWTRouter:
         """
         self._auth_model = value
 
-    def register_entity(self, **kwargs):
+    def register_entity(self, **kwargs) -> str:
         """
         :param kwargs:
         :return:
         """
-        self.auth.register_entity(**kwargs)
+        return self.auth.register_entity(self.extensions, self.exp, **kwargs)
 
-    def update_entity(self, **kwargs):
+    def update_entity(self, **kwargs) -> str:
         """
         :param kwargs:
         :return:
         """
-        self.auth.update_entity(**kwargs)
+        return self.auth.update_entity(self.extensions, self.exp, **kwargs)
 
-    def encode_token(self, extensions, **kwargs):
+    def encode_token(self, entity_id) -> str:
         """
-        :param extensions:
-        :param kwargs:
+        :param entity_id:
         :return:
         """
-        self.auth.encode_token(extensions, **kwargs)
+        return self.auth.encode_token(self.extensions, entity_id, self.exp)

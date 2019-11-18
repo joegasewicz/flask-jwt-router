@@ -35,7 +35,7 @@ class Extensions(BaseExtension):
     def init_extensions(self, config: Any) -> Config:
         return Config(
             config.get("SECRET_KEY") or "DEFAULT_SECRET_KEY",
-            config.get("ENTITY_KEY"),
+            config.get("ENTITY_KEY") or "id",
             config.get("WHITE_LIST_ROUTES") or [],
             config.get("JWT_ROUTER_API_NAME"),
             config.get("IGNORED_ROUTES") or [],
