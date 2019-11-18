@@ -53,6 +53,22 @@ class Routing(BaseRouting):
         if paths[1] == defined_static:
             return True
 
+    def _handle_pre_flight(self, method: str, w_method: str) -> bool:
+        """
+        Handle pre-flight requests with any verb
+        TODO Investigate if this requires returning True on all valid VERBS...?\
+         + tests required for this when investigated
+        :param method:
+        :param w_method:
+        :return: {bool}
+        """
+        if method == w_method:
+            return True
+        elif method == "OPTIONS" and w_method == "POST":
+            return True
+        else:
+            return False
+
     def _handle_query_params(self, white_route: str, path: str):
         """
         Handles dynamic query params
@@ -88,7 +104,7 @@ class Routing(BaseRouting):
         path = request.path
 
         for white_route in white_routes:
-            if method == white_route[0] and path == white_route[1]:
+            if self._handle_pre_flight(method, white_route[0]) and path == white_route[1]:
                 return False
             if method == white_route[0] and self._handle_query_params(white_route[1], path):
                 return False
