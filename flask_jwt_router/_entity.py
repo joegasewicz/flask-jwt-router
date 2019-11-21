@@ -4,7 +4,9 @@
 """
 import inspect
 from abc import ABC, abstractmethod
-from typing import Any, ClassVar
+from typing import Any, ClassVar, List, Tuple
+
+_ORMType = type(List[Tuple[int, str]])
 
 
 class BaseEntity(ABC):
@@ -16,7 +18,6 @@ class BaseEntity(ABC):
 
 class Entity(BaseEntity):
     """
-
     :param extensions:
     :param auth_model:
     """
@@ -24,10 +25,10 @@ class Entity(BaseEntity):
         self.extensions = extensions
         self.auth_model = auth_model
 
-    def _get_user_from_auth_model(self, entity_id: int) -> Any:
+    def _get_user_from_auth_model(self, entity_id: int) -> _ORMType:
         """
         :param entity_id:
-        :return: Any
+        :return: {_ORMType}
         """
         entity_key: str = self.extensions.entity_key
         result = self.auth_model.query.filter_by(**{entity_key: entity_id}).one()
@@ -35,10 +36,11 @@ class Entity(BaseEntity):
 
     def get_id_from_token(self, decoded_token: str) -> str:
         """
+        Entity class main public method.
         Attaches a __get_entity__ method to the AuthModel class &
         calling the attached method returns the entity data
-        :param decoded_token:
-        :return:
+        :param decoded_token: {str}
+        :return: {str}
         """
         self._attach_method()
         result = self.auth_model.__get_entity__(decoded_token[self.extensions.entity_key])

@@ -139,7 +139,6 @@ class Routing(BaseRouting):
 
     def _handle_token(self):
         """
-        TODO exception from jwt
         Checks the headers contain a Bearer string OR params.
         Checks to see that the route is white listed.
         :return None:
