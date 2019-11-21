@@ -19,6 +19,10 @@ class BaseEntity(ABC):
     def set_entity_model(model) -> Any:
         pass
 
+    @abstractmethod
+    def get_entity_by_decoded_token(self, decoded_token: str) -> str:
+        pass
+
 
 class Entity(BaseEntity):
     """
@@ -50,19 +54,20 @@ class Entity(BaseEntity):
         result = self.auth_model.query.filter_by(**{entity_key: entity_id}).one()
         return result
 
-    def _update_model_entity(self, token: str) -> str:
+    def get_entity_by_decoded_token(self, decoded_token: str) -> str:
         """
+
         :param token:
         :return: user Dict[str, Any] or None - TODO correct type
         """
         self._set_auth_model()
-        result = self.auth_model.__get_entity__(token[self.extensions.entity_key])
+        result = self.auth_model.__get_entity__(decoded_token[self.extensions.entity_key])
         return result
 
     def _set_auth_model(self) -> None:
         """
         Check if __get__entity__ doesn't already exists & attach
-        the method onto the entity model
+        __get_entity__ onto the entity model class
         :return: None
         """
         methods = inspect.getmembers(self.auth_model, predicate=inspect.ismethod)

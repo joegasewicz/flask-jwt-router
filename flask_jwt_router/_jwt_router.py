@@ -42,7 +42,7 @@ class FlaskJWTRouter:
         config = self.get_app_config(app)
         self.extensions = self.ext.init_extensions(config)
         self.entity = Entity(self.extensions, Entity.set_entity_model())
-        self.routing = Routing(self.app, self.extensions)
+        self.routing = Routing(self.app, self.extensions, self.entity)
         self.app.before_request(self.routing.before_middleware)
 
     def get_app_config(self, app):

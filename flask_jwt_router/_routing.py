@@ -2,6 +2,9 @@ from flask import request, abort, g
 import jwt
 from abc import ABC, abstractmethod
 import logging
+
+from ._entity import BaseEntity
+
 logger = logging.getLogger()
 
 
@@ -13,10 +16,12 @@ class BaseRouting(ABC):
 
 
 class Routing(BaseRouting):
-    def __init__(self, app, extensions):
+
+    def __init__(self, app, extensions, entity: BaseEntity):
         self.app = app
         self.extensions = extensions
         self.logger = logger
+        self.entity = entity
 
     def _prefix_api_name(self, w_routes=[]):
         """
@@ -158,6 +163,6 @@ class Routing(BaseRouting):
 
         if self.auth_model is not None:
             try:
-                g.entity = self._update_model_entity(decoded_token)
+                g.entity = self.entity.get_entity_by_decoded_token(decoded_token)
             except Exception as err:
                 return abort(401)
