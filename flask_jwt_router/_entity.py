@@ -14,11 +14,6 @@ class BaseEntity(ABC):
     def get_entity_id(self, **kwargs) -> Union[str, None]:
         pass
 
-    @staticmethod
-    @abstractmethod
-    def set_entity_model(model) -> Any:
-        pass
-
     @abstractmethod
     def get_id_from_token(self, decoded_token: str) -> str:
         pass

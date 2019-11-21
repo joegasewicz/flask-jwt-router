@@ -150,7 +150,7 @@ class Routing(BaseRouting):
             else:
                 bearer = request.headers.get("Authorization")
                 token = bearer.split("Bearer ")[1]
-        except ValueError:
+        except AttributeError:
             return abort(401)
 
         try:
