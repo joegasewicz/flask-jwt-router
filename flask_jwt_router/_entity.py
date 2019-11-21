@@ -4,15 +4,10 @@
 """
 import inspect
 from abc import ABC, abstractmethod
-from typing import Union, Any, ClassVar
+from typing import Any, ClassVar
 
 
 class BaseEntity(ABC):
-
-    @staticmethod
-    @abstractmethod
-    def get_entity_id(self, **kwargs) -> Union[str, None]:
-        pass
 
     @abstractmethod
     def get_id_from_token(self, decoded_token: str) -> str:
@@ -28,17 +23,6 @@ class Entity(BaseEntity):
     def __init__(self, extensions: ClassVar, auth_model: Any):
         self.extensions = extensions
         self.auth_model = auth_model
-
-    @staticmethod
-    def get_entity_id(**kwargs) -> Union[str, None]:
-        """
-        :param kwargs: Dict[str, int]
-        :return: Union[str, None]
-        """
-        try:
-            return kwargs['entity_id']
-        except KeyError as _:
-            return None
 
     def _get_user_from_auth_model(self, entity_id: int) -> Any:
         """
