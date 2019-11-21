@@ -56,7 +56,7 @@ class TestFlaskJwtRouter:
     def test_auth_model(self):
         class AuthModel:
             pass
-        result = Entity.set_entity_model({"entity_model":AuthModel})
+        result = Entity({}, AuthModel).auth_model
         assert result == AuthModel
 
     def test_config(self):

@@ -1,7 +1,11 @@
 from flask import request, abort, g
 import jwt
+from jwt.exceptions import InvalidTokenError
 from abc import ABC, abstractmethod
 import logging
+
+from ._entity import BaseEntity
+
 logger = logging.getLogger()
 
 
@@ -13,10 +17,12 @@ class BaseRouting(ABC):
 
 
 class Routing(BaseRouting):
-    def __init__(self, app, extensions):
+
+    def __init__(self, app, extensions, entity: BaseEntity):
         self.app = app
         self.extensions = extensions
         self.logger = logger
+        self.entity = entity
 
     def _prefix_api_name(self, w_routes=[]):
         """
@@ -144,7 +150,7 @@ class Routing(BaseRouting):
             else:
                 bearer = request.headers.get("Authorization")
                 token = bearer.split("Bearer ")[1]
-        except Exception as err:
+        except AttributeError:
             return abort(401)
 
         try:
@@ -153,11 +159,10 @@ class Routing(BaseRouting):
                 self.extensions.secret_key,
                 algorithms="HS256"
             )
-        except Exception as err:
+        except InvalidTokenError:
             return abort(401)
 
-        if self.auth_model is not None:
-            try:
-                g.entity = self._update_model_entity(decoded_token)
-            except Exception as err:
-                return abort(401)
+        try:
+            g.entity = self.entity.get_id_from_token(decoded_token)
+        except ValueError:
+            return abort(401)

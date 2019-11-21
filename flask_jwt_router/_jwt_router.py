@@ -1,4 +1,5 @@
 import logging
+from typing import ClassVar
 
 from ._extensions import BaseExtension, Extensions, Config
 from ._entity import BaseEntity, Entity
@@ -18,7 +19,7 @@ class FlaskJWTRouter:
     logger = logging
     app = None
     exp = 30
-    _auth_model = None
+    _auth_model: ClassVar = None
     extensions: Config
     auth: BaseAuthStrategy
     entity: BaseEntity
@@ -27,6 +28,7 @@ class FlaskJWTRouter:
 
     def __init__(self, app=None, **kwargs):
         self.ext = Extensions()
+        _auth_model = kwargs.get("entity_model", None)
 
         if app:
             self.init_app(app)
@@ -41,8 +43,8 @@ class FlaskJWTRouter:
         self.app = app
         config = self.get_app_config(app)
         self.extensions = self.ext.init_extensions(config)
-        self.entity = Entity(self.extensions, Entity.set_entity_model())
-        self.routing = Routing(self.app, self.extensions)
+        self.entity = Entity(self.extensions, self.auth_model)
+        self.routing = Routing(self.app, self.extensions, self.entity)
         self.app.before_request(self.routing.before_middleware)
 
     def get_app_config(self, app):
