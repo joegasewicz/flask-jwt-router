@@ -163,6 +163,6 @@ class Routing(BaseRouting):
 
         if self.auth_model is not None:
             try:
-                g.entity = self.entity.get_entity_by_decoded_token(decoded_token)
+                g.entity = self.entity.get_id_from_token(decoded_token)
             except Exception as err:
                 return abort(401)

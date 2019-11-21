@@ -20,7 +20,7 @@ class BaseEntity(ABC):
         pass
 
     @abstractmethod
-    def get_entity_by_decoded_token(self, decoded_token: str) -> str:
+    def get_id_from_token(self, decoded_token: str) -> str:
         pass
 
 
@@ -45,26 +45,27 @@ class Entity(BaseEntity):
         except KeyError as _:
             return None
 
-    def _get_user_from_auth_model(self, entity_id: int):
+    def _get_user_from_auth_model(self, entity_id: int) -> Any:
         """
         :param entity_id:
-        :return: Any - TODO correct return type
+        :return: Any
         """
         entity_key: str = self.extensions.entity_key
         result = self.auth_model.query.filter_by(**{entity_key: entity_id}).one()
         return result
 
-    def get_entity_by_decoded_token(self, decoded_token: str) -> str:
+    def get_id_from_token(self, decoded_token: str) -> str:
         """
-
-        :param token:
-        :return: user Dict[str, Any] or None - TODO correct type
+        Attaches a __get_entity__ method to the AuthModel class &
+        calling the attached method returns the entity data
+        :param decoded_token:
+        :return:
         """
-        self._set_auth_model()
+        self._attach_method()
         result = self.auth_model.__get_entity__(decoded_token[self.extensions.entity_key])
         return result
 
-    def _set_auth_model(self) -> None:
+    def _attach_method(self) -> None:
         """
         Check if __get__entity__ doesn't already exists & attach
         __get_entity__ onto the entity model class
