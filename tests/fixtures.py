@@ -1,7 +1,7 @@
 import pytest
-from flask import Flask, jsonify, copy_current_request_context
-# from flask_jwt_router.JwtRoutes import JwtRoutes
+from flask import Flask, jsonify
 from flask_jwt_router._jwt_routes import JwtRoutes
+
 
 app = Flask(__name__)
 
@@ -88,3 +88,5 @@ def test_client_static():
     ctx.push()
     yield static_client
     ctx.pop()
+
+
