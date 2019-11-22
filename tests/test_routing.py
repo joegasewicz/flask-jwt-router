@@ -10,9 +10,11 @@
 """
 from flask import Flask
 from typing import Any
+import pytest
 
 from flask_jwt_router._routing import Routing
 from flask_jwt_router._extensions import Extensions
+from flask_jwt_router._entity import Entity
 from .token_fixture import mock_token
 from .model_fixtures import TestEntity
 
@@ -52,6 +54,7 @@ class TestRouting:
     }
     ext = Extensions().init_extensions(extensions)
 
+    @pytest.mark.j
     def test_before_middleware(self, monkeypatch, TestEntity, mock_token):
         app = Flask(__name__)
         # Manually set the primary key
@@ -66,11 +69,13 @@ class TestRouting:
         with ctx:
             monkeypatch.setattr("flask.request.args", MockArgs(mock_token))
             monkeypatch.setattr("flask.request.headers", MockArgs(mock_token))
-            # monkeypatch.setattr("flask.g", _g)
 
+            # routing = Routing(app, self.ext, entity)
+            entity = Entity(self.ext, TestEntity)
             routing = Routing(app, self.ext, entity)
 
             assert routing.extensions
 
             routing.before_middleware()
-            assert ctx.g.entity == 1
+            assert ctx.g.entity == [(1, 'joe')]
+
