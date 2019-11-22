@@ -4,9 +4,7 @@ from datetime import datetime
 from dateutil.relativedelta import *
 
 
-@pytest.fixture
-def mock_token():
-    return jwt.encode({
+new_token = jwt.encode({
             "id": 1,
             "exp": datetime.utcnow() + relativedelta(days=+30)
         },
@@ -15,4 +13,15 @@ def mock_token():
         ).decode("utf-8")
 
 
+@pytest.fixture
+def mock_token():
+    return new_token
 
+
+@pytest.fixture
+def mock_decoded_token():
+    return jwt.decode(
+            new_token,
+            "TEST_SECRET",
+            algorithms="HS256"
+    )

@@ -12,23 +12,34 @@
 
 """
 from flask_jwt_router._entity import Entity
-
-
-class MockModel:
-    pass
+from flask_jwt_router._extensions import Extensions
+from .token_fixture import mock_decoded_token
+from .model_fixtures import MockEntityModel
 
 
 class TestEntity:
     """
         Entity class public methods tests
     """
-    mock_extensions = {
-        "SECRET_KEY": "DEFAULT_SECRET_KEY",
+    extensions = {
+        "WHITE_LIST_ROUTES": [("PUT", "/banana")],
+        "IGNORED_ROUTES": [("GET", "/")],
+        "JWT_ROUTER_API_NAME": "/api/v1",
+        "SECRET_KEY": "TEST_SECRET",
         "ENTITY_KEY": "id",
     }
-    mock_auth = MockModel()
-    mock_token = ""
+    ext = Extensions().init_extensions(extensions)
 
-    def test_get_id_from_token(self):
-        entity = Entity(self.mock_extensions, self.mock_auth)
+    token_non_entity = {'id': 12, 'exp': 1577037162}
 
+    def test_get_id_from_token(self, MockEntityModel, mock_decoded_token):
+        entity = Entity(self.ext, MockEntityModel)
+
+        assert self.ext.entity_key == "id"
+        assert entity.get_id_from_token(mock_decoded_token) == [(1, 'joe')]
+
+    def test_auth_model(self):
+        class AuthModel:
+            pass
+        result = Entity({}, AuthModel).auth_model
+        assert result == AuthModel

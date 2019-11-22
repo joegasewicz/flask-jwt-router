@@ -17,23 +17,8 @@ from flask_jwt_router._routing import Routing
 from flask_jwt_router._extensions import Extensions
 from flask_jwt_router._entity import Entity
 from .token_fixture import mock_token
-from .model_fixtures import TestEntity
+from .model_fixtures import TestMockEntity
 from tests.fixtures import jwt_router_client, test_client, test_client_static
-
-
-class GlobalEntity:
-    _entity: Any
-
-    def __init__(self):
-        self._entity = None
-
-    @property
-    def entity(self):
-        return self._entity
-
-    @entity.setter
-    def entity(self, value):
-        self._entity = value
 
 
 class MockArgs:
@@ -59,10 +44,10 @@ class TestRouting:
     }
     ext = Extensions().init_extensions(extensions)
 
-    def test_before_middleware(self, monkeypatch, TestEntity, mock_token):
+    def test_before_middleware(self, monkeypatch, TestMockEntity, mock_token):
         app = Flask(__name__)
         # Manually set the primary key
-        entity = TestEntity(id=1, user_name="joe")
+        entity = TestMockEntity(id=1, user_name="joe")
 
         ctx = app.test_request_context("/test")
         ctx.push()
@@ -70,7 +55,7 @@ class TestRouting:
         assert entity.user_name == "joe"
         assert entity.id == 1
 
-        entity = Entity(self.ext, TestEntity)
+        entity = Entity(self.ext, TestMockEntity)
         routing = Routing(app, self.ext, entity)
 
         with ctx:

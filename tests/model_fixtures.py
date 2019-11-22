@@ -14,8 +14,9 @@ class MockQuery:
     def one(self):
         return self.results
 
+
 @pytest.fixture
-def TestEntity():
+def TestMockEntity():
     Base = declarative_base()
 
     class TestEntity(Base):
@@ -28,4 +29,16 @@ def TestEntity():
 
         def get_id_from_token(self, t):
             return [(1, u'joe')]
+    return TestEntity
+
+
+@pytest.fixture
+def MockEntityModel():
+    Base = declarative_base()
+    class TestEntity(Base):
+        __tablename__ = "test_entity"
+        query = MockQuery()
+        id = Column(Integer(), primary_key=True)
+        user_name = Column(String(10))
+
     return TestEntity
