@@ -139,7 +139,6 @@ class Routing(BaseRouting):
 
     def _handle_token(self):
         """
-        TODO exception from jwt
         Checks the headers contain a Bearer string OR params.
         Checks to see that the route is white listed.
         :return None:
@@ -152,7 +151,6 @@ class Routing(BaseRouting):
                 token = bearer.split("Bearer ")[1]
         except AttributeError:
             return abort(401)
-
         try:
             decoded_token = jwt.decode(
                 token,
@@ -163,6 +161,7 @@ class Routing(BaseRouting):
             return abort(401)
 
         try:
-            g.entity = self.entity.get_id_from_token(decoded_token)
+            entity = self.entity.get_id_from_token(decoded_token)
+            g.entity = entity
         except ValueError:
             return abort(401)
