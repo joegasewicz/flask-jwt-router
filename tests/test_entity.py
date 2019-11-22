@@ -13,8 +13,8 @@
 """
 from flask_jwt_router._entity import Entity
 from flask_jwt_router._extensions import Extensions
-from .token_fixture import mock_decoded_token
-from .model_fixtures import MockEntityModel
+from tests.fixtures.token_fixture import mock_decoded_token
+from tests.fixtures.model_fixtures import MockEntityModel
 
 
 class TestEntity:

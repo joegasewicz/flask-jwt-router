@@ -3,7 +3,6 @@ from flask_jwt_router._jwt_routes import JwtRoutes
 
 class TestExtension:
 
-
     def test_config(self):
         IGNORED_ROUTES = [
             ("GET", "/"),

@@ -78,7 +78,7 @@ def test_client():
     ctx.pop()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture
 def test_client_static():
     flask_app_static = Flask(__name__, static_folder="static_copy")
     flask_app_static.config["WHITE_LIST_ROUTES"] = [("GET", "/anything")]
@@ -88,5 +88,3 @@ def test_client_static():
     ctx.push()
     yield static_client
     ctx.pop()
-
-

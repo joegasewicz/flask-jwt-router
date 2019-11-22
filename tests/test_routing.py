@@ -16,9 +16,9 @@ import pytest
 from flask_jwt_router._routing import Routing
 from flask_jwt_router._extensions import Extensions
 from flask_jwt_router._entity import Entity
-from .token_fixture import mock_token
-from .model_fixtures import TestMockEntity
-from tests.fixtures import jwt_router_client, test_client, test_client_static
+from tests.fixtures.token_fixture import mock_token
+from tests.fixtures.model_fixtures import TestMockEntity
+from tests.fixtures.app_fixtures import jwt_router_client, test_client, test_client_static
 
 
 class MockArgs:
