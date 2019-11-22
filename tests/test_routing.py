@@ -1,6 +1,7 @@
 """
-    Tests for Routing class that deal with encoding & decoding
-    tokens & authorising routes.
+    Unit Tests for:
+        - Routing class: that deal with encoding & decoding tokens & authorising routes.
+        - Entity class: This covers the get_id_from_token method.
 
     Extension values used in routing:
 
@@ -17,7 +18,7 @@ from flask_jwt_router._extensions import Extensions
 from flask_jwt_router._entity import Entity
 from .token_fixture import mock_token
 from .model_fixtures import TestEntity
-
+from tests.fixtures import jwt_router_client, test_client, test_client_static
 
 class GlobalEntity:
     _entity: Any
@@ -35,12 +36,15 @@ class GlobalEntity:
 
 
 class MockArgs:
-    def __init__(self, token=None):
+    def __init__(self, token=None, headers=False):
         self.token = token
+        self.headers = headers
 
     def get(self, t):
-        return self.token
-#  TODO    "Authorization": f"Bearer {self.token}",
+        if self.headers:
+            return f"Bearer {self.token}"
+        else:
+            return self.token
 
 
 class TestRouting:
@@ -54,28 +58,89 @@ class TestRouting:
     }
     ext = Extensions().init_extensions(extensions)
 
-    @pytest.mark.j
     def test_before_middleware(self, monkeypatch, TestEntity, mock_token):
         app = Flask(__name__)
         # Manually set the primary key
         entity = TestEntity(id=1, user_name="joe")
-        assert entity.user_name == "joe"
-        assert entity.id == 1
 
         ctx = app.test_request_context("/test")
         ctx.push()
-        _g = GlobalEntity()
+
+        assert entity.user_name == "joe"
+        assert entity.id == 1
+
+        entity = Entity(self.ext, TestEntity)
+        routing = Routing(app, self.ext, entity)
 
         with ctx:
+            # token from args
             monkeypatch.setattr("flask.request.args", MockArgs(mock_token))
-            monkeypatch.setattr("flask.request.headers", MockArgs(mock_token))
-
-            # routing = Routing(app, self.ext, entity)
-            entity = Entity(self.ext, TestEntity)
-            routing = Routing(app, self.ext, entity)
-
-            assert routing.extensions
-
             routing.before_middleware()
             assert ctx.g.entity == [(1, 'joe')]
+
+        with ctx:
+            # token from headers
+            monkeypatch.setattr("flask.request.args", MockArgs())
+            monkeypatch.setattr("flask.request.headers", MockArgs(mock_token, True))
+            routing.before_middleware()
+            assert ctx.g.entity == [(1, 'joe')]
+
+    @pytest.mark.parametrize(
+        "jwt_router_client,entity_model,expected", [
+            ({"WHITE_LIST_ROUTES": [("GET", "/test")]}, None, "200"),
+            ({"WHITE_LIST_ROUTES": []}, None, "401"),
+            ({"WHITE_LIST_ROUTES": [("POST", "/test")]}, None, "401"),
+            ({}, None, "401"),
+        ], indirect=["jwt_router_client"]
+    )
+    def test_jwt_route(self, jwt_router_client, entity_model, expected):
+        rv = jwt_router_client.get("/test")
+        assert expected in str(rv.status)
+
+    def test_api_named_routes(self, test_client):
+        rv = test_client.get("/api/v1/test")
+        assert "200" in str(rv.status)
+
+    def test_sub_paths(self, test_client):
+        rv = test_client.get("/api/v1/bananas/sub")
+        assert "200" in str(rv.status)
+        assert rv.get_json()["data"] == "sub"
+
+        rv = test_client.get("/api/v1/test/sub_two")
+        assert "401" in str(rv.status)
+
+    def test_dynamic_params(self, test_client):
+        rv = test_client.put("/api/v1/apples/sub/1")
+        assert "200" in str(rv.status)
+
+        rv = test_client.get("/api/v1/apples/sub/")
+        assert "401" in str(rv.status)
+
+        rv = test_client.get("/api/v1/apples/sub/hello")
+        assert "401" in str(rv.status)
+
+    def test_static_routes(self, test_client):
+        """
+        Tests if the static path is handled both by default and
+        if the path is past to the static_folder kwarg
+        """
+        rv = test_client.get("/static/images/Group.jpg")
+        assert "200" in str(rv.status)
+
+        rv = test_client.get("/")
+        assert "200" in str(rv.status)
+
+    def test_static_client(self, test_client_static):
+        rv = test_client_static.get("/static_copy/images/Group.jpg")
+        assert "200" in str(rv.status)
+
+    def test_ignored_routes(self, test_client):
+        rv = test_client.get("/ignore")
+        assert "200" in str(rv.status)
+
+    def test_ignored_route_path(self, test_client):
+        rv = test_client.get("/")
+        assert "200" in str(rv.status)
+
+
 

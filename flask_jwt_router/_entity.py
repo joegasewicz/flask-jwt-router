@@ -32,7 +32,6 @@ class Entity(BaseEntity):
         """
         entity_key: str = self.extensions.entity_key
         result = self.auth_model.query.filter_by(**{entity_key: entity_id}).one()
-        print(f"here---> {result}")
         return result
 
     def get_id_from_token(self, decoded_token: str) -> str:
