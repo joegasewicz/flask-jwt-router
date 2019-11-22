@@ -20,6 +20,7 @@ from .token_fixture import mock_token
 from .model_fixtures import TestEntity
 from tests.fixtures import jwt_router_client, test_client, test_client_static
 
+
 class GlobalEntity:
     _entity: Any
 
