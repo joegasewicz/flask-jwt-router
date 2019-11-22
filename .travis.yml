@@ -9,3 +9,4 @@ install:
 
 script:
   - tox -v -e py
+  - codecov
