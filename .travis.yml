@@ -6,6 +6,7 @@ python:
 
 install:
   - pip install -U tox
+  - pip install -U codecov
 
 script:
   - tox -v -e py
