@@ -6,7 +6,6 @@ chardet==3.0.4
 Click==7.0
 docutils==0.15.2
 Flask==1.1.1
--e git+https://github.com/joegasewicz/Flask-JWT-Router.git@81807f4d6298a5ae6630bcf21c3ddd4dcc293d5a#egg=flask_jwt_router
 idna==2.8
 importlib-metadata==0.23
 itsdangerous==1.1.0
