@@ -136,7 +136,9 @@ Please make sure to update tests as appropriate.
 To run tests use:
 ```bash
  pipnv install -e .
- pipenv shell pytest -vv
+ pipenv shell
+ pipenv install
+ pipenv run pytest -vv
 ```
 
 ## License
