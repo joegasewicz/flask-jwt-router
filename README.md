@@ -135,6 +135,7 @@ Please make sure to update tests as appropriate.
 
 To run tests use:
 ```bash
+# Create your local pipenv environment:
  pipnv install -e .
  pipenv shell
  pipenv install
