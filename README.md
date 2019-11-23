@@ -3,6 +3,7 @@
 [![codecov](https://codecov.io/gh/joegasewicz/Flask-JWT-Router/branch/master/graph/badge.svg)](https://codecov.io/gh/joegasewicz/Flask-JWT-Router)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c15de26af47d48448392eaa5e0e41bcf)](https://www.codacy.com/manual/joegasewicz/Flask-JWT-Router?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=joegasewicz/Flask-JWT-Router&amp;utm_campaign=Badge_Grade)
 [![Documentation Status](https://readthedocs.org/projects/flask-jwt-router/badge/?version=latest)](https://flask-jwt-router.readthedocs.io/en/latest/?badge=latest)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/flask-jwt-router)
 
 
 ![Greenprint](logo.png?raw=true "Title")
@@ -12,7 +13,7 @@
 Flask JWT Router is a Python library that adds authorised routes to a Flask app.
 
 Read the Documentation here: [Flask-JWT-Router](https://flask-jwt-router.readthedocs.io/en/latest/) 
-
+````
 ## Installation
 
 ```bash
@@ -125,7 +126,7 @@ def get_user():
     })
 
 ```
-
+````
 ## Authors
 
 * **joegasewicz** - *Initial work* - [@joegasewicz](https://twitter.com/joegasewicz)
