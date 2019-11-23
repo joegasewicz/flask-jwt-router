@@ -24,7 +24,7 @@ author = 'Joe Gasewicz'
 # The full version, including alpha/beta/rc tags
 release = '0.0.19'
 master_doc = 'index'
-
+issues_github_path = "joegasewicz/Flask-JWT-Router"
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
@@ -47,8 +47,10 @@ exclude_patterns = []
 # a list of builtin themes.
 #
 html_theme = 'alabaster'
-
+html_show_sourcelink = True
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+
