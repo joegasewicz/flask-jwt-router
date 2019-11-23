@@ -23,7 +23,7 @@ author = 'Joe Gasewicz'
 
 # The full version, including alpha/beta/rc tags
 release = '0.0.18'
-
+master_doc = 'index'
 
 # -- General configuration ---------------------------------------------------
 
