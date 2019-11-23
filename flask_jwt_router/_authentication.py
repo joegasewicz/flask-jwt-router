@@ -3,17 +3,17 @@
     defined in BaseAuthStrategy. Currently only 2 of the
     3 methods are used publicly but the intention is there...
 
-    Example with different cryptographic signing Algorithm:
+    Example with different cryptographic signing Algorithm::
 
-    class AnotherAuthStrategy(BaseAuthStrategy):
-    def encode_token(self, extensions: Config, **kwargs):
-        pass
+        class AnotherAuthStrategy(BaseAuthStrategy):
+            def encode_token(self, extensions: Config, **kwargs):
+                pass
 
-    def register_entity(self):
-        pass
+            def register_entity(self):
+                pass
 
-    def update_entity(self):
-        pass
+            def update_entity(self):
+                pass
 
 """
 from abc import ABC, abstractmethod
@@ -45,6 +45,13 @@ class JWTAuthStrategy(BaseAuthStrategy):
     """
 
     def __init__(self):
+        """
+         Blah blah blah.
+         Parameters
+         ---------
+         name
+             A string to assign to the `name` instance attribute.
+         """
         super(JWTAuthStrategy, self).__init__()
 
     def encode_token(self, extensions: Config, entity_id: Any, exp: Any):
