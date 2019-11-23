@@ -14,17 +14,39 @@ class FlaskJWTRouter:
     If there app is None then self.init_app(app=None, **kwargs) need to be called
     inside the Flask app factory pattern
 
-    :param app:
-    :param kwargs:
+    :param app: Flask application instance
+    :param kwargs: entity_model
     """
+
+    #: Logging.
     logger = logging
+
+    #: The Flask application instance.
     app = None
+
+    #: Token expiry.
     exp = 30
+
     _auth_model: ClassVar = None
+
+    #: The class that is used to create Config objects.  See :class:`~flask_jwt_router._extensions`
+    #: for more information.
     extensions: Config
+
+    #: The class that provides algorithms to :class:`~flask_jwt_router._jwt_routes`.
+    # See :class:`~flask_jwt_router._authentication` for more information.
     auth: BaseAuthStrategy
+
+    #: The class that is used to create Entity objects.  See :class:`~flask_jwt_router._entity`
+    #: for more information.
     entity: BaseEntity
+
+    #: The class that is used to create Routing objects.  See :class:`~flask_jwt_router._routing`
+    #: for more information.
     routing: BaseRouting
+
+    #: The class that is used to create Config objects.  See :class:`~flask_jwt_router._extensions`
+    #: for more information.
     ext: BaseExtension
 
     def __init__(self, app=None, **kwargs):
@@ -37,8 +59,7 @@ class FlaskJWTRouter:
     def init_app(self, app):
         """
         You can use this to set up your config at runtime
-        :param app:
-        :param kwargs:
+        :param app: Flask application instance
         :return:
         """
         self.app = app
