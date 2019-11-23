@@ -6,20 +6,42 @@
 Welcome to Flask JWT Router's documentation!
 ============================================
 
+
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
-Authentication Class
-====================
-.. automodule:: flask_jwt_router._authentication
-   :members:
+   authentication
 
+flask-JWT-Routes provides the following
++++++++++++++++++++++++++++++++++++++++
+* Out of the box authentication with JSON Web tokens
+* White list routes
+* Optional Authenticated entity available on flask's g object
 
+..
 
-Indices and tables
-==================
+Quick Start
+-----------
+Installation::
 
-* :ref:`genindex`
-* :ref:`modindex`
+   pip install flask-jwt-router
+
+Wrap your Flask app::
+
+   from flask_jwt_router import JwtRoutes
+   app = Flask(__name__)
+   JwtRoutes(app)
+
+White list Routes::
+
+   app.config["WHITE_LIST_ROUTES"] = [
+       ("POST", "/register"),
+   ]
+
+   @app.route("/register", methods=["POST"])
+   def register():
+       return "I don't need authorizing!"
+
+..
+
 * :ref:`search`

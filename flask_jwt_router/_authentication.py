@@ -1,9 +1,9 @@
 """
-    AuthStrategy class are strategies with public methods
+    AuthStrategy class are algorithms with public methods
     defined in BaseAuthStrategy. Currently only 2 of the
     3 methods are used publicly but the intention is there...
 
-    Example with different cryptographic signing Algorithm::
+    Example of a new algorithm with different cryptographic signing "Algorithm"::
 
         class AnotherAuthStrategy(BaseAuthStrategy):
             def encode_token(self, extensions: Config, **kwargs):
@@ -45,13 +45,6 @@ class JWTAuthStrategy(BaseAuthStrategy):
     """
 
     def __init__(self):
-        """
-         Blah blah blah.
-         Parameters
-         ---------
-         name
-             A string to assign to the `name` instance attribute.
-         """
         super(JWTAuthStrategy, self).__init__()
 
     def encode_token(self, extensions: Config, entity_id: Any, exp: Any):
