@@ -64,12 +64,7 @@ class JWTAuthStrategy(BaseAuthStrategy):
         :param exp: The expiry duration set when encoding a new token
         :return: str
         """
-        #: The reference to the entity key. Defaulted to `id`.  See :class:`~flask_jwt_router._extensions`
-        #: for more information.
         self.entity_key = extensions.entity_key
-
-        #: The reference to the entity key. Defaulted to `DEFAULT_SECRET_KEY`.
-        # See :class:`~flask_jwt_router._extensions` for more information.
         self.secret_key = extensions.secret_key
 
         encoded = jwt.encode({
