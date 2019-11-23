@@ -18,7 +18,7 @@
 """
 from abc import ABC, abstractmethod
 import jwt
-from typing import Any
+from typing import Any, Union
 from datetime import datetime
 from dateutil.relativedelta import *
 
@@ -43,53 +43,68 @@ class JWTAuthStrategy(BaseAuthStrategy):
     """
         Uses SHA-256 hash algorithm
     """
+    #: The reference to the entity key. Defaulted to `id`.  See :class:`~flask_jwt_router._extensions`
+    #: for more information.
+    entity_key: str = "id"
+
+    #: The reference to the entity key. Defaulted to `DEFAULT_SECRET_KEY`.
+    #: See :class:`~flask_jwt_router._extensions` for more information.
+    secret_key: str = "DEFAULT_SECRET_KEY"
+
+    #: The reference to the entity ID.
+    entity_id: str = None
 
     def __init__(self):
         super(JWTAuthStrategy, self).__init__()
 
-    def encode_token(self, extensions: Config, entity_id: Any, exp: Any):
+    def encode_token(self, extensions: Config, entity_id: Any, exp: Any) -> str:
         """
-        :param extensions:
-        :param entity_id:
-        :param exp:
-        :return:
+        :param extensions: See :class:`~flask_jwt_router._extensions`
+        :param entity_id: Normally the primary key `id` or `user_id`
+        :param exp: The expiry duration set when encoding a new token
+        :return: str
         """
-        entity_key = extensions.entity_key
-        secret_key = extensions.secret_key
+        #: The reference to the entity key. Defaulted to `id`.  See :class:`~flask_jwt_router._extensions`
+        #: for more information.
+        self.entity_key = extensions.entity_key
+
+        #: The reference to the entity key. Defaulted to `DEFAULT_SECRET_KEY`.
+        # See :class:`~flask_jwt_router._extensions` for more information.
+        self.secret_key = extensions.secret_key
 
         encoded = jwt.encode({
-            entity_key: entity_id,
+            self.entity_key: entity_id,
             "exp": datetime.utcnow() + relativedelta(days=+exp)  # TODO options for different time types
         },
-            secret_key,
+            self.secret_key,
             algorithm="HS256"
         ).decode("utf-8")
         return encoded
 
-    def register_entity(self, extensions: Config, exp: Any, **kwargs):
+    def register_entity(self, extensions: Config, exp: Any, **kwargs) -> Union[str, None]:
         """
-        :param extensions:
-        :param exp:
-        :param kwargs:
-        :return:
+        :param extensions: See :class:`~flask_jwt_router._extensions`
+        :param exp: The expiry duration set when encoding a new token
+        :param kwargs: Gets entity_id
+        :return: Union[str, None]
         """
-        entity_id = kwargs.get("entity_id", None)
-        if entity_id:
-            token = self.encode_token(extensions, exp, entity_id)
+        self.entity_id = kwargs.get("entity_id", None)
+        if self.entity_id:
+            token = self.encode_token(extensions, exp, self.entity_id)
             return token
         else:
             return None
 
-    def update_entity(self, extensions: Config, exp: Any, **kwargs):
+    def update_entity(self, extensions: Config, exp: Any, **kwargs) -> Union[str, None]:
         """
         :param extensions:
         :param exp:
         :param kwargs:
-        :return:
+        :return: Union[str, None]
         """
-        entity_id = kwargs.get("entity_id", None)
-        if entity_id:
-            token = self.encode_token(extensions, exp, entity_id)
+        self.entity_id = kwargs.get("entity_id", None)
+        if self.entity_id:
+            token = self.encode_token(extensions, exp, self.entity_id)
             return token
         else:
             return None
