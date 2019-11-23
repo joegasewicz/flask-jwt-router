@@ -13,6 +13,7 @@ class FlaskJWTRouter:
     """
     If there app is None then self.init_app(app=None, **kwargs) need to be called
     inside the Flask app factory pattern
+
     :param app:
     :param kwargs:
     """

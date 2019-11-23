@@ -1,4 +1,4 @@
-Routing
-=======
-.. automodule:: flask_jwt_router._jwt_router
-   :members:
+Routing Class
+=============
+.. automodule:: flask_jwt_router._routing
+    :members:
