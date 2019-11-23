@@ -11,3 +11,26 @@ Authentication Class
 .. automodule:: flask_jwt_router._authentication
    :members:
 
+Entity Class
+============
+.. automodule:: flask_jwt_router._entity
+   :members:
+
+Extensions Class
+================
+.. automodule:: flask_jwt_router._extensions
+   :members:
+
+JwtRouter
+=========
+.. automodule:: flask_jwt_router._jwt_router
+   :members:
+
+JwtRoutes
+=========
+.. automodule:: flask_jwt_router._jwt_routes
+
+Routing
+=======
+.. automodule:: flask_jwt_router._jwt_router
+   :members:
