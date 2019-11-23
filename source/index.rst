@@ -3,31 +3,30 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Flask JWT Router's documentation!
+Welcome to Flask JWT Router
 ============================================
 
 
 .. toctree::
    :maxdepth: 2
 
+   jwt_routes
    authentication
    entity
    extensions
    jwt_router
-   jwt_routes
    routing
 
 
-flask-JWT-Routes provides the following
+Features
 +++++++++++++++++++++++++++++++++++++++
 * Out of the box authentication with JSON Web tokens
-* White list routes
+* Whitelist routes
 * Optional Authenticated entity available on flask's g object
 
 
-JwtRoutes
-=========
-.. automodule:: flask_jwt_router._jwt_routes
+Installation::
+
+       pip install flask-jwt-router
 
 
-* :ref:`search`
