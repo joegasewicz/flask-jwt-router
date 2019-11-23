@@ -1,19 +1,19 @@
 """
-    AuthStrategy class are strategies with public methods
+    AuthStrategy class are algorithms with public methods
     defined in BaseAuthStrategy. Currently only 2 of the
     3 methods are used publicly but the intention is there...
 
-    Example with different cryptographic signing Algorithm:
+    Example of a new algorithm with different cryptographic signing "Algorithm"::
 
-    class AnotherAuthStrategy(BaseAuthStrategy):
-    def encode_token(self, extensions: Config, **kwargs):
-        pass
+        class AnotherAuthStrategy(BaseAuthStrategy):
+            def encode_token(self, extensions: Config, **kwargs):
+                pass
 
-    def register_entity(self):
-        pass
+            def register_entity(self):
+                pass
 
-    def update_entity(self):
-        pass
+            def update_entity(self):
+                pass
 
 """
 from abc import ABC, abstractmethod

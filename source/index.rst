@@ -1,16 +1,16 @@
-Flask JWT Router
+.. Flask JWT Router documentation master file, created by
+   sphinx-quickstart on Sat Nov 23 00:00:09 2019.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Welcome to Flask JWT Router's documentation!
 ============================================
+
 
 .. toctree::
    :maxdepth: 2
 
-   getting_started
-   authorising_routes
-   creating_an_entity_model
-   assign_tokens_to_routes
-   configuration
-   contents
-
+   authentication
 
 flask-JWT-Routes provides the following
 +++++++++++++++++++++++++++++++++++++++
@@ -44,6 +44,4 @@ White list Routes::
 
 ..
 
-* :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
