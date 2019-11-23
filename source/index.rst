@@ -11,6 +11,12 @@ Welcome to Flask JWT Router's documentation!
    :maxdepth: 2
 
    authentication
+   entity
+   extensions
+   jwt_router
+   jwt_routes
+   routing
+
 
 flask-JWT-Routes provides the following
 +++++++++++++++++++++++++++++++++++++++
