@@ -24,8 +24,8 @@ class FlaskJWTRouter:
     #: The Flask application instance.
     app = None
 
-    #: Token expiry.
-    exp = 30
+    #: Token expiry value. eg. 30 = 30 days from creation date.
+    exp: int = 30
 
     _auth_model: ClassVar = None
 
@@ -51,7 +51,7 @@ class FlaskJWTRouter:
 
     def __init__(self, app=None, **kwargs):
         self.ext = Extensions()
-        _auth_model = kwargs.get("entity_model", None)
+        self._auth_model = kwargs.get("entity_model", None)
 
         if app:
             self.init_app(app)
