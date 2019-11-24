@@ -28,14 +28,14 @@ from ._extensions import Config
 class BaseAuthStrategy(ABC):
 
     @abstractmethod
-    def register_entity(self, extensions: Config, exp: Any, **kwargs):
+    def register_entity(self, extensions: Config, exp: int, **kwargs):
         pass
 
     @abstractmethod
-    def update_entity(self, extensions: Config, exp: Any, **kwargs):
+    def update_entity(self, extensions: Config, exp: int, **kwargs):
         pass
 
-    def encode_token(self, extensions: Config, entity_id: Any, exp: Any):
+    def encode_token(self, extensions: Config, entity_id: Any, exp: int):
         pass
 
 
@@ -57,7 +57,7 @@ class JWTAuthStrategy(BaseAuthStrategy):
     def __init__(self):
         super(JWTAuthStrategy, self).__init__()
 
-    def encode_token(self, extensions: Config, entity_id: Any, exp: Any) -> str:
+    def encode_token(self, extensions: Config, entity_id: Any, exp: int) -> str:
         """
         :param extensions: See :class:`~flask_jwt_router._extensions`
         :param entity_id: Normally the primary key `id` or `user_id`
@@ -76,7 +76,7 @@ class JWTAuthStrategy(BaseAuthStrategy):
         ).decode("utf-8")
         return encoded
 
-    def register_entity(self, extensions: Config, exp: Any, **kwargs) -> Union[str, None]:
+    def register_entity(self, extensions: Config, exp: int, **kwargs) -> Union[str, None]:
         """
         :param extensions: See :class:`~flask_jwt_router._extensions`
         :param exp: The expiry duration set when encoding a new token
@@ -85,12 +85,12 @@ class JWTAuthStrategy(BaseAuthStrategy):
         """
         self.entity_id = kwargs.get("entity_id", None)
         if self.entity_id:
-            token = self.encode_token(extensions, exp, self.entity_id)
+            token = self.encode_token(extensions, self.entity_id, exp)
             return token
         else:
             return None
 
-    def update_entity(self, extensions: Config, exp: Any, **kwargs) -> Union[str, None]:
+    def update_entity(self, extensions: Config, exp: int, **kwargs) -> Union[str, None]:
         """
         :param extensions:
         :param exp:
@@ -99,7 +99,7 @@ class JWTAuthStrategy(BaseAuthStrategy):
         """
         self.entity_id = kwargs.get("entity_id", None)
         if self.entity_id:
-            token = self.encode_token(extensions, exp, self.entity_id)
+            token = self.encode_token(extensions, self.entity_id, exp)
             return token
         else:
             return None
