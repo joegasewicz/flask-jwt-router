@@ -124,11 +124,8 @@
         from app import app, jwt_routes
 
         # Example uses Marshmallow to serialize entity object
-        class EntitySchema(Schema):
-            id = fields.Integer()
-            name = fields.String()
 
-        @app.route("/register", methods=["POST"])
+        @app.route("/login" methods=["GET"])
         def register():
             user_data = g.get("entity")
             try:

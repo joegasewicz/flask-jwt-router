@@ -138,7 +138,7 @@ Access entity on Flask's global context
         id = fields.Integer()
         name = fields.String()
 
-    @app.route("/register", methods=["POST"])
+    @app.route("/login", methods=["GET"])
     def register():
         user_data = g.get("entity")
         try:
