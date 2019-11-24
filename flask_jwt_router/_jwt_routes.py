@@ -101,20 +101,46 @@
                 "token": jwt_routes.update_entity(entity_id=1)
             })
 
+    Create a new entity & return a new token::
+
+        @app.route("/register", methods=["POST"])
+        def register():
+            user_data = request.get_json()
+            try:
+                user = UserModel(**user_data)
+                user.create_user() # your entity creation logic
+
+                # Here we pass the id as a kwarg to `register_entity`
+                token: str = jwt_routes.register_entity(entity_id=user.id)
+
+                # Now we can return a new token!
+                return {
+                    "message": "User successfully created.",
+                    "token": str(token),  # casting is optional
+                }, 200
+
     Access entity on Flask's global context::
+
+        from app import app, jwt_routes
 
         # Example uses Marshmallow to serialize entity object
         class EntitySchema(Schema):
             id = fields.Integer()
             name = fields.String()
 
-        @app.route("/user", methods=["GET"])
-        def get_user():
-            # I was authorized & i have a user!
-            entity = EntitySchema().dumps(g.entity).data
-            return jsonify({
-                "entity": entity
-            })
+        @app.route("/register", methods=["POST"])
+        def register():
+            user_data = g.get("entity")
+            try:
+                user_dumped = UserSchema().dump(user_data)
+            except ValidationError as _:
+               return {
+                           "error": "User requested does not exist."
+                       }, 401
+            return {
+                "data": user_dumped,
+                "token": jwt_routes.update_entity(entity_id=user_data.id),
+            }, 200
 
 """
 from ._jwt_router import FlaskJWTRouter
