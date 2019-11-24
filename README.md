@@ -139,7 +139,7 @@ Access entity on Flask's global context
         name = fields.String()
 
     @app.route("/login", methods=["GET"])
-    def register():
+    def login():
         user_data = g.get("entity")
         try:
             user_dumped = UserSchema().dump(user_data)
