@@ -111,5 +111,5 @@ class FlaskJWTRouter:
         :param entity_id:
         :return:
         """
-        entity_type = self.entity.get_entity_from_ext()
+        entity_type = self.entity.get_entity_from_ext().__tablename__
         return self.auth.encode_token(self.extensions, entity_id, self.exp, entity_type)
