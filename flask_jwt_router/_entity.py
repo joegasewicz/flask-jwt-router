@@ -23,11 +23,11 @@ class Entity(BaseEntity):
     """
 
     #: The result from the decoded token.
-    #: This gets assigned in :method:`~get_entity_from_token`
+    #: This gets assigned in :class:`~get_entity_from_token`
     decoded_token: Dict[str, Any] = None
 
     #: The assigned entity model in the current request
-    #: This gets assigned in :method:`~get_entity_from_token`
+    #: This gets assigned in :class:`~flask_jwt_router._entity.get_entity_from_token`
     auth_model: _ORMType = None
 
     def __init__(self, extensions: ClassVar):
