@@ -1,5 +1,4 @@
 import logging
-from typing import ClassVar
 
 from ._extensions import BaseExtension, Extensions, Config
 from ._entity import BaseEntity, Entity
@@ -112,4 +111,5 @@ class FlaskJWTRouter:
         :param entity_id:
         :return:
         """
-        return self.auth.encode_token(self.extensions, entity_id, self.exp)
+        entity_type = self.entity.get_entity_from_ext()
+        return self.auth.encode_token(self.extensions, entity_id, self.exp, entity_type)

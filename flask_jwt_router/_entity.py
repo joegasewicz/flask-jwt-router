@@ -15,6 +15,10 @@ class BaseEntity(ABC):
     def get_entity_from_token(self, decoded_token: str) -> str:
         pass
 
+    @abstractmethod
+    def get_entity_from_ext(self) -> _ORMType:
+        pass
+
 
 class Entity(BaseEntity):
     """
