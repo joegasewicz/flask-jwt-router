@@ -55,7 +55,8 @@ class TestRouting:
         assert entity.user_name == "joe"
         assert entity.id == 1
 
-        entity = Entity(self.ext, TestMockEntity)
+        self.ext.entity_models = [TestMockEntity]
+        entity = Entity(self.ext)
         routing = Routing(app, self.ext, entity)
 
         with ctx:
