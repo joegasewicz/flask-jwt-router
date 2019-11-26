@@ -181,7 +181,7 @@ An Example configuration for registering & logging in users of different types:
         ("POST", "/auth/user"), ("POST", "/auth/user/login"),
         ("POST", "/auth/teacher"), ("POST", "/auth/teacher/login"),
     ]
-    app.config["ENTITY_MODELS"] = [(UserModel), (TeacherModel)]
+    app.config["ENTITY_MODELS"] = [UserModel, TeacherModel]
 ```
 ## Authors
 
