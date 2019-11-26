@@ -173,11 +173,14 @@ If you are handling a request without a token in the headers you can call::
 ```
 
 
-An Example configuration for registering & logging in user:
+An Example configuration for registering & logging in users of different types:
 ```python
     app.config["IGNORED_ROUTES"] = [("GET", "/")]
     app.config["JWT_ROUTER_API_NAME"] = "/api/v1"
-    app.config["WHITE_LIST_ROUTES"] = [("POST", "/auth/user"), ("POST", "/auth/user/login")]
+    app.config["WHITE_LIST_ROUTES"] = [
+        ("POST", "/auth/user"), ("POST", "/auth/user/login"),
+        ("POST", "/auth/teacher"), ("POST", "/auth/teacher/login"),
+    ]
     app.config["ENTITY_MODELS"] = [(UserModel), (TeacherModel)]
 ```
 ## Authors
