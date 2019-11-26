@@ -62,7 +62,7 @@ class JWTAuthStrategy(BaseAuthStrategy):
         :param extensions: See :class:`~flask_jwt_router._extensions`
         :param entity_id: Normally the primary key `id` or `user_id`
         :param exp: The expiry duration set when encoding a new token
-        :param entity_type: The Model Entity __tablename__
+        :param entity_type: The Model Entity `__tablename__`
         :return: str
         """
         self.entity_key = extensions.entity_key
