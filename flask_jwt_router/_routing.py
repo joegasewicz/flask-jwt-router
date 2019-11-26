@@ -161,7 +161,7 @@ class Routing(BaseRouting):
             return abort(401)
 
         try:
-            entity = self.entity.get_id_from_token(decoded_token)
-            g.entity = entity
+            entity = self.entity.get_entity_from_token(decoded_token)
+            setattr(g, self.entity.get_entity_from_ext().__tablename__, entity)
         except ValueError:
             return abort(401)

@@ -55,21 +55,22 @@ class TestRouting:
         assert entity.user_name == "joe"
         assert entity.id == 1
 
-        entity = Entity(self.ext, TestMockEntity)
+        self.ext.entity_models = [TestMockEntity]
+        entity = Entity(self.ext)
         routing = Routing(app, self.ext, entity)
 
         with ctx:
             # token from args
             monkeypatch.setattr("flask.request.args", MockArgs(mock_token))
             routing.before_middleware()
-            assert ctx.g.entity == [(1, 'joe')]
+            assert ctx.g.test_entities == [(1, 'joe')]
 
         with ctx:
             # token from headers
             monkeypatch.setattr("flask.request.args", MockArgs())
             monkeypatch.setattr("flask.request.headers", MockArgs(mock_token, True))
             routing.before_middleware()
-            assert ctx.g.entity == [(1, 'joe')]
+            assert ctx.g.test_entities == [(1, 'joe')]
 
     @pytest.mark.parametrize(
         "jwt_router_client,entity_model,expected", [

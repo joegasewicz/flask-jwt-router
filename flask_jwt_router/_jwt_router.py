@@ -1,5 +1,4 @@
 import logging
-from typing import ClassVar
 
 from ._extensions import BaseExtension, Extensions, Config
 from ._entity import BaseEntity, Entity
@@ -27,8 +26,6 @@ class FlaskJWTRouter:
     #: Token expiry value. eg. 30 = 30 days from creation date.
     exp: int = 30
 
-    _auth_model: ClassVar = None
-
     #: The class that is used to create Config objects.  See :class:`~flask_jwt_router._extensions`
     #: for more information.
     extensions: Config
@@ -51,8 +48,6 @@ class FlaskJWTRouter:
 
     def __init__(self, app=None, **kwargs):
         self.ext = Extensions()
-        self._auth_model = kwargs.get("entity_model", None)
-
         if app:
             self.init_app(app)
 
@@ -65,7 +60,7 @@ class FlaskJWTRouter:
         self.app = app
         config = self.get_app_config(app)
         self.extensions = self.ext.init_extensions(config)
-        self.entity = Entity(self.extensions, self.auth_model)
+        self.entity = Entity(self.extensions)
         self.routing = Routing(self.app, self.extensions, self.entity)
         self.app.before_request(self.routing.before_middleware)
 
@@ -97,18 +92,6 @@ class FlaskJWTRouter:
         except KeyError as _:
             return 30
 
-    @property
-    def auth_model(self):
-        return self._auth_model
-
-    @auth_model.setter
-    def auth_model(self, value):
-        """
-        :param value:
-        :return:
-        """
-        self._auth_model = value
-
     def register_entity(self, **kwargs) -> str:
         """
         :param kwargs:
@@ -128,4 +111,5 @@ class FlaskJWTRouter:
         :param entity_id:
         :return:
         """
-        return self.auth.encode_token(self.extensions, entity_id, self.exp)
+        entity_type = self.entity.get_entity_from_ext().__tablename__
+        return self.auth.encode_token(self.extensions, entity_id, self.exp, entity_type)

@@ -20,7 +20,7 @@ def TestMockEntity():
     Base = declarative_base()
 
     class TestEntity(Base):
-        __tablename__ = "test_entity"
+        __tablename__ = "test_entities"
 
         query = MockQuery()
 
@@ -36,9 +36,32 @@ def TestMockEntity():
 def MockEntityModel():
     Base = declarative_base()
     class TestEntity(Base):
-        __tablename__ = "test_entity"
+        __tablename__ = "test_entities"
         query = MockQuery()
         id = Column(Integer(), primary_key=True)
         user_name = Column(String(10))
 
     return TestEntity
+
+
+@pytest.fixture
+def MockEntityModelTwo():
+    Base = declarative_base()
+    class TestEntityTwo(Base):
+        __tablename__ = "test_two_entities"
+        query = MockQuery()
+        id = Column(Integer(), primary_key=True)
+        user_name = Column(String(10))
+
+    return TestEntityTwo
+
+
+@pytest.fixture
+def NoTableNameEntity():
+    Base = declarative_base()
+    class TestEntityThree(Base):
+        query = MockQuery()
+        id = Column(Integer(), primary_key=True)
+        user_name = Column(String(10))
+
+    return TestEntityThree

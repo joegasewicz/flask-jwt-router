@@ -35,7 +35,7 @@ class BaseAuthStrategy(ABC):
     def update_entity(self, extensions: Config, exp: int, **kwargs):
         pass
 
-    def encode_token(self, extensions: Config, entity_id: Any, exp: int):
+    def encode_token(self, extensions: Config, entity_id: Any, exp: int, entity_type: str):
         pass
 
 
@@ -57,17 +57,19 @@ class JWTAuthStrategy(BaseAuthStrategy):
     def __init__(self):
         super(JWTAuthStrategy, self).__init__()
 
-    def encode_token(self, extensions: Config, entity_id: Any, exp: int) -> str:
+    def encode_token(self, extensions: Config, entity_id: Any, exp: int, entity_type: str) -> str:
         """
         :param extensions: See :class:`~flask_jwt_router._extensions`
         :param entity_id: Normally the primary key `id` or `user_id`
         :param exp: The expiry duration set when encoding a new token
+        :param entity_type: The Model Entity `__tablename__`
         :return: str
         """
         self.entity_key = extensions.entity_key
         self.secret_key = extensions.secret_key
 
         encoded = jwt.encode({
+            "entity_type": entity_type,
             self.entity_key: entity_id,
             "exp": datetime.utcnow() + relativedelta(days=+exp)  # TODO options for different time types
         },
