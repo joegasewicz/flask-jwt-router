@@ -30,7 +30,7 @@ app = Flask(__name__)
 JwtRoutes(app)
 
 # If you're using the Flask factory pattern:
-jwt_routes = JwtRoutes(entity_model=UserModel)  # Example with *entity_model - see below
+jwt_routes = JwtRoutes()  # Example with *entity_model - see below
 
 def create_app(config):
     ...
@@ -83,6 +83,10 @@ app.config["ENTITY_KEY"] = "user_id"
 # (`id` is used by default)
 JwtRoutes(app, entity_model=UserModel)
 
+# You can also specify a list of entity model classes
+
+app.config["ENTITY_MODELS"] = [ UserModel, TeacherModel, ...etc ]
+
 ```
 
 ## Authorization
@@ -99,7 +103,7 @@ app.config["WHITE_LIST_ROUTES"] = [
 def register():
     """I'm registering a new user & returning a token!"""
     return jsonify({
-        "token": jwt_routes.register_entity(entity_id=1)
+        "token": jwt_routes.register_entity(entity_id=1, entity_type='user')
     })
 
 @app.route("/login", methods=["POST"])
@@ -140,7 +144,7 @@ Access entity on Flask's global context
 
     @app.route("/login", methods=["GET"])
     def login():
-        user_data = g.get("entity")
+        user_data = g.get("user")
         try:
             user_dumped = UserSchema().dump(user_data)
         except ValidationError as _:
@@ -151,7 +155,19 @@ Access entity on Flask's global context
             "data": user_dumped,
             "token": jwt_routes.update_entity(entity_id=user_data.id),
         }, 200
+        
 ```
+If you are handling a request with a token in the headers you can call::
+```python
+    jwt_routes.update_entity(entity_id=user_data.id)
+```
+
+If you are handling a request without a token in the headers you can call::
+
+```python
+    jwt_routes.register_entity(entity_id=user_data.id, entity_type="user")
+```
+
 
 ## Authors
 
