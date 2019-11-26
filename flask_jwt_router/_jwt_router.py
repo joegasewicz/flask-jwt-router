@@ -104,7 +104,8 @@ class FlaskJWTRouter:
         :param kwargs:
         :return:
         """
-        return self.auth.update_entity(self.extensions, self.exp, **kwargs)
+        entity_type = self.entity.get_entity_from_ext().__tablename__
+        return self.auth.update_entity(self.extensions, self.exp, entity_type, **kwargs)
 
     def encode_token(self, entity_id) -> str:
         """

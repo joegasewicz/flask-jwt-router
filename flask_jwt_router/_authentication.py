@@ -32,7 +32,7 @@ class BaseAuthStrategy(ABC):
         pass
 
     @abstractmethod
-    def update_entity(self, extensions: Config, exp: int, **kwargs):
+    def update_entity(self, extensions: Config, exp: int, entity_type, **kwarg):
         pass
 
     def encode_token(self, extensions: Config, entity_id: Any, exp: int, entity_type: str):
@@ -57,7 +57,7 @@ class JWTAuthStrategy(BaseAuthStrategy):
     def __init__(self):
         super(JWTAuthStrategy, self).__init__()
 
-    def encode_token(self, extensions: Config, entity_id: Any, exp: int, entity_type: str) -> str:
+    def encode_token(self, extensions: Config, entity_id: Any, exp: int, entity_type) -> str:
         """
         :param extensions: See :class:`~flask_jwt_router._extensions`
         :param entity_id: Normally the primary key `id` or `user_id`
@@ -96,16 +96,17 @@ class JWTAuthStrategy(BaseAuthStrategy):
         else:
             return None
 
-    def update_entity(self, extensions: Config, exp: int, **kwargs) -> Union[str, None]:
+    def update_entity(self, extensions: Config, exp: int, entity_type: str, **kwargs) -> Union[str, None]:
         """
         :param extensions:
         :param exp:
+        :param entity_type:
         :param kwargs:
         :return: Union[str, None]
         """
         self.entity_id = kwargs.get("entity_id", None)
         if self.entity_id:
-            token = self.encode_token(extensions, self.entity_id, exp)
+            token = self.encode_token(extensions, self.entity_id, exp, entity_type)
             return token
         else:
             return None
