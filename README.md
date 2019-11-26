@@ -81,7 +81,7 @@ class UserModel(db.Model):
 # You can define the primary key name with `ENTITY_KEY` on Flask's config
 app.config["ENTITY_KEY"] = "user_id"
 # (`id` is used by default)
-JwtRoutes(app, entity_model=UserModel)
+JwtRoutes(app)
 
 # You can also specify a list of entity model classes
 
@@ -103,7 +103,7 @@ app.config["WHITE_LIST_ROUTES"] = [
 def register():
     """I'm registering a new user & returning a token!"""
     return jsonify({
-        "token": jwt_routes.register_entity(entity_id=1, entity_type='user')
+        "token": jwt_routes.register_entity(entity_id=1, entity_type='users')
     })
 
 @app.route("/login", methods=["POST"])
@@ -113,6 +113,10 @@ def login():
         "token": jwt_routes.update_entity(entity_id=1)
     })
 ```
+
+*Warning: The `entity_type` must be the same as your tablename or `__tablename__` attribute's value.
+(With SqlAlchemy, you can define a `__tablename__` attribute directly or else
+the name is derived from your entity’s database table name).
 
 # Create & update Tokens on Routes
 Create a new entity & return a new token
@@ -125,7 +129,7 @@ Create a new entity & return a new token
             user.create_user() # your entity creation logic
 
             # Here we pass the id as a kwarg to `register_entity`
-            token: str = jwt_routes.register_entity(entity_id=user.id)
+            token: str = jwt_routes.register_entity(entity_id=user.id, entity_type="users")
 
             # Now we can return a new token!
             return {
@@ -165,7 +169,7 @@ If you are handling a request with a token in the headers you can call::
 If you are handling a request without a token in the headers you can call::
 
 ```python
-    jwt_routes.register_entity(entity_id=user_data.id, entity_type="user")
+    jwt_routes.register_entity(entity_id=user_data.id, entity_type="users")
 ```
 
 
