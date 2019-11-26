@@ -47,8 +47,7 @@ class Entity(BaseEntity):
 
     def get_entity_from_ext(self) -> _ORMType:
         """
-
-        :return:
+        :return: {_ORMType}
         """
         entity_type = self.decoded_token.get("entity_type")
         auth_model = None
@@ -58,11 +57,11 @@ class Entity(BaseEntity):
         if auth_model:
             return auth_model
         else:
-            raise Exception("[FLASK-JWT-ROUTER ERROR]: Your Entity model must have a `__tablename__` attribute!"
-                            " If you are running flask-jwt-router against tests then make"
-                            " sure you assign a `__tablename__` attribute to your Model class."
-                            )
-
+            raise Exception(
+                "[FLASK-JWT-ROUTER ERROR]: Your Entity model must have a `__tablename__` attribute!"
+                " If you are running flask-jwt-router against tests, make sure"
+                " you assign a `__tablename__` attribute to your Model class."
+            )
 
     def get_entity_from_token(self, decoded_token: Dict[str, any]) -> str:
         """
