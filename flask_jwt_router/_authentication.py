@@ -86,8 +86,9 @@ class JWTAuthStrategy(BaseAuthStrategy):
         :return: Union[str, None]
         """
         self.entity_id = kwargs.get("entity_id", None)
+        entity_type = kwargs.get("entity_type", None)
         if self.entity_id:
-            token = self.encode_token(extensions, self.entity_id, exp)
+            token = self.encode_token(extensions, self.entity_id, exp, entity_type)
             return token
         else:
             return None
