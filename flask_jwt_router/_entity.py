@@ -51,6 +51,9 @@ class Entity(BaseEntity):
 
     def get_entity_from_ext(self) -> _ORMType:
         """
+        Exception raised if SQLAlchemy ORM not being used
+        (SQLAlchemy will throw if `__tablename__` doesn't exist
+        or it can't create the name from the db engine's table object.
         :return: {_ORMType}
         """
         entity_type = self.decoded_token.get("entity_type")
