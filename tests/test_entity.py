@@ -11,6 +11,8 @@
 
 
 """
+import pytest
+
 from flask_jwt_router._entity import Entity
 from flask_jwt_router._extensions import Extensions
 from tests.fixtures.token_fixture import mock_decoded_token
@@ -32,14 +34,19 @@ class TestEntity:
 
     token_non_entity = {'id': 12, 'exp': 1577037162}
 
+    @pytest.mark.j
     def test_get_id_from_token(self, MockEntityModel, mock_decoded_token):
-        entity = Entity(self.ext, MockEntityModel)
+
+        self.ext.entity_models = [MockEntityModel]
+
+        entity = Entity(self.ext)
 
         assert self.ext.entity_key == "id"
-        assert entity.get_id_from_token(mock_decoded_token) == [(1, 'joe')]
+        assert entity.get_entity_from_token(mock_decoded_token) == [(1, 'joe')]
 
-    def test_auth_model(self):
-        class AuthModel:
-            pass
-        result = Entity({}, AuthModel).auth_model
-        assert result == AuthModel
+    # @pytest.mark.j
+    # def test_auth_model(self):
+    #     class AuthModel:
+    #         pass
+    #     result = Entity({"ENTITY_MODELS": [AuthModel]})
+    #     assert result == AuthModel

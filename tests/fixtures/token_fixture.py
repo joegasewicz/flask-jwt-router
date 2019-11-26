@@ -5,6 +5,7 @@ from dateutil.relativedelta import *
 
 
 new_token = jwt.encode({
+            "entity_type": "test_entities",
             "id": 1,
             "exp": datetime.utcnow() + relativedelta(days=+30)
         },

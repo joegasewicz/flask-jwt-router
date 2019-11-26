@@ -20,7 +20,7 @@ def TestMockEntity():
     Base = declarative_base()
 
     class TestEntity(Base):
-        __tablename__ = "test_entity"
+        __tablename__ = "test_entities"
 
         query = MockQuery()
 
@@ -36,7 +36,7 @@ def TestMockEntity():
 def MockEntityModel():
     Base = declarative_base()
     class TestEntity(Base):
-        __tablename__ = "test_entity"
+        __tablename__ = "test_entities"
         query = MockQuery()
         id = Column(Integer(), primary_key=True)
         user_name = Column(String(10))
