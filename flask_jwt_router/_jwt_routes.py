@@ -17,7 +17,7 @@
         JwtRoutes(app)
 
         # If you're using the Flask factory pattern:
-        jwt_routes = JwtRoutes(entity_model=UserModel)  # Example with *entity_model - see below
+        jwt_routes = JwtRoutes()
 
         def create_app(config):
             ...
@@ -72,8 +72,13 @@
         # You can define the primary key name with `ENTITY_KEY` on Flask's config
 
         app.config["ENTITY_KEY"] = "user_id"
+
+        # You can also specify a list of entity model classes
+
+        app.config["ENTITY_MODELS"] = [ UserModel, TeacherModel ]
+
         # (`id` is used by default)
-        JwtRoutes(app, entity_model=UserModel)
+        JwtRoutes(app)
 
 
     Authorization & Tokens
@@ -111,7 +116,7 @@
                 user.create_user() # your entity creation logic
 
                 # Here we pass the id as a kwarg to `register_entity`
-                token: str = jwt_routes.register_entity(entity_id=user.id)
+                token: str = jwt_routes.register_entity(entity_id=user.id, entity_type="user")
 
                 # Now we can return a new token!
                 return {
@@ -126,7 +131,7 @@
         # Example uses Marshmallow to serialize entity object
 
         @app.route("/login" methods=["GET"])
-        def register():
+        def login():
             user_data = g.get("entity")
             try:
                 user_dumped = UserSchema().dump(user_data)
@@ -136,8 +141,16 @@
                        }, 401
             return {
                 "data": user_dumped,
-                "token": jwt_routes.update_entity(entity_id=user_data.id),
+                "token": jwt_routes.register_entity(entity_id=user_data.id, entity_type="user"),
             }, 200
+
+    If you are handling a request with a token in the headers you can call::
+
+        jwt_routes.update_entity(entity_id=user_data.id)
+
+    If you are handling a request without a token in the headers you can call::
+
+    jwt_routes.register_entity(entity_id=user_data.id, entity_type="user")
 
 """
 from ._jwt_router import FlaskJWTRouter

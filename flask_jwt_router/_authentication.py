@@ -80,14 +80,18 @@ class JWTAuthStrategy(BaseAuthStrategy):
 
     def register_entity(self, extensions: Config, exp: int, **kwargs) -> Union[str, None]:
         """
+        kwargs:
+            - entity_id: Represents the entity's primary key
+            - entity_type: The table name of the entity
         :param extensions: See :class:`~flask_jwt_router._extensions`
         :param exp: The expiry duration set when encoding a new token
-        :param kwargs: Gets entity_id
+        :param kwargs:
         :return: Union[str, None]
         """
         self.entity_id = kwargs.get("entity_id", None)
+        entity_type = kwargs.get("entity_type", None)
         if self.entity_id:
-            token = self.encode_token(extensions, self.entity_id, exp)
+            token = self.encode_token(extensions, self.entity_id, exp, entity_type)
             return token
         else:
             return None
