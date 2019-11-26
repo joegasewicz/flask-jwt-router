@@ -29,7 +29,7 @@ class Config:
 
 
 class BaseExtension(ABC):
-    def init_extensions(self, config: Dict[str, Any]):
+    def init_extensions(self, config: Dict[str, Any]) -> Config:
         pass
 
 
