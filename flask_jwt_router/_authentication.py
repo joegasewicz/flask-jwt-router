@@ -68,6 +68,7 @@ class JWTAuthStrategy(BaseAuthStrategy):
         self.secret_key = extensions.secret_key
 
         encoded = jwt.encode({
+            type: "user",
             self.entity_key: entity_id,
             "exp": datetime.utcnow() + relativedelta(days=+exp)  # TODO options for different time types
         },
