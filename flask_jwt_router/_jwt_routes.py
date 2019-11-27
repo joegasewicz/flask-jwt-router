@@ -69,10 +69,6 @@
             id = db.Column(db.Integer, primary_key=True)
             name = db.Column(db.String)
 
-        # You can define the primary key name with `ENTITY_KEY` on Flask's config
-
-        app.config["ENTITY_KEY"] = "user_id"
-
         # You can also specify a list of entity model classes
 
         app.config["ENTITY_MODELS"] = [ UserModel, TeacherModel ]

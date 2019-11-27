@@ -19,6 +19,10 @@ class BaseEntity(ABC):
     def get_entity_from_ext(self) -> _ORMType:
         pass
 
+    @abstractmethod
+    def get_attr_name(self) -> str:
+        pass
+
 
 class Entity(BaseEntity):
     """
@@ -36,6 +40,9 @@ class Entity(BaseEntity):
 
     def __init__(self, extensions: ClassVar):
         self.extensions = extensions
+
+    def get_attr_name(self) -> str:
+        pass
 
     def get_entity_model(self):
         pass
