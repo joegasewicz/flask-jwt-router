@@ -55,6 +55,17 @@ def MockEntityModelTwo():
 
     return TestEntityTwo
 
+@pytest.fixture
+def MockEntityModelThree():
+    Base = declarative_base()
+    class TestEntityThree(Base):
+        __tablename__ = "test_two_entities"
+        query = MockQuery()
+        teacher_id = Column(Integer(), primary_key=True)
+        user_name = Column(String(10))
+
+    return TestEntityThree
+
 
 @pytest.fixture
 def NoTableNameEntity():
@@ -65,3 +76,5 @@ def NoTableNameEntity():
         user_name = Column(String(10))
 
     return TestEntityThree
+
+
