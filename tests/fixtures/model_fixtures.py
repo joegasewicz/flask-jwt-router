@@ -59,7 +59,7 @@ def MockEntityModelTwo():
 def MockEntityModelThree():
     Base = declarative_base()
     class TestEntityThree(Base):
-        __tablename__ = "test_two_entities"
+        __tablename__ = "test_3_entities"
         query = MockQuery()
         teacher_id = Column(Integer(), primary_key=True)
         user_name = Column(String(10))

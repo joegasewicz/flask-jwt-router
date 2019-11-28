@@ -19,8 +19,8 @@ from flask_jwt_router._entity import Entity
 from flask_jwt_router._extensions import Extensions
 from flask_jwt_router._routing import Routing
 from tests.fixtures.main_fixture import test_client, jwt_routes
-from tests.fixtures.token_fixture import mock_decoded_token, mock_decoded_token_two
-from tests.fixtures.model_fixtures import MockEntityModel, NoTableNameEntity, MockEntityModelTwo
+from tests.fixtures.token_fixture import mock_decoded_token, mock_decoded_token_two, mock_decoded_token_three
+from tests.fixtures.model_fixtures import MockEntityModel, NoTableNameEntity, MockEntityModelTwo, MockEntityModelThree
 from tests.fixtures.models import TeacherModel
 
 class MockArgs:
@@ -50,14 +50,13 @@ class TestEntity:
 
     token_non_entity = {'id': 12, 'exp': 1577037162}
 
-    def test_get_entity_from_token(self, MockEntityModelThree, mock_decoded_token):
+    def test_get_entity_from_token(self, MockEntityModelThree, mock_decoded_token_three):
 
         self.ext.entity_models = [MockEntityModelThree]
 
         entity = Entity(self.ext)
 
-        assert self.ext.entity_key == "id"
-        assert entity.get_entity_from_token(mock_decoded_token) == [(1, 'joe')]
+        assert entity.get_entity_from_token(mock_decoded_token_three) == [(1, 'joe')]
 
     def test_get_entity_from_token_multiple(self, MockEntityModel, MockEntityModelTwo, mock_decoded_token_two):
 
@@ -65,7 +64,6 @@ class TestEntity:
 
         entity = Entity(self.ext)
 
-        assert self.ext.entity_key == "id"
         assert entity.get_entity_from_token(mock_decoded_token_two) == [(1, 'joe')]
 
     def test_get_attr_name(self, MockEntityModel, mock_decoded_token):
@@ -79,7 +77,6 @@ class TestEntity:
 
         assert result == "id"
 
-    @pytest.mark.j
     def test_get_attr_name(self, test_client):
         rv = test_client.post("/api/v1/test_entity")
         assert "200" in str(rv.status)
@@ -101,19 +98,17 @@ class TestEntity:
         }
         rv_get = test_client.get("/api/v1/test_entity", headers=headers)
 
-        assert "201" in str(rv_get.status)
+        assert "200" in str(rv_get.status)
         assert "token" in str(rv_get.get_json())
-        # assert rv_get.get_json["data"] == {"teacher_id": 1, "name": "joe"}
-        #
-        # token_two = rv_get.get_json()["token"]
-        #
-        # decoded_token_two = jwt.decode(
-        #         token_two,
-        #         "DEFAULT_SECRET_KEY",
-        #         algorithms="HS256"
-        #     )
-        #
-        # assert decoded_token_two["entity_type"] == "teachers"
-        #
-        #
-        #
+        assert rv_get.get_json()["data"] == {"teacher_id": 1, "name": "joe"}
+
+        token_two = rv_get.get_json()["token"]
+
+        decoded_token_two = jwt.decode(
+                token_two,
+                "DEFAULT_SECRET_KEY",
+                algorithms="HS256"
+            )
+
+        assert decoded_token_two["entity_type"] == "teachers"
+

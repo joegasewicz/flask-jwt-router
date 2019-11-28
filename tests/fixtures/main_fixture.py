@@ -52,15 +52,11 @@ def test_entity():
 @flask_app.route("/api/v1/test_entity", methods=["GET"])
 def test_entity_two():
     token = jwt_routes.update_entity(entity_id=1)
-    keys = g.teachers.__table__.columns
-    values = g.teachers.__table__.columns._data.values()
-    print("keys", keys)
-    print("values ----> ", values)
     return jsonify({
         "token": token,
         "data": {
-            "keys": keys,
-            "values": values,
+            "teacher_id": g.teachers.teacher_id,
+            "name": g.teachers.name,
         }
     })
 

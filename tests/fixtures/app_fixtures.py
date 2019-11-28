@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 
 app = Flask(__name__)
-jwt_routes = JwtRoutes(app)
+jwt_routes = JwtRoutes()
 
 @app.route("/test", methods=["GET"])
 def test_one():

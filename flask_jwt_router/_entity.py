@@ -85,12 +85,12 @@ class Entity(BaseEntity):
             if hasattr(model, "__tablename__"):
                 if entity_type == model.__tablename__:
                     auth_model = model
-                else:
-                    raise Exception(
-                        "[FLASK-JWT-ROUTER ERROR]: Your Entity model must have a `__tablename__` that"
-                        " is equal to the entity_type specified in register_entity(). For details visit:\n"
-                        " https://flask-jwt-router.readthedocs.io/en/latest/jwt_routes.html#authorization-tokens"
-                    )
+            else:
+                raise Exception(
+                    "[FLASK-JWT-ROUTER ERROR]: Your Entity model must have a `__tablename__` that"
+                    " is equal to the entity_type specified in register_entity(). For details visit:\n"
+                    " https://flask-jwt-router.readthedocs.io/en/latest/jwt_routes.html#authorization-tokens"
+                )
         if auth_model:
             return auth_model
         else:
@@ -109,6 +109,7 @@ class Entity(BaseEntity):
         :return: {str}
         """
         self.decoded_token = decoded_token
+        print(f'-----> {decoded_token}')
         self.auth_model = self.get_entity_from_ext()
         self._attach_method()
         try:
