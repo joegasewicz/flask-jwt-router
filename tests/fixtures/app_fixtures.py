@@ -1,7 +1,6 @@
 import pytest
 from flask import Flask, jsonify
 from flask_jwt_router._jwt_routes import JwtRoutes
-from flask_sqlalchemy import SQLAlchemy
 
 
 app = Flask(__name__)
@@ -24,8 +23,6 @@ def jwt_router_client(request):
     yield client
 
     ctx.pop()
-
-
 
 
 
