@@ -8,6 +8,7 @@ codecov==2.0.15
 coverage==4.5.4
 docutils==0.15.2
 Flask==1.1.1
+-e git+https://github.com/joegasewicz/Flask-JWT-Router.git@298550a4c4bc4e6485e5e812f68a7ffeea82192d#egg=flask_jwt_router
 Flask-SQLAlchemy==2.4.1
 idna==2.8
 importlib-metadata==0.23
