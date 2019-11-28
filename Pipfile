@@ -7,7 +7,7 @@ verify_ssl = true
 pytest = "*"
 twine = "*"
 pyjwt = "*"
-SQLAlchemy = "*"
+flask-sqlalchemy = "*"
 
 [packages]
 flask = "*"
@@ -16,7 +16,6 @@ flask-jwt-router = {editable = true,path = "."}
 pyjwt = "*"
 pipenv = "*"
 codecov = "*"
-flask-sqlalchemy = "*"
 
 [requires]
 python_version = "3.7"
