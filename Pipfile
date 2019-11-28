@@ -7,7 +7,7 @@ verify_ssl = true
 pytest = "*"
 twine = "*"
 pyjwt = "*"
-Flask-SQLAlchem = "*"
+Flask-SQLAlchemy = "*"
 
 [packages]
 flask = "*"
