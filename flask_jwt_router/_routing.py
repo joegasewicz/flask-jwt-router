@@ -108,7 +108,6 @@ class Routing(BaseRouting):
         """
         method = request.method
         path = request.path
-
         for white_route in white_routes:
             if self._handle_pre_flight(method, white_route[0]) and path == white_route[1]:
                 return False
@@ -147,6 +146,7 @@ class Routing(BaseRouting):
             if request.args.get("auth"):
                 token = request.args.get("auth")
             else:
+
                 bearer = request.headers.get("Authorization")
                 token = bearer.split("Bearer ")[1]
         except AttributeError:
