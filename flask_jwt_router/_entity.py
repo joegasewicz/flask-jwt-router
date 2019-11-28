@@ -109,7 +109,6 @@ class Entity(BaseEntity):
         :return: {str}
         """
         self.decoded_token = decoded_token
-        print(f'-----> {decoded_token}')
         self.auth_model = self.get_entity_from_ext()
         self._attach_method()
         try:
