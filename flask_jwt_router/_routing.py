@@ -117,7 +117,7 @@ class Routing(BaseRouting):
                 return False
         return True
 
-    def _is_route_exist(self, url: str, method: str) -> bool:
+    def _does_route_exist(self, url: str, method: str) -> bool:
         adapter = self.app.url_map.bind('')
         try:
             adapter.match(url, method=method)
@@ -140,7 +140,7 @@ class Routing(BaseRouting):
         is_static = self._add_static_routes(path)
         if not is_static:
             # Handle ignored routes
-            if self._is_route_exist(path, method):
+            if self._does_route_exist(path, method):
                 is_ignored = False
                 ignored_routes = self.extensions.ignored_routes
                 if len(ignored_routes):

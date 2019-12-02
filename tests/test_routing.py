@@ -46,6 +46,9 @@ class TestRouting:
 
     def test_before_middleware(self, monkeypatch, TestMockEntity, mock_token):
         app = Flask(__name__)
+        @app.route("/test", methods=["GET"])
+        def test_one():
+            return "/test"
         # Manually set the primary key
         entity = TestMockEntity(id=1, user_name="joe")
 
