@@ -47,6 +47,9 @@ class TestRouting:
 
     def test_before_middleware(self, monkeypatch, TestMockEntity, mock_token):
         app = Flask(__name__)
+        @app.route("/test", methods=["GET"])
+        def test_one():
+            return "/test"
         # Manually set the primary key
         entity = TestMockEntity(id=1, user_name="joe")
 
@@ -102,10 +105,10 @@ class TestRouting:
         assert "200" in str(rv.status)
 
         rv = test_client.get("/api/v1/apples/sub/")
-        assert "401" in str(rv.status)
+        assert "404" in str(rv.status)
 
         rv = test_client.get("/api/v1/apples/sub/hello")
-        assert "401" in str(rv.status)
+        assert "404" in str(rv.status)
 
     def test_static_routes(self, test_client):
         """
@@ -129,6 +132,3 @@ class TestRouting:
     def test_ignored_route_path(self, test_client):
         rv = test_client.get("/")
         assert "200" in str(rv.status)
-
-
-
