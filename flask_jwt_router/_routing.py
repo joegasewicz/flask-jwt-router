@@ -1,4 +1,5 @@
-from flask import request, abort, g
+from werkzeug.routing import RequestRedirect, MethodNotAllowed, NotFound
+from flask import request, abort, g, url_for
 import jwt
 from jwt.exceptions import InvalidTokenError
 from abc import ABC, abstractmethod
@@ -116,6 +117,18 @@ class Routing(BaseRouting):
                 return False
         return True
 
+    def _is_route_exist(self, url: str, method: str) -> bool:
+        adapter = self.app.url_map.bind('')
+        try:
+            adapter.match(url, method=method)
+        except RequestRedirect as e:
+            # recursively match redirects
+            return self._is_route_exist(e.new_url, method)
+        except (MethodNotAllowed, NotFound):
+            # no match
+            return False
+        return True
+
     def before_middleware(self) -> None:
         """
         Handles ignored & whitelisted & static routes with api name
@@ -123,19 +136,21 @@ class Routing(BaseRouting):
         :return: Callable or None
         """
         path = request.path
+        method = request.method
         is_static = self._add_static_routes(path)
         if not is_static:
             # Handle ignored routes
-            is_ignored = False
-            ignored_routes = self.extensions.ignored_routes
-            if len(ignored_routes):
-                is_ignored = not self._allow_public_routes(ignored_routes)
-            if not is_ignored:
-                white_routes = self._prefix_api_name(self.extensions.whitelist_routes)
-                not_whitelist = self._allow_public_routes(white_routes)
+            if self._is_route_exist(path, method):
+                is_ignored = False
+                ignored_routes = self.extensions.ignored_routes
+                if len(ignored_routes):
+                    is_ignored = not self._allow_public_routes(ignored_routes)
+                if not is_ignored:
+                    white_routes = self._prefix_api_name(self.extensions.whitelist_routes)
+                    not_whitelist = self._allow_public_routes(white_routes)
 
-                if not_whitelist:
-                    self._handle_token()
+                    if not_whitelist:
+                        self._handle_token()
 
     def _handle_token(self):
         """

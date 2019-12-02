@@ -101,10 +101,10 @@ class TestRouting:
         assert "200" in str(rv.status)
 
         rv = test_client.get("/api/v1/apples/sub/")
-        assert "401" in str(rv.status)
+        assert "404" in str(rv.status)
 
         rv = test_client.get("/api/v1/apples/sub/hello")
-        assert "401" in str(rv.status)
+        assert "404" in str(rv.status)
 
     def test_static_routes(self, test_client):
         """
@@ -128,6 +128,3 @@ class TestRouting:
     def test_ignored_route_path(self, test_client):
         rv = test_client.get("/")
         assert "200" in str(rv.status)
-
-
-
