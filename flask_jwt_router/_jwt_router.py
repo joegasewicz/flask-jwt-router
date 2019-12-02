@@ -97,6 +97,8 @@ class FlaskJWTRouter:
         :param kwargs:
         :return:
         """
+        entity_type = kwargs.get("entity_type")
+        self.extensions.entity_key = self.entity.get_attr_name(entity_type)
         return self.auth.register_entity(self.extensions, self.exp, **kwargs)
 
     def update_entity(self, **kwargs) -> str:
@@ -104,6 +106,7 @@ class FlaskJWTRouter:
         :param kwargs:
         :return:
         """
+        self.extensions.entity_key = self.entity.get_attr_name()
         entity_type = self.entity.get_entity_from_ext().__tablename__
         return self.auth.update_entity(self.extensions, self.exp, entity_type, **kwargs)
 
@@ -112,5 +115,6 @@ class FlaskJWTRouter:
         :param entity_id:
         :return:
         """
+        self.extensions.entity_key = self.entity.get_attr_name()
         entity_type = self.entity.get_entity_from_ext().__tablename__
         return self.auth.encode_token(self.extensions, entity_id, self.exp, entity_type)
