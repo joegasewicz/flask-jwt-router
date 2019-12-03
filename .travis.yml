@@ -9,10 +9,10 @@ matrix:
   include:
     - python: "3.6-dev"
       env:
-        - TOX_ENV=3.6
+        - TOX_ENV=py3.6
     - python: "3.7-dev"
       env:
-        - TOX_ENV=3.7
+        - TOX_ENV=py3.7
 
 script:
   - tox -v -e $TOX_ENV
