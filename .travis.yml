@@ -7,12 +7,12 @@ install:
 
 matrix:
   include:
-    - python: "3.6-dev"
+    - python: 3.6
       env:
-        - TOX_ENV=3.6-dev
-    - python: "3.7-dev"
+        - TOX_ENV=py3.6
+    - python: 3.7
       env:
-        - TOX_ENV=3.7-dev
+        - TOX_ENV=py3.7
 
 script:
   - tox -v -e $TOX_ENV
