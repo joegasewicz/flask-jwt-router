@@ -1,3 +1,6 @@
+"""
+    The super class for Flask-JWT-Router
+"""
 import logging
 
 from ._extensions import BaseExtension, Extensions, Config
@@ -5,6 +8,7 @@ from ._entity import BaseEntity, Entity
 from ._routing import BaseRouting, Routing
 from ._authentication import BaseAuthStrategy
 
+# pylint:disable=invalid-name
 logger = logging.getLogger()
 
 
@@ -44,7 +48,7 @@ class FlaskJWTRouter:
     #: for more information.
     ext: BaseExtension
 
-    def __init__(self, app=None, **kwargs):
+    def __init__(self, app=None):
         self.ext = Extensions()
         if app:
             self.init_app(app)
@@ -62,6 +66,7 @@ class FlaskJWTRouter:
         self.routing = Routing(self.app, self.extensions, self.entity)
         self.app.before_request(self.routing.before_middleware)
 
+    # pylint:disable=no-self-use
     def get_app_config(self, app):
         """
         :param app: Flask Application Instance
@@ -70,6 +75,7 @@ class FlaskJWTRouter:
         config = getattr(app, "config", {})
         return config
 
+    # pylint:disable=no-self-use
     def get_entity_id(self, **kwargs):
         """
         :param kwargs: Dict[str, int]
@@ -80,6 +86,7 @@ class FlaskJWTRouter:
         except KeyError as _:
             return None
 
+    # pylint:disable=no-self-use
     def get_exp(self, **kwargs):
         """
         :param kwargs: Dict[str, int]
