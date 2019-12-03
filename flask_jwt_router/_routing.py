@@ -1,5 +1,5 @@
 from werkzeug.routing import RequestRedirect, MethodNotAllowed, NotFound
-from flask import request, abort, g, url_for
+from flask import request, abort, g
 import jwt
 from jwt.exceptions import InvalidTokenError
 from abc import ABC, abstractmethod
@@ -122,7 +122,7 @@ class Routing(BaseRouting):
             adapter.match(url, method=method)
         except RequestRedirect as e:
             # recursively match redirects
-            return self._is_route_exist(e.new_url, method)
+            return self._does_route_exist(e.new_url, method)
         except (MethodNotAllowed, NotFound):
             # no match
             return False
