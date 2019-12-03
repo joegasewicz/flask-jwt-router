@@ -1,3 +1,6 @@
+"""
+     The main configuration class for Flask-JWT-Router
+"""
 from abc import ABC
 from typing import Dict, Any
 
@@ -29,13 +32,19 @@ class Config:
 
 
 class BaseExtension(ABC):
+    """Abstract Base Class for Extensions"""
     def init_extensions(self, config: Dict[str, Any]) -> Config:
+        # pylint: disable=missing-function-docstring
         pass
 
 
 class Extensions(BaseExtension):
-
+    """Contains the main configuration values"""
     def init_extensions(self, config: Any) -> Config:
+        """
+        :param config:
+        :return:
+        """
         return Config(
             config.get("SECRET_KEY") or "DEFAULT_SECRET_KEY",
             config.get("ENTITY_KEY") or "id",

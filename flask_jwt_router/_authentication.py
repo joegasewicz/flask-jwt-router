@@ -17,25 +17,29 @@
 
 """
 from abc import ABC, abstractmethod
-import jwt
-from typing import Any, Union
+from typing import Any
 from datetime import datetime
+# pylint:disable=wildcard-import,unused-wildcard-import
 from dateutil.relativedelta import *
+import jwt
 
 from ._extensions import Config
 
 
 class BaseAuthStrategy(ABC):
-
+    # pylint:disable=missing-class-docstring
     @abstractmethod
     def register_entity(self, extensions: Config, exp: int, **kwargs):
+        # pylint:disable=missing-function-docstring
         pass
 
     @abstractmethod
     def update_entity(self, extensions: Config, exp: int, entity_type, **kwarg):
+        # pylint:disable=missing-function-docstring
         pass
 
     def encode_token(self, extensions: Config, entity_id: Any, exp: int, entity_type: str):
+        # pylint:disable=missing-function-docstring
         pass
 
 
@@ -43,8 +47,8 @@ class JWTAuthStrategy(BaseAuthStrategy):
     """
         Uses SHA-256 hash algorithm
     """
-    #: The reference to the entity key. Defaulted to `id`.  See :class:`~flask_jwt_router._extensions`
-    #: for more information.
+    #: The reference to the entity key. Defaulted to `id`.
+    # See :class:`~flask_jwt_router._extensions` for more information.
     entity_key: str = "id"
 
     #: The reference to the entity key. Defaulted to `DEFAULT_SECRET_KEY`.
@@ -55,6 +59,7 @@ class JWTAuthStrategy(BaseAuthStrategy):
     entity_id: str = None
 
     def __init__(self):
+        # pylint:disable=useless-super-delegation
         super(JWTAuthStrategy, self).__init__()
 
     def encode_token(self, extensions: Config, entity_id: Any, exp: int, entity_type) -> str:
@@ -67,18 +72,16 @@ class JWTAuthStrategy(BaseAuthStrategy):
         """
         self.entity_key = extensions.entity_key
         self.secret_key = extensions.secret_key
-
+        # pylint: disable=line-too-long
         encoded = jwt.encode({
             "entity_type": entity_type,
             self.entity_key: entity_id,
-            "exp": datetime.utcnow() + relativedelta(days=+exp)  # TODO options for different time types
-        },
-            self.secret_key,
-            algorithm="HS256"
-        ).decode("utf-8")
+            # pylint: disable=no-member
+            "exp": datetime.utcnow() + relativedelta(days=+exp)
+        }, self.secret_key, algorithm="HS256").decode("utf-8")
         return encoded
 
-    def register_entity(self, extensions: Config, exp: int, **kwargs) -> Union[str, None]:
+    def register_entity(self, extensions: Config, exp: int, **kwargs) -> str:
         """
         kwargs:
             - entity_id: Represents the entity's primary key
@@ -90,13 +93,14 @@ class JWTAuthStrategy(BaseAuthStrategy):
         """
         self.entity_id = kwargs.get("entity_id", None)
         entity_type = kwargs.get("entity_type", None)
-        if self.entity_id:
-            token = self.encode_token(extensions, self.entity_id, exp, entity_type)
-            return token
-        else:
-            return None
+        return self.encode_token(extensions, self.entity_id, exp, entity_type)
 
-    def update_entity(self, extensions: Config, exp: int, entity_type: str, **kwargs) -> Union[str, None]:
+    def update_entity(self,
+                      extensions: Config,
+                      exp: int,
+                      entity_type: str,
+                      **kwargs,
+                      ) -> str:
         """
         :param extensions:
         :param exp:
@@ -105,10 +109,4 @@ class JWTAuthStrategy(BaseAuthStrategy):
         :return: Union[str, None]
         """
         self.entity_id = kwargs.get("entity_id", None)
-        if self.entity_id:
-            token = self.encode_token(extensions, self.entity_id, exp, entity_type)
-            return token
-        else:
-            return None
-
-
+        return self.encode_token(extensions, self.entity_id, exp, entity_type)
