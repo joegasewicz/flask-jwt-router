@@ -10,13 +10,11 @@ logger = logging.getLogger()
 
 class FlaskJWTRouter:
     """
-    If there app is None then self.init_app(app=None, **kwargs) need to be called
-    inside the Flask app factory pattern
-
+        If there app is None then self.init_app(app=None, **kwargs) need to be called
+        inside the Flask app factory pattern.
     :param app: Flask application instance
     :param kwargs: entity_model
     """
-
     #: Logging.
     logger = logging
 
@@ -95,7 +93,7 @@ class FlaskJWTRouter:
     def register_entity(self, **kwargs) -> str:
         """
         :param kwargs:
-        :return:
+        :return: str
         """
         entity_type = kwargs.get("entity_type")
         self.extensions.entity_key = self.entity.get_attr_name(entity_type)
@@ -104,7 +102,7 @@ class FlaskJWTRouter:
     def update_entity(self, **kwargs) -> str:
         """
         :param kwargs:
-        :return:
+        :return: str
         """
         self.extensions.entity_key = self.entity.get_attr_name()
         entity_type = self.entity.get_entity_from_ext().__tablename__
