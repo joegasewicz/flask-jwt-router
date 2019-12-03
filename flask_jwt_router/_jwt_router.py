@@ -85,8 +85,8 @@ class FlaskJWTRouter:
             return kwargs['entity_id']
         except KeyError as _:
             return None
-
     # pylint:disable=no-self-use
+
     def get_exp(self, **kwargs):
         """
         :param kwargs: Dict[str, int]
