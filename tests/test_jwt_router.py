@@ -1,5 +1,5 @@
 from flask_jwt_router._jwt_routes import JwtRoutes
-
+import pytest
 
 class TestJwtRouter:
     def test_get_secret_key(self):
@@ -54,7 +54,15 @@ class TestJwtRouter:
         config = flask_jwt_router.get_app_config(app)
         assert config["WHITE_LIST_ROUTES"] == white_list
 
+    def test_register_entity(self):
+        class App:
+            config = {
+                "SECRET_KEY": "123abc"
+            }
+            def before_request(self, t):
+                pass
+        app = App()
+        flask_jwt_router = JwtRoutes(app)
 
-
-
-
+        with pytest.raises(KeyError, match=r"register_entity.+") as excinfo:
+            token = flask_jwt_router.register_entity(entity_id=1)
