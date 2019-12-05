@@ -192,5 +192,11 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 Please make sure to update tests as appropriate.
 
+Make sure you have Python versions: `3.6`,  `3.7`,  `3.8`
+Then run:
+```python
+    tox
+```
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)

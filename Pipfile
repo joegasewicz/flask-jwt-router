@@ -15,6 +15,7 @@ python-dateutil = "==2.8.0"
 flask-jwt-router = {editable = true,path = "."}
 pyjwt = "*"
 pipenv = "*"
+pylint = "*"
 
 [requires]
 python_version = "3.7"

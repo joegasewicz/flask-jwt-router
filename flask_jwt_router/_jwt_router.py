@@ -1,3 +1,6 @@
+"""
+    The super class for Flask-JWT-Router
+"""
 import logging
 
 from ._extensions import BaseExtension, Extensions, Config
@@ -5,18 +8,17 @@ from ._entity import BaseEntity, Entity
 from ._routing import BaseRouting, Routing
 from ._authentication import BaseAuthStrategy
 
+# pylint:disable=invalid-name
 logger = logging.getLogger()
 
 
 class FlaskJWTRouter:
     """
-    If there app is None then self.init_app(app=None, **kwargs) need to be called
-    inside the Flask app factory pattern
-
+        If there app is None then self.init_app(app=None, **kwargs) need to be called
+        inside the Flask app factory pattern.
     :param app: Flask application instance
     :param kwargs: entity_model
     """
-
     #: Logging.
     logger = logging
 
@@ -46,7 +48,7 @@ class FlaskJWTRouter:
     #: for more information.
     ext: BaseExtension
 
-    def __init__(self, app=None, **kwargs):
+    def __init__(self, app=None):
         self.ext = Extensions()
         if app:
             self.init_app(app)
@@ -64,6 +66,7 @@ class FlaskJWTRouter:
         self.routing = Routing(self.app, self.extensions, self.entity)
         self.app.before_request(self.routing.before_middleware)
 
+    # pylint:disable=no-self-use
     def get_app_config(self, app):
         """
         :param app: Flask Application Instance
@@ -72,6 +75,7 @@ class FlaskJWTRouter:
         config = getattr(app, "config", {})
         return config
 
+    # pylint:disable=no-self-use
     def get_entity_id(self, **kwargs):
         """
         :param kwargs: Dict[str, int]
@@ -81,6 +85,7 @@ class FlaskJWTRouter:
             return kwargs['entity_id']
         except KeyError as _:
             return None
+    # pylint:disable=no-self-use
 
     def get_exp(self, **kwargs):
         """
@@ -95,7 +100,7 @@ class FlaskJWTRouter:
     def register_entity(self, **kwargs) -> str:
         """
         :param kwargs:
-        :return:
+        :return: str
         """
         if 'entity_type' not in kwargs:
             raise KeyError("register_entity() missing 1 required argument: entity_type")
@@ -106,7 +111,7 @@ class FlaskJWTRouter:
     def update_entity(self, **kwargs) -> str:
         """
         :param kwargs:
-        :return:
+        :return: str
         """
         self.extensions.entity_key = self.entity.get_attr_name()
         entity_type = self.entity.get_entity_from_ext().__tablename__

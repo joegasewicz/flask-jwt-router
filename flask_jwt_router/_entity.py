@@ -10,17 +10,20 @@ _ORMType = type(List[Tuple[int, str]])
 
 
 class BaseEntity(ABC):
-
+    # pylint:disable=missing-class-docstring
     @abstractmethod
-    def get_attr_name(self) -> str:
+    def get_attr_name(self, entity_type: str = None) -> str:
+        # pylint:disable=missing-function-docstring
         pass
 
     @abstractmethod
     def get_entity_from_token(self, decoded_token: str) -> str:
+        # pylint:disable=missing-function-docstring
         pass
 
     @abstractmethod
-    def get_entity_from_ext(self) -> _ORMType:
+    def get_entity_from_ext(self, entity_type: str = None) -> _ORMType:
+        # pylint:disable=missing-function-docstring
         pass
 
 
@@ -43,22 +46,22 @@ class Entity(BaseEntity):
 
     def get_attr_name(self, entity_type: str = None) -> str:
         """
-        :description: If SQLAlchemy is the ORM then expect there to be a
+        If SQLAlchemy is the ORM then expect there to be a
         __mapper__.primary_key path. This returns a list
         but for our purposes we only need the first
         primary key attribute name. This method maintains the
         existing option of specifying a primary key name directly
         for scenarios when not using SqlAlchemy etc & also assigns
         a default primary key to `id`.
-        :return: {str}
+        :param entity_type:
+        :return:
         """
         if not self.auth_model:
             self.auth_model = self.get_entity_from_ext(entity_type)
         if hasattr(self.auth_model, "__mapper__"):
-            """SqlAlchemy is the ORM being used"""
+            # SqlAlchemy is the ORM being used
             return self.auth_model.__mapper__.primary_key[0].name
-        else:
-            return self.extensions.entity_key
+        return self.extensions.entity_key
 
     def _get_from_model(self, entity_id: int) -> _ORMType:
         """
@@ -88,17 +91,18 @@ class Entity(BaseEntity):
             else:
                 raise Exception(
                     "[FLASK-JWT-ROUTER ERROR]: Your Entity model must have a `__tablename__` that"
-                    " is equal to the entity_type specified in register_entity(). For details visit:\n"
-                    " https://flask-jwt-router.readthedocs.io/en/latest/jwt_routes.html#authorization-tokens"
+                    " is equal to the entity_type specified in register_entity()."
+                    "For details visit:\n"
+                    # pylint:disable=line-too-long
+                    "https://flask-jwt-router.readthedocs.io/en/latest/jwt_routes.html#authorization-tokens"
                 )
         if auth_model:
             return auth_model
-        else:
-            raise Exception(
-                "[FLASK-JWT-ROUTER ERROR]: Your Entity model must have a `__tablename__` attribute!"
-                " If you are running flask-jwt-router against tests, make sure"
-                " you assign a `__tablename__` attribute to your Model class."
-            )
+        raise Exception(
+            "[FLASK-JWT-ROUTER ERROR]: Your Entity model must have a `__tablename__` attribute!"
+            " If you are running flask-jwt-router against tests, make sure"
+            " you assign a `__tablename__` attribute to your Model class."
+        )
 
     def get_entity_from_token(self, decoded_token: Dict[str, any]) -> Union[str, None]:
         """
@@ -114,8 +118,7 @@ class Entity(BaseEntity):
         try:
             result = self.auth_model.__get_entity__(decoded_token[self.get_attr_name()])
             return result
-        except KeyError as err:
-            # TODO log err for dev here
+        except KeyError as _:
             return None
 
     def _attach_method(self) -> None:
@@ -125,8 +128,8 @@ class Entity(BaseEntity):
         :return: None
         """
         methods = inspect.getmembers(self.auth_model, predicate=inspect.ismethod)
-        for m in methods:
-            if m == "__get_entity__":
+        for method in methods:
+            if method == "__get_entity__":
                 raise ValueError("__get_entity__ method already exists")
         setattr(
             self.auth_model,

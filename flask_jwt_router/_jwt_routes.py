@@ -149,8 +149,8 @@
     jwt_routes.register_entity(entity_id=user_data.id, entity_type="user")
 
 """
-from ._jwt_router import FlaskJWTRouter
 from ._authentication import JWTAuthStrategy
+from ._jwt_router import FlaskJWTRouter
 
 
 class JwtRoutes(FlaskJWTRouter):

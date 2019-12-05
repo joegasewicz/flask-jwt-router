@@ -1,9 +1,14 @@
-from werkzeug.routing import RequestRedirect, MethodNotAllowed, NotFound
-from flask import request, abort, g
-import jwt
-from jwt.exceptions import InvalidTokenError
+"""
+    Main class for routing
+"""
 from abc import ABC, abstractmethod
+# pylint:disable=invalid-name
 import logging
+from flask import request, abort, g
+from werkzeug.routing import RequestRedirect, MethodNotAllowed, NotFound
+from jwt.exceptions import InvalidTokenError
+import jwt
+
 
 from ._entity import BaseEntity
 
@@ -11,21 +16,26 @@ logger = logging.getLogger()
 
 
 class BaseRouting(ABC):
-
+    # pylint:disable=missing-class-docstring
     @abstractmethod
     def before_middleware(self) -> None:
+        # pylint:disable=missing-function-docstring
         pass
 
 
 class Routing(BaseRouting):
-
+    """
+    :param app: Flask application instance
+    :param extensions: :class:`~flask_jwt_router._extensions`
+    :param entity: :class:`~flask_jwt_router._entity`
+    """
     def __init__(self, app, extensions, entity: BaseEntity):
         self.app = app
         self.extensions = extensions
         self.logger = logger
         self.entity = entity
 
-    def _prefix_api_name(self, w_routes=[]):
+    def _prefix_api_name(self, w_routes=None):
         """
         If the config has JWT_ROUTER_API_NAME defined then
         update each white listed route with an api name
@@ -43,23 +53,21 @@ class Routing(BaseRouting):
             named_white_routes.append((verb, f"{api_name}{path}"))
         return named_white_routes
 
-    def _add_static_routes(self, path: str):
+    def _add_static_routes(self, path: str) -> bool:
         """
         Always allow /static/ in path and handle static_url_path from Flask **kwargs
         :param path:
         :return:
         """
-        if path == "favicon.ico":
-            return True
-
         paths = path.split("/")
-        if paths[1] == "static":
-            return True
-
         defined_static = self.app.static_url_path[1:]
-        if paths[1] == defined_static:
+        if path == "favicon.ico" or\
+                paths[1] == "static" or\
+                paths[1] == defined_static:
             return True
+        return False
 
+    # pylint:disable=no-self-use
     def _handle_pre_flight(self, method: str, w_method: str) -> bool:
         """
         Handle pre-flight requests with any verb
@@ -69,12 +77,10 @@ class Routing(BaseRouting):
         :param w_method:
         :return: {bool}
         """
-        if method == w_method:
+        if method == w_method or\
+                method == "OPTIONS" and w_method == "POST":
             return True
-        elif method == "OPTIONS" and w_method == "POST":
-            return True
-        else:
-            return False
+        return False
 
     def _handle_query_params(self, white_route: str, path: str):
         """
@@ -93,7 +99,7 @@ class Routing(BaseRouting):
         path_segments = path.split("/")
 
         for r, p in zip(route_segments, path_segments):
-            if len(r):
+            if len(r) > 0:
                 if r[0] != "<":
                     if r != p:
                         return False
@@ -122,7 +128,7 @@ class Routing(BaseRouting):
             adapter.match(url, method=method)
         except RequestRedirect as e:
             # recursively match redirects
-            return self._is_route_exist(e.new_url, method)
+            return self._does_route_exist(e.new_url, method)
         except (MethodNotAllowed, NotFound):
             # no match
             return False
@@ -134,6 +140,7 @@ class Routing(BaseRouting):
         If it's not static, ignored whitelisted then authorize
         :return: Callable or None
         """
+        #pylint:disable=inconsistent-return-statements
         path = request.path
         method = request.method
         is_static = self._add_static_routes(path)
@@ -142,7 +149,7 @@ class Routing(BaseRouting):
             if self._does_route_exist(path, method):
                 is_ignored = False
                 ignored_routes = self.extensions.ignored_routes
-                if len(ignored_routes):
+                if len(ignored_routes) > 0:
                     is_ignored = not self._allow_public_routes(ignored_routes)
                 if not is_ignored:
                     white_routes = self._prefix_api_name(self.extensions.whitelist_routes)
@@ -161,7 +168,6 @@ class Routing(BaseRouting):
             if request.args.get("auth"):
                 token = request.args.get("auth")
             else:
-
                 bearer = request.headers.get("Authorization")
                 token = bearer.split("Bearer ")[1]
         except AttributeError:
@@ -174,9 +180,9 @@ class Routing(BaseRouting):
             )
         except InvalidTokenError:
             return abort(401)
-
         try:
             entity = self.entity.get_entity_from_token(decoded_token)
             setattr(g, self.entity.get_entity_from_ext().__tablename__, entity)
+            return None
         except ValueError:
             return abort(401)

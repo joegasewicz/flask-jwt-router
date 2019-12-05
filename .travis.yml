@@ -1,12 +1,15 @@
 language: python
 sudo: false
 
-python:
-  - "3.7-dev"
-
 install:
   - pip install -U tox
   - pip install -U codecov
+
+matrix:
+  include:
+    - python: "3.6-dev"
+    - python: "3.7-dev"
+    - python: "3.8-dev"
 
 script:
   - tox -v -e py
