@@ -97,6 +97,8 @@ class FlaskJWTRouter:
         :param kwargs:
         :return:
         """
+        if 'entity_type' not in kwargs:
+            raise KeyError("register_entity() missing 1 required argument: entity_type")
         entity_type = kwargs.get("entity_type")
         self.extensions.entity_key = self.entity.get_attr_name(entity_type)
         return self.auth.register_entity(self.extensions, self.exp, **kwargs)
