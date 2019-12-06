@@ -17,13 +17,15 @@
 
 """
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, List, Tuple
 from datetime import datetime
 # pylint:disable=wildcard-import,unused-wildcard-import
 from dateutil.relativedelta import *
 import jwt
 
 from ._extensions import Config
+
+_ORMType = type(List[Tuple[int, str]])
 
 
 class BaseAuthStrategy(ABC):
@@ -38,7 +40,13 @@ class BaseAuthStrategy(ABC):
         # pylint:disable=missing-function-docstring
         pass
 
+    @abstractmethod
     def encode_token(self, extensions: Config, entity_id: Any, exp: int, table_name: str):
+        # pylint:disable=missing-function-docstring
+        pass
+
+    @abstractmethod
+    def create_token_from_model(self, model: _ORMType) -> str:
         # pylint:disable=missing-function-docstring
         pass
 
