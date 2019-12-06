@@ -103,7 +103,7 @@ app.config["WHITE_LIST_ROUTES"] = [
 def register():
     """I'm registering a new user & returning a token!"""
     return jsonify({
-        "token": jwt_routes.register_entity(entity_id=1, table_name='users')
+        "token": jwt_routes.create_token(entity_id=1, table_name='users')
     })
 
 @app.route("/login", methods=["POST"])
@@ -128,8 +128,8 @@ Create a new entity & return a new token
             user = UserModel(**user_data)
             user.create_user() # your entity creation logic
 
-            # Here we pass the id as a kwarg to `register_entity`
-            token: str = jwt_routes.register_entity(entity_id=user.id, table_name="users")
+            # Here we pass the id as a kwarg to `create_token`
+            token: str = jwt_routes.create_token(entity_id=user.id, table_name="users")
 
             # Now we can return a new token!
             return {
@@ -169,7 +169,7 @@ If you are handling a request with a token in the headers you can call::
 If you are handling a request without a token in the headers you can call::
 
 ```python
-    jwt_routes.register_entity(entity_id=user_data.id, table_name="users")
+    jwt_routes.create_token(entity_id=user_data.id, table_name="users")
 ```
 
 

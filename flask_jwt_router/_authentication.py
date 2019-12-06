@@ -9,7 +9,7 @@
             def encode_token(self, extensions: Config, **kwargs):
                 pass
 
-            def register_entity(self):
+            def create_token(self):
                 pass
 
             def update_entity(self):
@@ -29,7 +29,7 @@ from ._extensions import Config
 class BaseAuthStrategy(ABC):
     # pylint:disable=missing-class-docstring
     @abstractmethod
-    def register_entity(self, extensions: Config, exp: int, **kwargs):
+    def create_token(self, extensions: Config, exp: int, **kwargs):
         # pylint:disable=missing-function-docstring
         pass
 
@@ -81,7 +81,7 @@ class JWTAuthStrategy(BaseAuthStrategy):
         }, self.secret_key, algorithm="HS256").decode("utf-8")
         return encoded
 
-    def register_entity(self, extensions: Config, exp: int, **kwargs) -> str:
+    def create_token(self, extensions: Config, exp: int, **kwargs) -> str:
         """
         kwargs:
             - entity_id: Represents the entity's primary key
