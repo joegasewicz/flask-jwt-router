@@ -1,10 +1,11 @@
 import pytest
-from flask import Flask, jsonify
+from flask import Flask
 from flask_jwt_router._jwt_routes import JwtRoutes
 
 
 app = Flask(__name__)
 jwt_routes = JwtRoutes()
+
 
 @app.route("/test", methods=["GET"])
 def test_one():
