@@ -110,7 +110,7 @@ def register():
 def login():
     """I'm authorized & updating my token!"""
     return jsonify({
-        "token": jwt_routes.update_entity(entity_id=1)
+        "token": jwt_routes.update_token(entity_id=1)
     })
 ```
 
@@ -157,13 +157,13 @@ Access entity on Flask's global context
                    }, 401
         return {
             "data": user_dumped,
-            "token": jwt_routes.update_entity(entity_id=user_data.id),
+            "token": jwt_routes.update_token(entity_id=user_data.id),
         }, 200
         
 ```
 If you are handling a request with a token in the headers you can call::
 ```python
-    jwt_routes.update_entity(entity_id=user_data.id)
+    jwt_routes.update_token(entity_id=user_data.id)
 ```
 
 If you are handling a request without a token in the headers you can call::

@@ -51,7 +51,7 @@ def test_entity():
 
 @flask_app.route("/api/v1/test_entity", methods=["GET"])
 def test_entity_two():
-    token = jwt_routes.update_entity(entity_id=1)
+    token = jwt_routes.update_token(entity_id=1)
     return jsonify({
         "token": token,
         "data": {

@@ -12,7 +12,7 @@
             def register_entity(self):
                 pass
 
-            def update_entity(self):
+            def update_token(self):
                 pass
 
 """
@@ -34,7 +34,7 @@ class BaseAuthStrategy(ABC):
         pass
 
     @abstractmethod
-    def update_entity(self, extensions: Config, exp: int, table_name, **kwarg):
+    def update_token(self, extensions: Config, exp: int, table_name, **kwarg):
         # pylint:disable=missing-function-docstring
         pass
 
@@ -95,7 +95,7 @@ class JWTAuthStrategy(BaseAuthStrategy):
         table_name = kwargs.get("table_name", None)
         return self.encode_token(extensions, self.entity_id, exp, table_name)
 
-    def update_entity(self,
+    def update_token(self,
                       extensions: Config,
                       exp: int,
                       table_name: str,

@@ -80,7 +80,7 @@ class Entity(BaseEntity):
         :return: {_ORMType}
         """
         if not table_name:
-            # In case `update_entity()` is called, `table_name` is in the token
+            # In case `update_token()` is called, `table_name` is in the token
             table_name = self.decoded_token.get("table_name")
         auth_model = None
 
