@@ -112,7 +112,7 @@
                 user.create_user() # your entity creation logic
 
                 # Here we pass the id as a kwarg to `register_entity`
-                token: str = jwt_routes.register_entity(entity_id=user.id, entity_type="user")
+                token: str = jwt_routes.register_entity(entity_id=user.id, table_name="user")
 
                 # Now we can return a new token!
                 return {
@@ -137,7 +137,7 @@
                        }, 401
             return {
                 "data": user_dumped,
-                "token": jwt_routes.register_entity(entity_id=user_data.id, entity_type="user"),
+                "token": jwt_routes.register_entity(entity_id=user_data.id, table_name="user"),
             }, 200
 
     If you are handling a request with a token in the headers you can call::
@@ -146,9 +146,10 @@
 
     If you are handling a request without a token in the headers you can call::
 
-    jwt_routes.register_entity(entity_id=user_data.id, entity_type="user")
+        jwt_routes.register_entity(entity_id=user_data.id, table_name="user")
 
 """
+
 from ._authentication import JWTAuthStrategy
 from ._jwt_router import FlaskJWTRouter
 

@@ -103,7 +103,7 @@ app.config["WHITE_LIST_ROUTES"] = [
 def register():
     """I'm registering a new user & returning a token!"""
     return jsonify({
-        "token": jwt_routes.register_entity(entity_id=1, entity_type='users')
+        "token": jwt_routes.register_entity(entity_id=1, table_name='users')
     })
 
 @app.route("/login", methods=["POST"])
@@ -114,7 +114,7 @@ def login():
     })
 ```
 
-*Warning: The `entity_type` must be the same as your tablename or `__tablename__` attribute's value.
+*Warning: The `table_name` must be the same as your tablename or `__tablename__` attribute's value.
 (With SqlAlchemy, you can define a `__tablename__` attribute directly or else
 the name is derived from your entity’s database table name).
 
@@ -129,7 +129,7 @@ Create a new entity & return a new token
             user.create_user() # your entity creation logic
 
             # Here we pass the id as a kwarg to `register_entity`
-            token: str = jwt_routes.register_entity(entity_id=user.id, entity_type="users")
+            token: str = jwt_routes.register_entity(entity_id=user.id, table_name="users")
 
             # Now we can return a new token!
             return {
@@ -169,7 +169,7 @@ If you are handling a request with a token in the headers you can call::
 If you are handling a request without a token in the headers you can call::
 
 ```python
-    jwt_routes.register_entity(entity_id=user_data.id, entity_type="users")
+    jwt_routes.register_entity(entity_id=user_data.id, table_name="users")
 ```
 
 
@@ -196,6 +196,11 @@ Make sure you have Python versions: `3.6`,  `3.7`,  `3.8`
 Then run:
 ```python
     tox
+```
+
+To update docs run:
+```bash
+    make html
 ```
 
 ## License

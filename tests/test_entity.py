@@ -90,7 +90,7 @@ class TestEntity:
                 algorithms="HS256"
             )
 
-        assert decoded_token["entity_type"] == "teachers"
+        assert decoded_token["table_name"] == "teachers"
 
         headers = {
             "Content-Type": "application/json",
@@ -110,5 +110,5 @@ class TestEntity:
                 algorithms="HS256"
             )
 
-        assert decoded_token_two["entity_type"] == "teachers"
+        assert decoded_token_two["table_name"] == "teachers"
 
