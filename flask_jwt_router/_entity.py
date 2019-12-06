@@ -12,7 +12,7 @@ _ORMType = type(List[Tuple[int, str]])
 class BaseEntity(ABC):
     # pylint:disable=missing-class-docstring
     @abstractmethod
-    def get_attr_name(self, entity_type: str = None) -> str:
+    def get_attr_name(self, table_name: str = None) -> str:
         # pylint:disable=missing-function-docstring
         pass
 
@@ -22,7 +22,7 @@ class BaseEntity(ABC):
         pass
 
     @abstractmethod
-    def get_entity_from_ext(self, entity_type: str = None) -> _ORMType:
+    def get_entity_from_ext(self, table_name: str = None) -> _ORMType:
         # pylint:disable=missing-function-docstring
         pass
 
@@ -44,7 +44,7 @@ class Entity(BaseEntity):
     def __init__(self, extensions: ClassVar):
         self.extensions = extensions
 
-    def get_attr_name(self, entity_type: str = None) -> str:
+    def get_attr_name(self, table_name: str = None) -> str:
         """
         If SQLAlchemy is the ORM then expect there to be a
         __mapper__.primary_key path. This returns a list
@@ -53,11 +53,11 @@ class Entity(BaseEntity):
         existing option of specifying a primary key name directly
         for scenarios when not using SqlAlchemy etc & also assigns
         a default primary key to `id`.
-        :param entity_type:
+        :param table_name:
         :return:
         """
         if not self.auth_model:
-            self.auth_model = self.get_entity_from_ext(entity_type)
+            self.auth_model = self.get_entity_from_ext(table_name)
         if hasattr(self.auth_model, "__mapper__"):
             # SqlAlchemy is the ORM being used
             return self.auth_model.__mapper__.primary_key[0].name
@@ -72,26 +72,26 @@ class Entity(BaseEntity):
         result = self.auth_model.query.filter_by(**{entity_key: entity_id}).one()
         return result
 
-    def get_entity_from_ext(self, entity_type: str = None) -> _ORMType:
+    def get_entity_from_ext(self, table_name: str = None) -> _ORMType:
         """
         Exception raised if SQLAlchemy ORM not being used
         (SQLAlchemy will throw if `__tablename__` doesn't exist
         or it can't create the name from the db engine's table object.
         :return: {_ORMType}
         """
-        if not entity_type:
-            # In case `update_entity()` is called, `entity_type` is in the token
-            entity_type = self.decoded_token.get("entity_type")
+        if not table_name:
+            # In case `update_entity()` is called, `table_name` is in the token
+            table_name = self.decoded_token.get("table_name")
         auth_model = None
 
         for model in self.extensions.entity_models:
             if hasattr(model, "__tablename__"):
-                if entity_type == model.__tablename__:
+                if table_name == model.__tablename__:
                     auth_model = model
             else:
                 raise Exception(
                     "[FLASK-JWT-ROUTER ERROR]: Your Entity model must have a `__tablename__` that"
-                    " is equal to the entity_type specified in register_entity()."
+                    " is equal to the table_name specified in register_entity()."
                     "For details visit:\n"
                     # pylint:disable=line-too-long
                     "https://flask-jwt-router.readthedocs.io/en/latest/jwt_routes.html#authorization-tokens"

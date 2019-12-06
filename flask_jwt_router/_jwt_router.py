@@ -2,6 +2,7 @@
     The super class for Flask-JWT-Router
 """
 import logging
+from warnings import warn
 
 from ._extensions import BaseExtension, Extensions, Config
 from ._entity import BaseEntity, Entity
@@ -102,10 +103,14 @@ class FlaskJWTRouter:
         :param kwargs:
         :return: str
         """
-        if 'entity_type' not in kwargs:
-            raise KeyError("register_entity() missing 1 required argument: entity_type")
-        entity_type = kwargs.get("entity_type")
-        self.extensions.entity_key = self.entity.get_attr_name(entity_type)
+        if 'entity_type' in kwargs:
+            warn(("'entity_type' argument name has been deprecated and will be replaced"
+                  "in the next release. Use 'table_name' instead"))
+            kwargs['table_name'] = kwargs['entity_type']
+        if 'table_name' not in kwargs:
+            raise KeyError("register_entity() missing 1 required argument: table_name")
+        table_name = kwargs.get("table_name")
+        self.extensions.entity_key = self.entity.get_attr_name(table_name)
         return self.auth.register_entity(self.extensions, self.exp, **kwargs)
 
     def update_entity(self, **kwargs) -> str:
@@ -114,8 +119,8 @@ class FlaskJWTRouter:
         :return: str
         """
         self.extensions.entity_key = self.entity.get_attr_name()
-        entity_type = self.entity.get_entity_from_ext().__tablename__
-        return self.auth.update_entity(self.extensions, self.exp, entity_type, **kwargs)
+        table_name = self.entity.get_entity_from_ext().__tablename__
+        return self.auth.update_entity(self.extensions, self.exp, table_name, **kwargs)
 
     def encode_token(self, entity_id) -> str:
         """
@@ -123,5 +128,5 @@ class FlaskJWTRouter:
         :return:
         """
         self.extensions.entity_key = self.entity.get_attr_name()
-        entity_type = self.entity.get_entity_from_ext().__tablename__
-        return self.auth.encode_token(self.extensions, entity_id, self.exp, entity_type)
+        table_name = self.entity.get_entity_from_ext().__tablename__
+        return self.auth.encode_token(self.extensions, entity_id, self.exp, table_name)

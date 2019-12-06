@@ -5,7 +5,7 @@ from dateutil.relativedelta import *
 
 
 new_token = jwt.encode({
-            "entity_type": "test_entities",
+            "table_name": "test_entities",
             "id": 1,
             "exp": datetime.utcnow() + relativedelta(days=+30)
         },
@@ -29,7 +29,7 @@ def mock_decoded_token():
 
 
 new_token_two = jwt.encode({
-            "entity_type": "test_two_entities",
+            "table_name": "test_two_entities",
             "id": 1,
             "exp": datetime.utcnow() + relativedelta(days=+30)
         },
@@ -53,7 +53,7 @@ def mock_decoded_token_two():
 
 
 new_token_three = jwt.encode({
-            "entity_type": "test_3_entities",
+            "table_name": "test_3_entities",
             "teacher_id": 1,
             "exp": datetime.utcnow() + relativedelta(days=+30)
         },

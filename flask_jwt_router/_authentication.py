@@ -34,11 +34,11 @@ class BaseAuthStrategy(ABC):
         pass
 
     @abstractmethod
-    def update_entity(self, extensions: Config, exp: int, entity_type, **kwarg):
+    def update_entity(self, extensions: Config, exp: int, table_name, **kwarg):
         # pylint:disable=missing-function-docstring
         pass
 
-    def encode_token(self, extensions: Config, entity_id: Any, exp: int, entity_type: str):
+    def encode_token(self, extensions: Config, entity_id: Any, exp: int, table_name: str):
         # pylint:disable=missing-function-docstring
         pass
 
@@ -62,19 +62,19 @@ class JWTAuthStrategy(BaseAuthStrategy):
         # pylint:disable=useless-super-delegation
         super(JWTAuthStrategy, self).__init__()
 
-    def encode_token(self, extensions: Config, entity_id: Any, exp: int, entity_type) -> str:
+    def encode_token(self, extensions: Config, entity_id: Any, exp: int, table_name) -> str:
         """
         :param extensions: See :class:`~flask_jwt_router._extensions`
         :param entity_id: Normally the primary key `id` or `user_id`
         :param exp: The expiry duration set when encoding a new token
-        :param entity_type: The Model Entity `__tablename__`
+        :param table_name: The Model Entity `__tablename__`
         :return: str
         """
         self.entity_key = extensions.entity_key
         self.secret_key = extensions.secret_key
         # pylint: disable=line-too-long
         encoded = jwt.encode({
-            "entity_type": entity_type,
+            "table_name": table_name,
             self.entity_key: entity_id,
             # pylint: disable=no-member
             "exp": datetime.utcnow() + relativedelta(days=+exp)
@@ -85,28 +85,28 @@ class JWTAuthStrategy(BaseAuthStrategy):
         """
         kwargs:
             - entity_id: Represents the entity's primary key
-            - entity_type: The table name of the entity
+            - table_name: The table name of the entity
         :param extensions: See :class:`~flask_jwt_router._extensions`
         :param exp: The expiry duration set when encoding a new token
         :param kwargs:
         :return: Union[str, None]
         """
         self.entity_id = kwargs.get("entity_id", None)
-        entity_type = kwargs.get("entity_type", None)
-        return self.encode_token(extensions, self.entity_id, exp, entity_type)
+        table_name = kwargs.get("table_name", None)
+        return self.encode_token(extensions, self.entity_id, exp, table_name)
 
     def update_entity(self,
                       extensions: Config,
                       exp: int,
-                      entity_type: str,
+                      table_name: str,
                       **kwargs,
                       ) -> str:
         """
         :param extensions:
         :param exp:
-        :param entity_type:
+        :param table_name:
         :param kwargs:
         :return: Union[str, None]
         """
         self.entity_id = kwargs.get("entity_id", None)
-        return self.encode_token(extensions, self.entity_id, exp, entity_type)
+        return self.encode_token(extensions, self.entity_id, exp, table_name)
