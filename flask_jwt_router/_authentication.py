@@ -46,7 +46,7 @@ class BaseAuthStrategy(ABC):
         pass
 
     @abstractmethod
-    def create_token_from_model(self, model: _ORMType) -> str:
+    def create_token_from_model(self) -> str:
         # pylint:disable=missing-function-docstring
         pass
 
@@ -69,6 +69,9 @@ class JWTAuthStrategy(BaseAuthStrategy):
     def __init__(self):
         # pylint:disable=useless-super-delegation
         super(JWTAuthStrategy, self).__init__()
+
+    def create_token_from_model(self) -> str:
+        return ""
 
     def encode_token(self, extensions: Config, entity_id: Any, exp: int, table_name) -> str:
         """

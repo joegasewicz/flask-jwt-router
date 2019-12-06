@@ -4,6 +4,7 @@
 
 import logging
 from warnings import warn
+from typing import List, Tuple
 
 from ._extensions import BaseExtension, Extensions, Config
 from ._entity import BaseEntity, Entity
@@ -12,7 +13,7 @@ from ._authentication import BaseAuthStrategy
 
 # pylint:disable=invalid-name
 logger = logging.getLogger()
-
+_ORMType = type(List[Tuple[int, str]])
 
 class FlaskJWTRouter:
     """
@@ -98,6 +99,9 @@ class FlaskJWTRouter:
             return kwargs['exp']
         except KeyError as _:
             return 30
+
+    def create_token_from_model(self, model: _ORMType) -> str:
+        return self.auth.create_token_from_model()
 
     def register_entity(self, **kwargs) -> str:
         """
