@@ -198,5 +198,10 @@ Then run:
     tox
 ```
 
+To update docs run:
+```bash
+    make html
+```
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
