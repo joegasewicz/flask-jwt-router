@@ -146,9 +146,10 @@
 
     If you are handling a request without a token in the headers you can call::
 
-    jwt_routes.register_entity(entity_id=user_data.id, table_name="user")
+        jwt_routes.register_entity(entity_id=user_data.id, table_name="user")
 
 """
+
 from ._authentication import JWTAuthStrategy
 from ._jwt_router import FlaskJWTRouter
 
