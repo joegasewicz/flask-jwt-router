@@ -1,5 +1,5 @@
 """
-The super class for Flask-JWT-Router.
+    The super class for Flask-JWT-Router.
 """
 
 import logging

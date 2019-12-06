@@ -86,7 +86,6 @@ class JWTAuthStrategy(BaseAuthStrategy):
         kwargs:
             - entity_id: Represents the entity's primary key
             - table_name: The table name of the entity
-        
         :param extensions: See :class:`~flask_jwt_router._extensions`
         :param exp: The expiry duration set when encoding a new token
         :param kwargs:
