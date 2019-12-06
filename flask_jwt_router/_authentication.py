@@ -29,6 +29,17 @@ _ORMType = type(List[Tuple[int, str]])
 
 
 class BaseAuthStrategy(ABC):
+
+    @abstractmethod
+    def create_token_from_model(self, model: _ORMType) -> str:
+        # pylint:disable=missing-function-docstring
+        pass
+
+    @abstractmethod
+    def encode_token(self, extensions: Config, entity_id: Any, exp: int, entity_type: str):
+        # pylint:disable=missing-function-docstring
+        pass
+
     # pylint:disable=missing-class-docstring
     @abstractmethod
     def register_entity(self, extensions: Config, exp: int, **kwargs):
@@ -40,15 +51,6 @@ class BaseAuthStrategy(ABC):
         # pylint:disable=missing-function-docstring
         pass
 
-    @abstractmethod
-    def encode_token(self, extensions: Config, entity_id: Any, exp: int, entity_type: str):
-        # pylint:disable=missing-function-docstring
-        pass
-
-    @abstractmethod
-    def create_token_from_model(self, model: _ORMType) -> str:
-        # pylint:disable=missing-function-docstring
-        pass
 
 
 class JWTAuthStrategy(BaseAuthStrategy):
