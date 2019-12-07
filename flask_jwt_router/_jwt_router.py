@@ -99,7 +99,7 @@ class FlaskJWTRouter:
         except KeyError as _:
             return 30
 
-    def register_entity(self, **kwargs) -> str:
+    def create_token(self, **kwargs) -> str:
         """
         :param kwargs:
         :return: str
@@ -109,10 +109,10 @@ class FlaskJWTRouter:
                   "in the next release. Use 'table_name' instead"))
             kwargs['table_name'] = kwargs['entity_type']
         if 'table_name' not in kwargs:
-            raise KeyError("register_entity() missing 1 required argument: table_name")
+            raise KeyError("create_token() missing 1 required argument: table_name")
         table_name = kwargs.get("table_name")
         self.extensions.entity_key = self.entity.get_attr_name(table_name)
-        return self.auth.register_entity(self.extensions, self.exp, **kwargs)
+        return self.auth.create_token(self.extensions, self.exp, **kwargs)
 
     def update_entity(self, **kwargs) -> str:
         """

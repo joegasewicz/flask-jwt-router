@@ -91,7 +91,7 @@ class Entity(BaseEntity):
             else:
                 raise Exception(
                     "[FLASK-JWT-ROUTER ERROR]: Your Entity model must have a `__tablename__` that"
-                    " is equal to the table_name specified in register_entity()."
+                    " is equal to the table_name specified in create_token()."
                     "For details visit:\n"
                     # pylint:disable=line-too-long
                     "https://flask-jwt-router.readthedocs.io/en/latest/jwt_routes.html#authorization-tokens"
