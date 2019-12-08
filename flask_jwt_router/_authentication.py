@@ -96,11 +96,11 @@ class JWTAuthStrategy(BaseAuthStrategy):
         return self.encode_token(extensions, self.entity_id, exp, table_name)
 
     def update_token(self,
-                      extensions: Config,
-                      exp: int,
-                      table_name: str,
-                      **kwargs,
-                      ) -> str:
+                     extensions: Config,
+                     exp: int,
+                     table_name: str,
+                     **kwargs,
+                     ) -> str:
         """
         :param extensions:
         :param exp:
