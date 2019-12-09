@@ -4,9 +4,10 @@
 
 import logging
 from warnings import warn
+from typing import List
 
 from ._extensions import BaseExtension, Extensions, Config
-from ._entity import BaseEntity, Entity
+from ._entity import BaseEntity, Entity, _ORMType
 from ._routing import BaseRouting, Routing
 from ._authentication import BaseAuthStrategy
 
@@ -26,6 +27,9 @@ class FlaskJWTRouter:
 
     #: The Flask application instance.
     app = None
+
+    #: A list of entity models
+    entity_models: List[_ORMType]
 
     #: Token expiry value. eg. 30 = 30 days from creation date.
     exp: int = 30
@@ -50,20 +54,23 @@ class FlaskJWTRouter:
     #: for more information.
     ext: BaseExtension
 
-    def __init__(self, app=None):
+    def __init__(self, app=None, **kwargs):
+        self.entity_models = kwargs.get("entity_models")
         self.ext = Extensions()
+        self.app = app
         if app:
-            self.init_app(app)
+            self.init_app(app, entity_models=self.entity_models)
 
-    def init_app(self, app):
+    def init_app(self, app=None, **kwargs):
         """
         You can use this to set up your config at runtime
         :param app: Flask application instance
         :return:
         """
-        self.app = app
+        self.app = self.app or app
+        entity_models = self.entity_models or kwargs.get("entity_models")
         config = self.get_app_config(app)
-        self.extensions = self.ext.init_extensions(config)
+        self.extensions = self.ext.init_extensions(config, entity_models=entity_models)
         self.entity = Entity(self.extensions)
         self.routing = Routing(self.app, self.extensions, self.entity)
         self.app.before_request(self.routing.before_middleware)

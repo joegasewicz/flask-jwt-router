@@ -2,7 +2,9 @@
      The main configuration class for Flask-JWT-Router
 """
 from abc import ABC
-from typing import Dict, Any
+from typing import Dict, Any, List
+
+from ._entity import _ORMType
 
 
 class Config:
@@ -33,23 +35,26 @@ class Config:
 
 class BaseExtension(ABC):
     """Abstract Base Class for Extensions"""
-    def init_extensions(self, config: Dict[str, Any]) -> Config:
+    def init_extensions(self, config: Dict[str, Any], **kwargs) -> Config:
         # pylint: disable=missing-function-docstring
         pass
 
 
 class Extensions(BaseExtension):
     """Contains the main configuration values"""
-    def init_extensions(self, config: Any) -> Config:
+    entity_models: List[_ORMType]
+
+    def init_extensions(self, config: Any, **kwargs) -> Config:
         """
         :param config:
         :return:
         """
+        entity_models = kwargs.get("entity_models")
         return Config(
             config.get("SECRET_KEY") or "DEFAULT_SECRET_KEY",
             config.get("ENTITY_KEY") or "id",
             config.get("WHITE_LIST_ROUTES") or [],
             config.get("JWT_ROUTER_API_NAME"),
             config.get("IGNORED_ROUTES") or [],
-            config.get("ENTITY_MODELS") or [],
+            entity_models or config.get("ENTITY_MODELS") or [],
         )
