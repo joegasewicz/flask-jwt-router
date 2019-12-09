@@ -9,7 +9,7 @@ class TestJwtRoutes:
 
     app = Flask(__name__)
 
-    def test_init_app(self):
+    def test_init_app(self, MockEntityModel):
         jwt = JwtRoutes(self.app, entity_models=[MockEntityModel])
         assert jwt.extensions.entity_models[0] == MockEntityModel
         assert jwt.app == self.app
