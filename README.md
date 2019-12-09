@@ -78,8 +78,10 @@ def register():
 class UserModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
+    
 # You can define the primary key name with `ENTITY_KEY` on Flask's config
 app.config["ENTITY_KEY"] = "user_id"
+
 # (`id` is used by default)
 JwtRoutes(app, entity_models=[UserModel, TeacherModel, ...etc])
 
