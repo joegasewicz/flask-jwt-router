@@ -203,7 +203,7 @@ Then run:
     tox
 ```
 
-To update docs run:
+To check the docs look good locally you can run:
 ```bash
     make html
 ```
