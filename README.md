@@ -81,11 +81,12 @@ class UserModel(db.Model):
 # You can define the primary key name with `ENTITY_KEY` on Flask's config
 app.config["ENTITY_KEY"] = "user_id"
 # (`id` is used by default)
-JwtRoutes(app)
+JwtRoutes(app, entity_models=[UserModel, TeacherModel, ...etc])
 
-# You can also specify a list of entity model classes
-
-app.config["ENTITY_MODELS"] = [ UserModel, TeacherModel, ...etc ]
+# Or pass later with `init_app`
+def create_app(config):
+    ...
+    jwt_routes.init_app(app, entity_models=[UserModel, TeacherModel, ...etc])
 
 ```
 
@@ -181,7 +182,9 @@ An Example configuration for registering & logging in users of different types:
         ("POST", "/auth/user"), ("POST", "/auth/user/login"),
         ("POST", "/auth/teacher"), ("POST", "/auth/teacher/login"),
     ]
-    app.config["ENTITY_MODELS"] = [UserModel, TeacherModel]
+    
+    # Optionally, you can pass your models to Flask's config:
+    app.config["ENTITY_MODELS"] = [ UserModel, TeacherModel, ...etc ]
 ```
 ## Authors
 
