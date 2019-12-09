@@ -1,7 +1,7 @@
 """
      The main configuration class for Flask-JWT-Router
 """
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Dict, Any, List
 
 from ._entity import _ORMType
@@ -35,6 +35,7 @@ class Config:
 
 class BaseExtension(ABC):
     """Abstract Base Class for Extensions"""
+    @abstractmethod
     def init_extensions(self, config: Dict[str, Any], **kwargs) -> Config:
         # pylint: disable=missing-function-docstring
         pass
