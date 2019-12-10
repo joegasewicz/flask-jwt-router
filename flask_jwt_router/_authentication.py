@@ -38,6 +38,7 @@ class BaseAuthStrategy(ABC):
         # pylint:disable=missing-function-docstring
         pass
 
+    @abstractmethod
     def encode_token(self, extensions: Config, entity_id: Any, exp: int, table_name: str):
         # pylint:disable=missing-function-docstring
         pass

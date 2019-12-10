@@ -66,15 +66,16 @@
         # Create your entity model (example uses Flask-SqlAlchemy)
 
         class UserModel(db.Model):
+            __tablename__ = "users"
             id = db.Column(db.Integer, primary_key=True)
             name = db.Column(db.String)
 
-        # You can also specify a list of entity model classes
+        JwtRoutes(app, entity_models=[UserModel, TeacherModel, ...etc])
 
-        app.config["ENTITY_MODELS"] = [ UserModel, TeacherModel ]
-
-        # (`id` is used by default)
-        JwtRoutes(app)
+        # Or pass later with `init_app`
+        def create_app(config):
+            ...
+            jwt_routes.init_app(app, entity_models=[UserModel, TeacherModel, ...etc])
 
 
     Authorization & Tokens

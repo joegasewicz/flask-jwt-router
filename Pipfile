@@ -8,6 +8,7 @@ pytest = "*"
 twine = "*"
 pyjwt = "*"
 Flask-SQLAlchemy = "*"
+Sphinx = "*"
 
 [packages]
 flask = "*"
