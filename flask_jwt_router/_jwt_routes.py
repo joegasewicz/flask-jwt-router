@@ -66,15 +66,16 @@
         # Create your entity model (example uses Flask-SqlAlchemy)
 
         class UserModel(db.Model):
+            __tablename__ = "users"
             id = db.Column(db.Integer, primary_key=True)
             name = db.Column(db.String)
 
-        # You can also specify a list of entity model classes
+        JwtRoutes(app, entity_models=[UserModel, TeacherModel, ...etc])
 
-        app.config["ENTITY_MODELS"] = [ UserModel, TeacherModel ]
-
-        # (`id` is used by default)
-        JwtRoutes(app)
+        # Or pass later with `init_app`
+        def create_app(config):
+            ...
+            jwt_routes.init_app(app, entity_models=[UserModel, TeacherModel, ...etc])
 
 
     Authorization & Tokens
@@ -92,7 +93,7 @@
         def register():
             # I'm registering a new user & returning a token!
             return jsonify({
-                "token": jwt_routes.register_entity(entity_id=1)
+                "token": jwt_routes.create_token(entity_id=1)
             })
 
         @app.route("/login", methods=["POST"])
@@ -111,8 +112,8 @@
                 user = UserModel(**user_data)
                 user.create_user() # your entity creation logic
 
-                # Here we pass the id as a kwarg to `register_entity`
-                token: str = jwt_routes.register_entity(entity_id=user.id, table_name="user")
+                # Here we pass the id as a kwarg to `create_token`
+                token: str = jwt_routes.create_token(entity_id=user.id, table_name="user")
 
                 # Now we can return a new token!
                 return {
@@ -137,7 +138,7 @@
                        }, 401
             return {
                 "data": user_dumped,
-                "token": jwt_routes.register_entity(entity_id=user_data.id, table_name="user"),
+                "token": jwt_routes.create_token(entity_id=user_data.id, table_name="user"),
             }, 200
 
     If you are handling a request with a token in the headers you can call::
@@ -146,7 +147,7 @@
 
     If you are handling a request without a token in the headers you can call::
 
-        jwt_routes.register_entity(entity_id=user_data.id, table_name="user")
+        jwt_routes.create_token(entity_id=user_data.id, table_name="user")
 
 """
 

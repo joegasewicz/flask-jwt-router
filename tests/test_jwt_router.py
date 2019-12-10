@@ -54,7 +54,7 @@ class TestJwtRouter:
         config = flask_jwt_router.get_app_config(app)
         assert config["WHITE_LIST_ROUTES"] == white_list
 
-    def test_register_entity(self):
+    def test_create_token(self):
         class App:
             config = {
                 "SECRET_KEY": "123abc"
@@ -64,5 +64,5 @@ class TestJwtRouter:
         app = App()
         flask_jwt_router = JwtRoutes(app)
 
-        with pytest.raises(KeyError, match=r"register_entity.+") as excinfo:
-            token = flask_jwt_router.register_entity(entity_id=1)
+        with pytest.raises(KeyError, match=r"create_token.+") as excinfo:
+            token = flask_jwt_router.create_token(entity_id=1)

@@ -43,7 +43,7 @@ def test_entity():
     from tests.fixtures.models import TeacherModel
     teacher = TeacherModel(name="joe")
     teacher.save()
-    token = jwt_routes.register_entity(entity_id=1, table_name="teachers")
+    token = jwt_routes.create_token(entity_id=1, table_name="teachers")
     return jsonify({
         "token": token,
     })
