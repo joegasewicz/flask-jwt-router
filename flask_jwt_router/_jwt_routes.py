@@ -100,7 +100,7 @@
         def login():
             # I'm authorized & updating my token!
             return jsonify({
-                "token": jwt_routes.update_entity(entity_id=1)
+                "token": jwt_routes.update_token(entity_id=1)
             })
 
     Create a new entity & return a new token::
@@ -143,7 +143,7 @@
 
     If you are handling a request with a token in the headers you can call::
 
-        jwt_routes.update_entity(entity_id=user_data.id)
+        jwt_routes.update_token(entity_id=user_data.id)
 
     If you are handling a request without a token in the headers you can call::
 
