@@ -77,8 +77,7 @@ class Routing(BaseRouting):
         :param w_method:
         :return: {bool}
         """
-        if method == w_method or\
-                method == "OPTIONS" and w_method == "POST":
+        if method in (w_method, "OPTIONS"):
             return True
         return False
 
