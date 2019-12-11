@@ -9,4 +9,9 @@
 - Renamed the `register_entity` public method to be called `create_token` [Issue #113](https://github.com/joegasewicz/Flask-JWT-Router/issues/113)
 - Add Models to JWTRoutes class & init_app method [Issue #119](https://github.com/joegasewicz/Flask-JWT-Router/issues/119)
 
+
+**Release 0.0.26** - 2019-12-11
+
+- Preflight OPTIONS bug fix [Issue #125](https://github.com/joegasewicz/Flask-JWT-Router/issues/125)
+
 ## Unreleased

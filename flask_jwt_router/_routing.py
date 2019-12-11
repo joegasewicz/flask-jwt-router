@@ -68,16 +68,13 @@ class Routing(BaseRouting):
         return False
 
     # pylint:disable=no-self-use
-    def _handle_pre_flight(self, method: str, w_method: str) -> bool:
+    def _handle_pre_flight(self, method: str) -> bool:
         """
         Handle pre-flight requests with any verb
-        TODO Investigate if this requires returning True on all valid VERBS...?\
-         + tests required for this when investigated
-        :param method:
-        :param w_method:
+        :param method
         :return: {bool}
         """
-        if method in (w_method, "OPTIONS"):
+        if method == "OPTIONS":
             return True
         return False
 
@@ -115,8 +112,10 @@ class Routing(BaseRouting):
         method = request.method
         path = request.path
         for white_route in white_routes:
-            if self._handle_pre_flight(method, white_route[0]) and path == white_route[1]:
+            if self._handle_pre_flight(method):
                 return False
+            if method == white_route[0] and path == white_route[1]:
+               return False
             if method == white_route[0] and self._handle_query_params(white_route[1], path):
                 return False
         return True
@@ -153,7 +152,6 @@ class Routing(BaseRouting):
                 if not is_ignored:
                     white_routes = self._prefix_api_name(self.extensions.whitelist_routes)
                     not_whitelist = self._allow_public_routes(white_routes)
-
                     if not_whitelist:
                         self._handle_token()
 
