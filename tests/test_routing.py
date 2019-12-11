@@ -132,3 +132,7 @@ class TestRouting:
     def test_ignored_route_path(self, test_client):
         rv = test_client.get("/")
         assert "200" in str(rv.status)
+
+    def test_handle_pre_flight_request(self, test_client):
+        rv = test_client.options("/")
+        assert "200" in str(rv.status)
