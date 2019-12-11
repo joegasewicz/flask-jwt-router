@@ -113,7 +113,7 @@ class Routing(BaseRouting):
         path = request.path
         for white_route in white_routes:
             if self._handle_pre_flight(method):
-                return False
+               return False
             if method == white_route[0] and path == white_route[1]:
                return False
             if method == white_route[0] and self._handle_query_params(white_route[1], path):
