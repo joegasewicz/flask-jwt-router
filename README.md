@@ -189,7 +189,7 @@ An Example configuration for registering & logging in users of different types:
 ```
 
 # JSON Web Token setup
-Your front end website code needs to make http request with headers that include a Bearer.
+To send the JSON web token from your front end, you will need to pass a `Bearer` string in your authorization header.
 For example:
 ```javascript
     fetch(url, {
@@ -199,7 +199,7 @@ For example:
     })
 ```
 ### Routing without headers
-If you require restring routes without passing headers, then you can use the ``auth`` query param:
+If you require calling a resource without passing headers, then you can use the ``auth`` query param (useful when streaming video files):
 ```python
     url = "http://example.com/cars?auth=my_token"
 ```
