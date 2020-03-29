@@ -174,7 +174,11 @@ If you are handling a request without a token in the headers you can call::
 ```python
     jwt_routes.create_token(entity_id=user_data.id, table_name="users")
 ```
-
+### Routing without headers
+If you require restring routes without passing headers, then you can use the ``auth`` query param:
+```python
+    url = "http://example.com/cars?auth=my_token"
+```
 
 An Example configuration for registering & logging in users of different types:
 ```python
@@ -188,6 +192,8 @@ An Example configuration for registering & logging in users of different types:
     # Optionally, you can pass your models to Flask's config:
     app.config["ENTITY_MODELS"] = [ UserModel, TeacherModel, ...etc ]
 ```
+
+
 ## Authors
 
 * **joegasewicz** - *Initial work* - [@joegasewicz](https://twitter.com/joegasewicz)
