@@ -12,6 +12,8 @@
 
 Flask JWT Router is a Python library that adds authorised routes to a Flask app.
 
+This library is in a Beta stage.
+
 Read the Documentation here: [Flask-JWT-Router](https://flask-jwt-router.readthedocs.io/en/latest/) 
 
 ## Installation
