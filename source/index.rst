@@ -14,7 +14,6 @@ Welcome to Flask JWT Router
    authentication
    entity
    config
-   flask_jwt_router
    routing
 
 
