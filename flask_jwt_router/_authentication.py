@@ -1,21 +1,3 @@
-"""
-    AuthStrategy class are algorithms with public methods
-    defined in BaseAuthStrategy. Currently only 2 of the
-    3 methods are used publicly but the intention is there...
-
-    Example of a new algorithm with different cryptographic signing "Algorithm"::
-
-        class AnotherAuthStrategy(BaseAuthStrategy):
-            def encode_token(self, extensions: Config, **kwargs):
-                pass
-
-            def create_token(self):
-                pass
-
-            def update_token(self):
-                pass
-
-"""
 from abc import ABC, abstractmethod
 from typing import Any
 from datetime import datetime
@@ -26,7 +8,7 @@ import jwt
 from ._extensions import Config
 
 
-class BaseAuthStrategy(ABC):
+class BaseAuthentication(ABC):
     # pylint:disable=missing-class-docstring
     @abstractmethod
     def create_token(self, extensions: Config, exp: int, **kwargs):
@@ -44,7 +26,7 @@ class BaseAuthStrategy(ABC):
         pass
 
 
-class JWTAuthStrategy(BaseAuthStrategy):
+class Authentication(BaseAuthentication):
     """
         Uses SHA-256 hash algorithm
     """
@@ -61,7 +43,7 @@ class JWTAuthStrategy(BaseAuthStrategy):
 
     def __init__(self):
         # pylint:disable=useless-super-delegation
-        super(JWTAuthStrategy, self).__init__()
+        super(Authentication, self).__init__()
 
     def encode_token(self, extensions: Config, entity_id: Any, exp: int, table_name) -> str:
         """
