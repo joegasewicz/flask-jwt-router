@@ -1,0 +1,37 @@
+from flask_jwt_router._jwt_routes import JwtRoutes
+from flask_jwt_router._config import Config
+from tests.fixtures.model_fixtures import MockEntityModel
+
+
+class TestConfig:
+    IGNORED_ROUTES = [
+        ("GET", "/"),
+        ("GET", "/ignore"),
+    ]
+    WHITE_LIST_ROUTES = [
+        ("GET", "/test"),
+    ]
+
+    config = {
+                "IGNORED_ROUTES": IGNORED_ROUTES,
+                "WHITE_LIST_ROUTES": WHITE_LIST_ROUTES,
+                "SECRET_KEY": "a sectrect key",
+                "JWT_ROUTER_API_NAME": "api/v1",
+                "ENTITY_KEY": "user_id",
+            }
+
+    def test_init_config(self, MockEntityModel):
+        config = Config()
+        config_one = config.init_config(self.config, entity_models=[MockEntityModel])
+
+        assert config_one.whitelist_routes == self.WHITE_LIST_ROUTES
+        assert config_one.ignored_routes == self.IGNORED_ROUTES
+        assert config_one.entity_models == [MockEntityModel]
+        assert config_one.entity_key == "user_id"
+        assert config_one.api_name == "api/v1"
+
+        config_two = {**self.config, "ENTITY_MODELS": [MockEntityModel]}
+        con = config.init_config(config_two)
+
+        assert con.entity_models == [MockEntityModel]
+

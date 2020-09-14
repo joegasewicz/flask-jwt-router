@@ -155,7 +155,7 @@ import logging
 from warnings import warn
 from typing import List
 
-from ._extensions import BaseExtension, Extensions, Config
+from ._config import BaseConfig, Config, _Config
 from ._entity import BaseEntity, Entity, _ORMType
 from ._routing import BaseRouting, Routing
 from ._authentication import BaseAuthentication, Authentication
@@ -183,9 +183,9 @@ class JwtRoutes:
     #: Token expiry value. eg. 30 = 30 days from creation date.
     exp: int = 30
 
-    #: The class that is used to create Config objects.  See :class:`~flask_jwt_router._extensions`
+    #: The class that is used to create Config objects.  See :class:`~flask_jwt_router._config`
     #: for more information.
-    extensions: Config
+    config: _Config
 
     #: The class that provides algorithms to :class:`~flask_jwt_router._jwt_routes`.
     # See :class:`~flask_jwt_router._authentication` for more information.
@@ -199,13 +199,13 @@ class JwtRoutes:
     #: for more information.
     routing: BaseRouting
 
-    #: The class that is used to create Config objects.  See :class:`~flask_jwt_router._extensions`
+    #: The class that is used to create Config objects.  See :class:`~flask_jwt_router._config`
     #: for more information.
-    ext: BaseExtension
+    ext: BaseConfig
 
     def __init__(self, app=None, **kwargs):
         self.entity_models = kwargs.get("entity_models")
-        self.ext = Extensions()
+        self.ext = Config()
         self.auth = Authentication()
         self.app = app
         if app:
@@ -220,9 +220,9 @@ class JwtRoutes:
         self.app = app if app else self.app
         entity_models = self.entity_models or kwargs.get("entity_models")
         config = self.get_app_config(self.app)
-        self.extensions = self.ext.init_extensions(config, entity_models=entity_models)
-        self.entity = Entity(self.extensions)
-        self.routing = Routing(self.app, self.extensions, self.entity)
+        self.config = self.ext.init_config(config, entity_models=entity_models)
+        self.entity = Entity(self.config)
+        self.routing = Routing(self.app, self.config, self.entity)
         self.app.before_request(self.routing.before_middleware)
 
     # pylint:disable=no-self-use
@@ -268,23 +268,23 @@ class JwtRoutes:
         if 'table_name' not in kwargs:
             raise KeyError("create_token() missing 1 required argument: table_name")
         table_name = kwargs.get("table_name")
-        self.extensions.entity_key = self.entity.get_attr_name(table_name)
-        return self.auth.create_token(self.extensions, self.exp, **kwargs)
+        self.config.entity_key = self.entity.get_attr_name(table_name)
+        return self.auth.create_token(self.config, self.exp, **kwargs)
 
     def update_token(self, **kwargs) -> str:
         """
         :param kwargs:
         :return: str
         """
-        self.extensions.entity_key = self.entity.get_attr_name()
+        self.config.entity_key = self.entity.get_attr_name()
         table_name = self.entity.get_entity_from_ext().__tablename__
-        return self.auth.update_token(self.extensions, self.exp, table_name, **kwargs)
+        return self.auth.update_token(self.config, self.exp, table_name, **kwargs)
 
     def encode_token(self, entity_id) -> str:
         """
         :param entity_id:
         :return:
         """
-        self.extensions.entity_key = self.entity.get_attr_name()
+        self.config.entity_key = self.entity.get_attr_name()
         table_name = self.entity.get_entity_from_ext().__tablename__
-        return self.auth.encode_token(self.extensions, entity_id, self.exp, table_name)
+        return self.auth.encode_token(self.config, entity_id, self.exp, table_name)

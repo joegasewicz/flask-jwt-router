@@ -16,7 +16,7 @@ class TestJwtRouter:
         app = App()
         flask_jwt_router = JwtRoutes(app)
 
-        result = flask_jwt_router.extensions.secret_key
+        result = flask_jwt_router.config.secret_key
         assert result == "__TEST_SECRET__"
 
         class App:
@@ -29,7 +29,7 @@ class TestJwtRouter:
 
         app = App()
         flask_jwt_router_two = JwtRoutes(app)
-        result_two = flask_jwt_router_two.extensions.secret_key
+        result_two = flask_jwt_router_two.config.secret_key
         assert result_two == "__TEST_SECRET__"
 
     def test_get_exp(self):

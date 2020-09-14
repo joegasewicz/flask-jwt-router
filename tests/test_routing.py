@@ -3,7 +3,7 @@
         - Routing class: that deal with encoding & decoding tokens & authorising routes.
         - Entity class: This covers the get_id_from_token method.
 
-    Extension values used in routing:
+    Config values used in routing:
 
     "WHITE_LIST_ROUTES" = [("PUT", "/banana")]
     "IGNORED_ROUTES" = [("GET", "/")]
@@ -14,7 +14,7 @@ from typing import Any
 import pytest
 
 from flask_jwt_router._routing import Routing
-from flask_jwt_router._extensions import Extensions
+from flask_jwt_router._config import Config
 from flask_jwt_router._entity import Entity
 from tests.fixtures.token_fixture import mock_token
 from tests.fixtures.model_fixtures import TestMockEntity
@@ -37,13 +37,13 @@ class MockArgs:
 class TestRouting:
 
     app = None
-    extensions = {
+    config = {
         "WHITE_LIST_ROUTES": [("PUT", "/banana")],
         "IGNORED_ROUTES": [("GET", "/")],
         "JWT_ROUTER_API_NAME": "/api/v1",
         "SECRET_KEY": "__TEST_SECRET__",
     }
-    ext = Extensions().init_extensions(extensions)
+    config = Config().init_config(config)
 
     def test_before_middleware(self, monkeypatch, TestMockEntity, mock_token):
         app = Flask(__name__)
@@ -59,9 +59,9 @@ class TestRouting:
         assert entity.user_name == "joe"
         assert entity.id == 1
 
-        self.ext.entity_models = [TestMockEntity]
-        entity = Entity(self.ext)
-        routing = Routing(app, self.ext, entity)
+        self.config.entity_models = [TestMockEntity]
+        entity = Entity(self.config)
+        routing = Routing(app, self.config, entity)
 
         with ctx:
             # token from args

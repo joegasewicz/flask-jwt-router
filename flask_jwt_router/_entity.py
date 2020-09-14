@@ -29,7 +29,7 @@ class BaseEntity(ABC):
 
 class Entity(BaseEntity):
     """
-    :param extensions:
+    :param config:
     :param auth_model:
     """
 
@@ -41,8 +41,8 @@ class Entity(BaseEntity):
     #: This gets assigned in :class:`~flask_jwt_router._entity.get_entity_from_token`
     auth_model: _ORMType = None
 
-    def __init__(self, extensions: ClassVar):
-        self.extensions = extensions
+    def __init__(self, config: ClassVar):
+        self.config = config
 
     def get_attr_name(self, table_name: str = None) -> str:
         """
@@ -61,7 +61,7 @@ class Entity(BaseEntity):
         if hasattr(self.auth_model, "__mapper__"):
             # SqlAlchemy is the ORM being used
             return self.auth_model.__mapper__.primary_key[0].name
-        return self.extensions.entity_key
+        return self.config.entity_key
 
     def _get_from_model(self, entity_id: int) -> _ORMType:
         """
@@ -84,7 +84,7 @@ class Entity(BaseEntity):
             table_name = self.decoded_token.get("table_name")
         auth_model = None
 
-        for model in self.extensions.entity_models:
+        for model in self.config.entity_models:
             if hasattr(model, "__tablename__"):
                 if table_name == model.__tablename__:
                     auth_model = model

@@ -5,23 +5,23 @@ from datetime import datetime
 from dateutil.relativedelta import *
 import jwt
 
-from ._extensions import Config
+from ._config import _Config
 
 
 class BaseAuthentication(ABC):
     # pylint:disable=missing-class-docstring
     @abstractmethod
-    def create_token(self, extensions: Config, exp: int, **kwargs):
+    def create_token(self, config: _Config, exp: int, **kwargs):
         # pylint:disable=missing-function-docstring
         pass
 
     @abstractmethod
-    def update_token(self, extensions: Config, exp: int, table_name, **kwarg):
+    def update_token(self, config: _Config, exp: int, table_name, **kwarg):
         # pylint:disable=missing-function-docstring
         pass
 
     @abstractmethod
-    def encode_token(self, extensions: Config, entity_id: Any, exp: int, table_name: str):
+    def encode_token(self, config: _Config, entity_id: Any, exp: int, table_name: str):
         # pylint:disable=missing-function-docstring
         pass
 
@@ -31,11 +31,11 @@ class Authentication(BaseAuthentication):
         Uses SHA-256 hash algorithm
     """
     #: The reference to the entity key. Defaulted to `id`.
-    # See :class:`~flask_jwt_router._extensions` for more information.
+    # See :class:`~flask_jwt_router._config` for more information.
     entity_key: str = "id"
 
     #: The reference to the entity key.
-    #: See :class:`~flask_jwt_router._extensions` for more information.
+    #: See :class:`~flask_jwt_router._config` for more information.
     secret_key: str = None
 
     #: The reference to the entity ID.
@@ -45,16 +45,16 @@ class Authentication(BaseAuthentication):
         # pylint:disable=useless-super-delegation
         super(Authentication, self).__init__()
 
-    def encode_token(self, extensions: Config, entity_id: Any, exp: int, table_name) -> str:
+    def encode_token(self, config: _Config, entity_id: Any, exp: int, table_name) -> str:
         """
-        :param extensions: See :class:`~flask_jwt_router._extensions`
+        :param config: See :class:`~flask_jwt_router._config`
         :param entity_id: Normally the primary key `id` or `user_id`
         :param exp: The expiry duration set when encoding a new token
         :param table_name: The Model Entity `__tablename__`
         :return: str
         """
-        self.entity_key = extensions.entity_key
-        self.secret_key = extensions.secret_key
+        self.entity_key = config.entity_key
+        self.secret_key = config.secret_key
         # pylint: disable=line-too-long
         encoded = jwt.encode({
             "table_name": table_name,
@@ -64,32 +64,32 @@ class Authentication(BaseAuthentication):
         }, self.secret_key, algorithm="HS256").decode("utf-8")
         return encoded
 
-    def create_token(self, extensions: Config, exp: int, **kwargs) -> str:
+    def create_token(self, config: _Config, exp: int, **kwargs) -> str:
         """
         kwargs:
             - entity_id: Represents the entity's primary key
             - table_name: The table name of the entity
-        :param extensions: See :class:`~flask_jwt_router._extensions`
+        :param config: See :class:`~flask_jwt_router._config`
         :param exp: The expiry duration set when encoding a new token
         :param kwargs:
         :return: Union[str, None]
         """
         self.entity_id = kwargs.get("entity_id", None)
         table_name = kwargs.get("table_name", None)
-        return self.encode_token(extensions, self.entity_id, exp, table_name)
+        return self.encode_token(config, self.entity_id, exp, table_name)
 
     def update_token(self,
-                     extensions: Config,
+                     config: _Config,
                      exp: int,
                      table_name: str,
                      **kwargs,
                      ) -> str:
         """
-        :param extensions:
+        :param config:
         :param exp:
         :param table_name:
         :param kwargs:
         :return: Union[str, None]
         """
         self.entity_id = kwargs.get("entity_id", None)
-        return self.encode_token(extensions, self.entity_id, exp, table_name)
+        return self.encode_token(config, self.entity_id, exp, table_name)
