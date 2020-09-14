@@ -125,7 +125,7 @@ def login():
 (With SqlAlchemy, you can define a `__tablename__` attribute directly or else
 the name is derived from your entity’s database table name).
 
-# Setting the Token Expire Duration
+## Setting the Token Expire Duration
 There are two ways to set the expire duration of the JWT.
 
 from your app config
@@ -143,7 +143,7 @@ calling the `set_exp`
 ```
 By default the expire duration is set to 30 days
 
-# Create & update Tokens on Routes
+## Create & update Tokens on Routes
 Create a new entity & return a new token
 ```python
 @app.route("/register", methods=["POST"])
@@ -210,7 +210,7 @@ An Example configuration for registering & logging in users of different types:
     app.config["ENTITY_MODELS"] = [ UserModel, TeacherModel, ...etc ]
 ```
 
-# JSON Web Token setup
+## JSON Web Token setup
 To send the JSON web token from your front end, you will need to pass a `Bearer` string in your authorization header.
 For example:
 ```javascript
