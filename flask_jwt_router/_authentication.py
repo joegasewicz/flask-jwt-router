@@ -52,9 +52,9 @@ class JWTAuthStrategy(BaseAuthStrategy):
     # See :class:`~flask_jwt_router._extensions` for more information.
     entity_key: str = "id"
 
-    #: The reference to the entity key. Defaulted to `DEFAULT_SECRET_KEY`.
+    #: The reference to the entity key.
     #: See :class:`~flask_jwt_router._extensions` for more information.
-    secret_key: str = "DEFAULT_SECRET_KEY"
+    secret_key: str = None
 
     #: The reference to the entity ID.
     entity_id: str = None

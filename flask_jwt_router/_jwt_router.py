@@ -67,9 +67,9 @@ class FlaskJWTRouter:
         :param app: Flask application instance
         :return:
         """
-        self.app = self.app or app
+        self.app = app if app else self.app
         entity_models = self.entity_models or kwargs.get("entity_models")
-        config = self.get_app_config(app)
+        config = self.get_app_config(self.app)
         self.extensions = self.ext.init_extensions(config, entity_models=entity_models)
         self.entity = Entity(self.extensions)
         self.routing = Routing(self.app, self.extensions, self.entity)

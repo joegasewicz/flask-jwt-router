@@ -4,7 +4,7 @@
     an entity's data.
 
     The extension variables used in this class are:
-        - SECRET_KEY or DEFAULT_SECRET_KEY
+        - SECRET_KEY or __TEST_SECRET__
         - ENTITY_KEY or id
 
     Start with a decoded token (as the Router class handles this):
@@ -22,6 +22,7 @@ from tests.fixtures.main_fixture import test_client, jwt_routes
 from tests.fixtures.token_fixture import mock_decoded_token, mock_decoded_token_two, mock_decoded_token_three
 from tests.fixtures.model_fixtures import MockEntityModel, NoTableNameEntity, MockEntityModelTwo, MockEntityModelThree
 from tests.fixtures.models import TeacherModel
+
 
 class MockArgs:
     def __init__(self, token=None, headers=False):
@@ -43,7 +44,7 @@ class TestEntity:
         "WHITE_LIST_ROUTES": [("PUT", "/banana")],
         "IGNORED_ROUTES": [("GET", "/")],
         "JWT_ROUTER_API_NAME": "/api/v1",
-        "SECRET_KEY": "TEST_SECRET",
+        "SECRET_KEY": "__TEST_SECRET__",
         "ENTITY_KEY": "id",
     }
     ext = Extensions().init_extensions(extensions)
@@ -86,7 +87,7 @@ class TestEntity:
 
         decoded_token = jwt.decode(
                 token,
-                "DEFAULT_SECRET_KEY",
+                "__TEST_SECRET__",
                 algorithms="HS256"
             )
 
@@ -106,7 +107,7 @@ class TestEntity:
 
         decoded_token_two = jwt.decode(
                 token_two,
-                "DEFAULT_SECRET_KEY",
+                "__TEST_SECRET__",
                 algorithms="HS256"
             )
 

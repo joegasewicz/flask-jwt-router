@@ -41,7 +41,7 @@ class TestRouting:
         "WHITE_LIST_ROUTES": [("PUT", "/banana")],
         "IGNORED_ROUTES": [("GET", "/")],
         "JWT_ROUTER_API_NAME": "/api/v1",
-        "SECRET_KEY": "TEST_SECRET",
+        "SECRET_KEY": "__TEST_SECRET__",
     }
     ext = Extensions().init_extensions(extensions)
 

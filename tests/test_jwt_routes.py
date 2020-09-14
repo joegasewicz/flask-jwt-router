@@ -8,6 +8,7 @@ from tests.fixtures.model_fixtures import MockEntityModel
 class TestJwtRoutes:
 
     app = Flask(__name__)
+    app.config["SECRET_KEY"] = "__TEST_SECRET__"
 
     def test_init_app(self, MockEntityModel):
         jwt = JwtRoutes(self.app, entity_models=[MockEntityModel])

@@ -7,9 +7,17 @@ from typing import Dict, Any, List
 from ._entity import _ORMType
 
 
+class SecretKeyError(Exception):
+    message = "You must define a secret key. " \
+              "See https://flask-jwt-router.readthedocs.io/en/latest/extensions.html"
+
+    def __init__(self):
+        super(SecretKeyError, self).__init__(self.message)
+
+
 class Config:
     """
-    :param secret_key: Defaults to `DEFAULT_SECRET_KEY`
+    :param secret_key: User defined secret key
     :param entity_key: The name of the model's entity attribute
     :param whitelist_routes: List of tuple pairs of verb & url path
     :param api_name: the api name prefix e.g `/api/v1`
@@ -51,11 +59,16 @@ class Extensions(BaseExtension):
         :return:
         """
         entity_models = kwargs.get("entity_models")
-        return Config(
-            config.get("SECRET_KEY") or "DEFAULT_SECRET_KEY",
+        config = Config(
+            config.get("SECRET_KEY"),
             config.get("ENTITY_KEY") or "id",
             config.get("WHITE_LIST_ROUTES") or [],
             config.get("JWT_ROUTER_API_NAME"),
             config.get("IGNORED_ROUTES") or [],
             entity_models or config.get("ENTITY_MODELS") or [],
         )
+
+        if not config.secret_key:
+            raise SecretKeyError
+
+        return config

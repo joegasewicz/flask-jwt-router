@@ -15,6 +15,7 @@ def test_one():
 def jwt_router_client(request):
     app.config = {**app.config, **request.param}
     app.config["TESTING"] = True
+    app.config["SECRET_KEY"] = "__TEST_SECRET__"
     jwt_routes.init_app(app)
     client = app.test_client()
     ctx = app.app_context()
@@ -30,6 +31,7 @@ def jwt_router_client(request):
 def test_client_static():
     flask_app_static = Flask(__name__, static_folder="static_copy")
     flask_app_static.config["WHITE_LIST_ROUTES"] = [("GET", "/anything")]
+    flask_app_static.config["SECRET_KEY"] = "__TEST_SECRET__"
     JwtRoutes(flask_app_static)
     static_client = flask_app_static.test_client()
     ctx = flask_app_static.app_context()
