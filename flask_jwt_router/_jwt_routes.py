@@ -13,6 +13,8 @@
         from flask_jwt_router import JwtRoutes
 
         app = Flask(__name__)
+        # You are required to always set a unique SECRET_KEY for your app
+        app.config["SECRET_KEY"] = "your_app_secret_key"
 
         JwtRoutes(app)
 
@@ -77,6 +79,24 @@
             ...
             jwt_routes.init_app(app, entity_models=[UserModel, TeacherModel, ...etc])
 
+    Setting the Token Expire Duration
+    =================================
+
+    There are two ways to set the expire duration of the JWT.
+
+    from your app config::
+
+        # Set the token expire duration to 7 days
+        app.config["JWT_EXPIRE_DAYS"] = 7
+
+    using the :class:`~flask_jwt_router.set_exp` method::
+
+        # Set the token expire duration to 14 days
+        jwt_routes = JwtRoutes()
+        # jwt_routes.init_app( ...etc
+        jwt_routes.set_exp(expire_days=14)
+
+    By default the expire duration is set to 30 days
 
     Authorization & Tokens
     ======================
@@ -163,6 +183,8 @@ from ._authentication import BaseAuthentication, Authentication
 # pylint:disable=invalid-name
 logger = logging.getLogger()
 
+EXPIRE_DEFAULT = 30
+
 
 class JwtRoutes:
     """
@@ -180,8 +202,9 @@ class JwtRoutes:
     #: A list of entity models
     entity_models: List[_ORMType]
 
-    #: Token expiry value. eg. 30 = 30 days from creation date.
-    exp: int = 30
+    #: Low level expire member. See :class:`~flask_jwt_router._config` & set with JWT_EXPIRE_DAYS
+    #: or use :class:`~flask_jwt_router.set_exp`.
+    exp: int
 
     #: The class that is used to create Config objects.  See :class:`~flask_jwt_router._config`
     #: for more information.
@@ -224,6 +247,10 @@ class JwtRoutes:
         self.entity = Entity(self.config)
         self.routing = Routing(self.app, self.config, self.entity)
         self.app.before_request(self.routing.before_middleware)
+        if self.config.expire_days:
+            self.exp = self.config.expire_days
+        else:
+            self.exp = EXPIRE_DEFAULT
 
     # pylint:disable=no-self-use
     def get_app_config(self, app):
@@ -246,15 +273,16 @@ class JwtRoutes:
             return None
 
     # pylint:disable=no-self-use
-    def get_exp(self, **kwargs):
+    def set_exp(self, **kwargs) -> None:
         """
         :param kwargs: Dict[str, int]
-        :return: number
+            - expire_days: The expire time for the JWT in days
+        :return: None
         """
         try:
-            return kwargs['exp']
+            self.exp = kwargs['expire_days']
         except KeyError as _:
-            return 30
+            self.exp = EXPIRE_DEFAULT
 
     def create_token(self, **kwargs) -> str:
         """

@@ -28,6 +28,8 @@ from flask import Flask
 from flask_jwt_router import JwtRoutes
 
 app = Flask(__name__)
+# You are required to always set a unique SECRET_KEY for your app
+app.config["SECRET_KEY"] = "your_app_secret_key"
 
 JwtRoutes(app)
 
@@ -176,6 +178,24 @@ If you are handling a request without a token in the headers you can call::
 ```python
     jwt_routes.create_token(entity_id=user_data.id, table_name="users")
 ```
+
+# Setting the Token Expire Duration
+There are two ways to set the expire duration of the JWT.
+
+from your app config
+```python
+        # Set the token expire duration to 7 days
+        app.config["JWT_EXPIRE_DAYS"] = 7
+```
+calling the `set_exp`
+```python
+
+        # Set the token expire duration to 14 days
+        jwt_routes = JwtRoutes()
+        # jwt_routes.init_app( ...etc
+        jwt_routes.set_exp(expire_days=14)
+```
+By default the expire duration is set to 30 days
 
 An Example configuration for registering & logging in users of different types:
 ```python

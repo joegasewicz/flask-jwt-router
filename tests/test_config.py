@@ -18,6 +18,7 @@ class TestConfig:
                 "SECRET_KEY": "a sectrect key",
                 "JWT_ROUTER_API_NAME": "api/v1",
                 "ENTITY_KEY": "user_id",
+                "JWT_EXPIRE_DAYS": 6,
             }
 
     def test_init_config(self, MockEntityModel):
@@ -29,6 +30,7 @@ class TestConfig:
         assert config.entity_models == [MockEntityModel]
         assert config.entity_key == "user_id"
         assert config.api_name == "api/v1"
+        assert config.expire_days == 6
 
         config_two = {**self.config, "ENTITY_MODELS": [MockEntityModel]}
         config.init_config(config_two)
