@@ -22,6 +22,7 @@ setup(
     author="Joe Gasewicz",
     author_email="joegasewicz@gmail.com",
     install_requires=[
-        "PyJWT"
+        "PyJWT",
+        "python-dateutil==2.8.0"
     ]
 )
