@@ -40,14 +40,15 @@ class TestEntity:
     """
         Entity class public methods tests
     """
-    config = {
+    app_config = {
         "WHITE_LIST_ROUTES": [("PUT", "/banana")],
         "IGNORED_ROUTES": [("GET", "/")],
         "JWT_ROUTER_API_NAME": "/api/v1",
         "SECRET_KEY": "__TEST_SECRET__",
         "ENTITY_KEY": "id",
     }
-    config = Config().init_config(config)
+    config = Config()
+    config.init_config(app_config)
 
     token_non_entity = {'id': 12, 'exp': 1577037162}
 

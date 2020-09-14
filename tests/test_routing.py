@@ -37,13 +37,14 @@ class MockArgs:
 class TestRouting:
 
     app = None
-    config = {
+    app_config = {
         "WHITE_LIST_ROUTES": [("PUT", "/banana")],
         "IGNORED_ROUTES": [("GET", "/")],
         "JWT_ROUTER_API_NAME": "/api/v1",
         "SECRET_KEY": "__TEST_SECRET__",
     }
-    config = Config().init_config(config)
+    config = Config()
+    config.init_config(app_config)
 
     def test_before_middleware(self, monkeypatch, TestMockEntity, mock_token):
         app = Flask(__name__)

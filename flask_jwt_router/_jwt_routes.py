@@ -155,7 +155,7 @@ import logging
 from warnings import warn
 from typing import List
 
-from ._config import BaseConfig, Config, _Config
+from ._config import BaseConfig, Config
 from ._entity import BaseEntity, Entity, _ORMType
 from ._routing import BaseRouting, Routing
 from ._authentication import BaseAuthentication, Authentication
@@ -185,7 +185,7 @@ class JwtRoutes:
 
     #: The class that is used to create Config objects.  See :class:`~flask_jwt_router._config`
     #: for more information.
-    config: _Config
+    config: BaseConfig
 
     #: The class that provides algorithms to :class:`~flask_jwt_router._jwt_routes`.
     # See :class:`~flask_jwt_router._authentication` for more information.
@@ -205,7 +205,7 @@ class JwtRoutes:
 
     def __init__(self, app=None, **kwargs):
         self.entity_models = kwargs.get("entity_models")
-        self.ext = Config()
+        self.config = Config()
         self.auth = Authentication()
         self.app = app
         if app:
@@ -219,8 +219,8 @@ class JwtRoutes:
         """
         self.app = app if app else self.app
         entity_models = self.entity_models or kwargs.get("entity_models")
-        config = self.get_app_config(self.app)
-        self.config = self.ext.init_config(config, entity_models=entity_models)
+        app_config = self.get_app_config(self.app)
+        self.config.init_config(app_config, entity_models=entity_models)
         self.entity = Entity(self.config)
         self.routing = Routing(self.app, self.config, self.entity)
         self.app.before_request(self.routing.before_middleware)
@@ -244,8 +244,8 @@ class JwtRoutes:
             return kwargs['entity_id']
         except KeyError as _:
             return None
-    # pylint:disable=no-self-use
 
+    # pylint:disable=no-self-use
     def get_exp(self, **kwargs):
         """
         :param kwargs: Dict[str, int]

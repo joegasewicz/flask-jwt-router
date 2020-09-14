@@ -2,7 +2,7 @@
      The main configuration class for Flask-JWT-Router
 """
 from abc import ABC, abstractmethod
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Tuple
 
 from ._entity import _ORMType
 
@@ -44,7 +44,7 @@ class _Config:
 class BaseConfig(ABC):
     """Abstract Base Class for Extensions"""
     @abstractmethod
-    def init_config(self, config: Dict[str, Any], **kwargs) -> _Config:
+    def init_config(self, config: Dict[str, Any], **kwargs) -> None:
         # pylint: disable=missing-function-docstring
         pass
 
@@ -52,23 +52,32 @@ class BaseConfig(ABC):
 class Config(BaseConfig):
     """Contains the main configuration values"""
     entity_models: List[_ORMType]
+    secret_key: str
+    entity_key: str
+    whitelist_routes: List[Tuple[str]]
+    api_name: str
+    ignored_routes: List[Tuple[str]]
 
-    def init_config(self, config: Any, **kwargs) -> _Config:
+    def init_config(self, app_config: Dict[str, Any], **kwargs) -> None:
         """
-        :param config:
+        :param app_config:
         :return:
         """
         entity_models = kwargs.get("entity_models")
-        config = _Config(
-            config.get("SECRET_KEY"),
-            config.get("ENTITY_KEY") or "id",
-            config.get("WHITE_LIST_ROUTES") or [],
-            config.get("JWT_ROUTER_API_NAME"),
-            config.get("IGNORED_ROUTES") or [],
-            entity_models or config.get("ENTITY_MODELS") or [],
+        _config = _Config(
+            app_config.get("SECRET_KEY"),
+            app_config.get("ENTITY_KEY") or "id",
+            app_config.get("WHITE_LIST_ROUTES") or [],
+            app_config.get("JWT_ROUTER_API_NAME"),
+            app_config.get("IGNORED_ROUTES") or [],
+            entity_models or app_config.get("ENTITY_MODELS") or [],
         )
-
-        if not config.secret_key:
+        if not _config.secret_key:
             raise SecretKeyError
 
-        return config
+        self.secret_key = _config.secret_key
+        self.entity_key = _config.entity_key
+        self.whitelist_routes = _config.whitelist_routes
+        self.api_name = _config.api_name
+        self.ignored_routes = _config.ignored_routes
+        self.entity_models = _config.entity_models
