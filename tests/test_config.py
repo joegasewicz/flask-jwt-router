@@ -34,4 +34,3 @@ class TestConfig:
         con = config.init_config(config_two)
 
         assert con.entity_models == [MockEntityModel]
-
