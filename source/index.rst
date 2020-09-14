@@ -13,7 +13,7 @@ Welcome to Flask JWT Router
    jwt_routes
    authentication
    entity
-   extensions
+   config
    flask_jwt_router
    routing
 

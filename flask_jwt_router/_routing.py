@@ -26,12 +26,12 @@ class BaseRouting(ABC):
 class Routing(BaseRouting):
     """
     :param app: Flask application instance
-    :param extensions: :class:`~flask_jwt_router._extensions`
+    :param config: :class:`~flask_jwt_router._config`
     :param entity: :class:`~flask_jwt_router._entity`
     """
-    def __init__(self, app, extensions, entity: BaseEntity):
+    def __init__(self, app, config, entity: BaseEntity):
         self.app = app
-        self.extensions = extensions
+        self.config = config
         self.logger = logger
         self.entity = entity
 
@@ -43,7 +43,7 @@ class Routing(BaseRouting):
         :param w_routes:
         :return List[str]:
         """
-        api_name = self.extensions.api_name
+        api_name = self.config.api_name
         if not api_name:
             return w_routes
         # Prepend the api name to the white listed route
@@ -146,11 +146,11 @@ class Routing(BaseRouting):
             # Handle ignored routes
             if self._does_route_exist(path, method):
                 is_ignored = False
-                ignored_routes = self.extensions.ignored_routes
+                ignored_routes = self.config.ignored_routes
                 if len(ignored_routes) > 0:
                     is_ignored = not self._allow_public_routes(ignored_routes)
                 if not is_ignored:
-                    white_routes = self._prefix_api_name(self.extensions.whitelist_routes)
+                    white_routes = self._prefix_api_name(self.config.whitelist_routes)
                     not_whitelist = self._allow_public_routes(white_routes)
                     if not_whitelist:
                         self._handle_token()
@@ -172,7 +172,7 @@ class Routing(BaseRouting):
         try:
             decoded_token = jwt.decode(
                 token,
-                self.extensions.secret_key,
+                self.config.secret_key,
                 algorithms="HS256"
             )
         except InvalidTokenError:

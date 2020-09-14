@@ -15,7 +15,7 @@ class SecretKeyError(Exception):
         super(SecretKeyError, self).__init__(self.message)
 
 
-class Config:
+class _Config:
     """
     :param secret_key: User defined secret key
     :param entity_key: The name of the model's entity attribute
@@ -41,25 +41,25 @@ class Config:
         self.entity_models = entity_models
 
 
-class BaseExtension(ABC):
+class BaseConfig(ABC):
     """Abstract Base Class for Extensions"""
     @abstractmethod
-    def init_extensions(self, config: Dict[str, Any], **kwargs) -> Config:
+    def init_config(self, config: Dict[str, Any], **kwargs) -> _Config:
         # pylint: disable=missing-function-docstring
         pass
 
 
-class Extensions(BaseExtension):
+class Config(BaseConfig):
     """Contains the main configuration values"""
     entity_models: List[_ORMType]
 
-    def init_extensions(self, config: Any, **kwargs) -> Config:
+    def init_config(self, config: Any, **kwargs) -> _Config:
         """
         :param config:
         :return:
         """
         entity_models = kwargs.get("entity_models")
-        config = Config(
+        config = _Config(
             config.get("SECRET_KEY"),
             config.get("ENTITY_KEY") or "id",
             config.get("WHITE_LIST_ROUTES") or [],

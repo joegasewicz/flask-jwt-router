@@ -3,7 +3,7 @@
     can decode & encode JSON web tokens correctly & return
     an entity's data.
 
-    The extension variables used in this class are:
+    The configension variables used in this class are:
         - SECRET_KEY or __TEST_SECRET__
         - ENTITY_KEY or id
 
@@ -16,7 +16,7 @@ import jwt
 from flask import jsonify
 
 from flask_jwt_router._entity import Entity
-from flask_jwt_router._extensions import Extensions
+from flask_jwt_router._config import Config
 from flask_jwt_router._routing import Routing
 from tests.fixtures.main_fixture import test_client, jwt_routes
 from tests.fixtures.token_fixture import mock_decoded_token, mock_decoded_token_two, mock_decoded_token_three
@@ -40,38 +40,38 @@ class TestEntity:
     """
         Entity class public methods tests
     """
-    extensions = {
+    config = {
         "WHITE_LIST_ROUTES": [("PUT", "/banana")],
         "IGNORED_ROUTES": [("GET", "/")],
         "JWT_ROUTER_API_NAME": "/api/v1",
         "SECRET_KEY": "__TEST_SECRET__",
         "ENTITY_KEY": "id",
     }
-    ext = Extensions().init_extensions(extensions)
+    config = Config().init_config(config)
 
     token_non_entity = {'id': 12, 'exp': 1577037162}
 
     def test_get_entity_from_token(self, MockEntityModelThree, mock_decoded_token_three):
 
-        self.ext.entity_models = [MockEntityModelThree]
+        self.config.entity_models = [MockEntityModelThree]
 
-        entity = Entity(self.ext)
+        entity = Entity(self.config)
 
         assert entity.get_entity_from_token(mock_decoded_token_three) == [(1, 'joe')]
 
     def test_get_entity_from_token_multiple(self, MockEntityModel, MockEntityModelTwo, mock_decoded_token_two):
 
-        self.ext.entity_models = [MockEntityModel, MockEntityModelTwo]
+        self.config.entity_models = [MockEntityModel, MockEntityModelTwo]
 
-        entity = Entity(self.ext)
+        entity = Entity(self.config)
 
         assert entity.get_entity_from_token(mock_decoded_token_two) == [(1, 'joe')]
 
     def test_get_attr_name(self, MockEntityModel, mock_decoded_token):
 
-        self.ext.entity_models = [MockEntityModel]
+        self.config.entity_models = [MockEntityModel]
 
-        entity = Entity(self.ext)
+        entity = Entity(self.config)
         entity.get_entity_from_token(mock_decoded_token)
 
         result = entity.get_attr_name()
