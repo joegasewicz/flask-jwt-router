@@ -125,6 +125,24 @@ def login():
 (With SqlAlchemy, you can define a `__tablename__` attribute directly or else
 the name is derived from your entity’s database table name).
 
+# Setting the Token Expire Duration
+There are two ways to set the expire duration of the JWT.
+
+from your app config
+```python
+        # Set the token expire duration to 7 days
+        app.config["JWT_EXPIRE_DAYS"] = 7
+```
+calling the `set_exp`
+```python
+
+        # Set the token expire duration to 14 days
+        jwt_routes = JwtRoutes()
+        # jwt_routes.init_app( ...etc
+        jwt_routes.set_exp(expire_days=14)
+```
+By default the expire duration is set to 30 days
+
 # Create & update Tokens on Routes
 Create a new entity & return a new token
 ```python
@@ -178,24 +196,6 @@ If you are handling a request without a token in the headers you can call::
 ```python
     jwt_routes.create_token(entity_id=user_data.id, table_name="users")
 ```
-
-# Setting the Token Expire Duration
-There are two ways to set the expire duration of the JWT.
-
-from your app config
-```python
-        # Set the token expire duration to 7 days
-        app.config["JWT_EXPIRE_DAYS"] = 7
-```
-calling the `set_exp`
-```python
-
-        # Set the token expire duration to 14 days
-        jwt_routes = JwtRoutes()
-        # jwt_routes.init_app( ...etc
-        jwt_routes.set_exp(expire_days=14)
-```
-By default the expire duration is set to 30 days
 
 An Example configuration for registering & logging in users of different types:
 ```python
