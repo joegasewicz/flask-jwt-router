@@ -63,14 +63,14 @@ def test_entity_two():
 
 @pytest.fixture(scope='module')
 def test_client():
-
+    flask_app.config["SECRET_KEY"] = "__TEST_SECRET__"
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
     flask_app.config["JWT_ROUTER_API_NAME"] = "/api/v1"
     flask_app.config["WHITE_LIST_ROUTES"] = [
         ("GET", "/test"),
         ("POST", "/test_entity"),
         ("GET", "/bananas/sub"),
-        ("PUT", "/apples/sub/<int:user_id>")
+        ("PUT", "/apples/sub/<int:user_id>"),
     ]
     flask_app.config["IGNORED_ROUTES"] = [
         ("GET", "/"),

@@ -1,11 +1,13 @@
 from flask_jwt_router._jwt_routes import JwtRoutes
 import pytest
 
+
 class TestJwtRouter:
+
     def test_get_secret_key(self):
         class App:
             config = {
-                "SECRET_KEY": "123abc"
+                "SECRET_KEY": "__TEST_SECRET__"
             }
 
             def before_request(self, t):
@@ -15,10 +17,12 @@ class TestJwtRouter:
         flask_jwt_router = JwtRoutes(app)
 
         result = flask_jwt_router.extensions.secret_key
-        assert result == "123abc"
+        assert result == "__TEST_SECRET__"
 
         class App:
-            config = {}
+            config = {
+                "SECRET_KEY": "__TEST_SECRET__"
+            }
 
             def before_request(self, t):
                 pass
@@ -26,7 +30,7 @@ class TestJwtRouter:
         app = App()
         flask_jwt_router_two = JwtRoutes(app)
         result_two = flask_jwt_router_two.extensions.secret_key
-        assert result_two == "DEFAULT_SECRET_KEY"
+        assert result_two == "__TEST_SECRET__"
 
     def test_get_exp(self):
         flask_jwt_router = JwtRoutes()
@@ -47,6 +51,7 @@ class TestJwtRouter:
         white_list = [("POST", "/test")]
         class App:
             config = {
+                "SECRET_KEY": "__TEST_SECRET__",
                 "WHITE_LIST_ROUTES": white_list
             }
         app = App()
@@ -57,7 +62,7 @@ class TestJwtRouter:
     def test_create_token(self):
         class App:
             config = {
-                "SECRET_KEY": "123abc"
+                "SECRET_KEY": "__TEST_SECRET__"
             }
             def before_request(self, t):
                 pass

@@ -9,7 +9,7 @@ new_token = jwt.encode({
             "id": 1,
             "exp": datetime.utcnow() + relativedelta(days=+30)
         },
-            "TEST_SECRET",
+            "__TEST_SECRET__",
             algorithm="HS256"
         ).decode("utf-8")
 
@@ -23,7 +23,7 @@ def mock_token():
 def mock_decoded_token():
     return jwt.decode(
             new_token,
-            "TEST_SECRET",
+            "__TEST_SECRET__",
             algorithms="HS256"
     )
 
@@ -33,7 +33,7 @@ new_token_two = jwt.encode({
             "id": 1,
             "exp": datetime.utcnow() + relativedelta(days=+30)
         },
-            "TEST_SECRET",
+            "__TEST_SECRET__",
             algorithm="HS256"
         ).decode("utf-8")
 
@@ -47,7 +47,7 @@ def mock_token_two():
 def mock_decoded_token_two():
     return jwt.decode(
             new_token_two,
-            "TEST_SECRET",
+            "__TEST_SECRET__",
             algorithms="HS256"
     )
 
@@ -57,7 +57,7 @@ new_token_three = jwt.encode({
             "teacher_id": 1,
             "exp": datetime.utcnow() + relativedelta(days=+30)
         },
-            "TEST_SECRET",
+            "__TEST_SECRET__",
             algorithm="HS256"
         ).decode("utf-8")
 
@@ -71,7 +71,7 @@ def mock_token_three():
 def mock_decoded_token_three():
     return jwt.decode(
             new_token_three,
-            "TEST_SECRET",
+            "__TEST_SECRET__",
             algorithms="HS256"
     )
 
