@@ -45,11 +45,11 @@ class Authentication(BaseAuthentication):
         # pylint:disable=useless-super-delegation
         super(Authentication, self).__init__()
 
-    def encode_token(self, config: _Config, entity_id: Any, exp: int, table_name) -> str:
+    def encode_token(self, config: _Config, entity_id: Any, exp_days: int, table_name) -> str:
         """
         :param config: See :class:`~flask_jwt_router._config`
         :param entity_id: Normally the primary key `id` or `user_id`
-        :param exp: The expiry duration set when encoding a new token
+        :param exp_days: The expiry in days duration set when encoding a new token
         :param table_name: The Model Entity `__tablename__`
         :return: str
         """
@@ -60,36 +60,36 @@ class Authentication(BaseAuthentication):
             "table_name": table_name,
             self.entity_key: entity_id,
             # pylint: disable=no-member
-            "exp": datetime.utcnow() + relativedelta(days=+exp)
+            "exp": datetime.utcnow() + relativedelta(days=+exp_days)
         }, self.secret_key, algorithm="HS256").decode("utf-8")
         return encoded
 
-    def create_token(self, config: _Config, exp: int, **kwargs) -> str:
+    def create_token(self, config: _Config, exp_days: int, **kwargs) -> str:
         """
         kwargs:
             - entity_id: Represents the entity's primary key
             - table_name: The table name of the entity
         :param config: See :class:`~flask_jwt_router._config`
-        :param exp: The expiry duration set when encoding a new token
+        :param exp_days: The expiry in days duration set when encoding a new token
         :param kwargs:
         :return: Union[str, None]
         """
         self.entity_id = kwargs.get("entity_id", None)
         table_name = kwargs.get("table_name", None)
-        return self.encode_token(config, self.entity_id, exp, table_name)
+        return self.encode_token(config, self.entity_id, exp_days, table_name)
 
     def update_token(self,
                      config: _Config,
-                     exp: int,
+                     exp_days: int,
                      table_name: str,
                      **kwargs,
                      ) -> str:
         """
-        :param config:
-        :param exp:
-        :param table_name:
+        :param config: See :class:`~flask_jwt_router._config`
+        :param exp_days: The expiry in days duration set when encoding a new token
+        :param table_name: The table name of the entity
         :param kwargs:
         :return: Union[str, None]
         """
         self.entity_id = kwargs.get("entity_id", None)
-        return self.encode_token(config, self.entity_id, exp, table_name)
+        return self.encode_token(config, self.entity_id, exp_days, table_name)
