@@ -9,6 +9,15 @@ from typing import Any, ClassVar, List, Tuple, Dict, Union
 _ORMType = type(List[Tuple[int, str]])
 
 
+class NoTokenInHeadersError(Exception):
+    message = "No token in headers error!\n" \
+              "Did you mean to call create_token? " \
+              "See https://flask-jwt-router.readthedocs.io/en/latest/jwt_routes.html#authorization-tokens"
+
+    def __init__(self, err):
+        super(NoTokenInHeadersError, self).__init__(f"{err}\n{self.message}")
+
+
 class BaseEntity(ABC):
     # pylint:disable=missing-class-docstring
     @abstractmethod
@@ -81,7 +90,10 @@ class Entity(BaseEntity):
         """
         if not table_name:
             # In case `update_token()` is called, `table_name` is in the token
-            table_name = self.decoded_token.get("table_name")
+            try:
+                table_name = self.decoded_token.get("table_name")
+            except AttributeError as err:
+                raise NoTokenInHeadersError(err)
         auth_model = None
 
         for model in self.config.entity_models:
