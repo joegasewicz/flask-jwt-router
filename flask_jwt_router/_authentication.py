@@ -85,10 +85,11 @@ class Authentication(BaseAuthentication):
                      **kwargs,
                      ) -> str:
         """
+        kwargs:
+            - entity_id: Represents the entity's primary key
         :param config:
         :param exp:
         :param table_name:
-        :param kwargs:
         :return: Union[str, None]
         """
         self.entity_id = kwargs.get("entity_id", None)
