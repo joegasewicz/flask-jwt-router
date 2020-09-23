@@ -80,6 +80,7 @@ def register():
 ```python
 # Create your entity model (example uses Flask-SqlAlchemy)
 class UserModel(db.Model):
+    __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     
@@ -173,7 +174,7 @@ Access entity on Flask's global context
 
     @app.route("/login", methods=["GET"])
     def login():
-        user_data = g.get("user")
+        user_data = g.get("users") # This is your SqlAlchemy `__tablename__` or the default name.
         try:
             user_dumped = UserSchema().dump(user_data)
         except ValidationError as _:
