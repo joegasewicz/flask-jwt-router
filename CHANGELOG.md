@@ -26,4 +26,4 @@
 **Release 0.0.28** -
 
 - Created custom error for `update_token` method called on non existent token [Issue #151](https://github.com/joegasewicz/flask-jwt-router/issues/151)
-
+- Updated `Authenticate`'s `update_token` method's doc string with entity_id kwarg. [Issue #150](https://github.com/joegasewicz/flask-jwt-router/issues/150) 
