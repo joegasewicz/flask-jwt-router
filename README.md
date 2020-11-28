@@ -6,7 +6,7 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/flask-jwt-router)
 ![PyPI - License](https://img.shields.io/pypi/l/flask-jwt-router?color=pink)
 
-![Greenprint](logo.png?raw=true "Title")
+![Flask JWT Router](asssets/logo.png?raw=true "Title")
 
 # Flask JWT Router
 

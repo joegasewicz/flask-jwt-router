@@ -5,17 +5,18 @@ import logging
 import json
 
 
-class OAuthTwo:
+class HttpRequests:
 
     logger = logging.getLogger()
 
     def _get_headers(self, token: str) -> Dict[str, str]:
+        t = {"Authorization": f"Bearer {token}"} if token else {}
         return {
+            **t,
             "Content-type": "application/x-www-form-urlencoded",
-            "Authorization": f"Bearer {token}",
         }
 
-    def post_token(self, url: str, token: str) -> Union[Dict, None]:
+    def post_token(self, url: str, token: str = None) -> Union[Dict, None]:
         try:
             conn = http.client.HTTPConnection(url)
             conn.request("POST", "", None, self._get_headers(token))
@@ -28,7 +29,7 @@ class OAuthTwo:
         except HTTPException as err:
             self.logger.debug(err, exc_info=True)
 
-    def get_by_scope(self, scope_url: str, access_token: str) -> None:
+    def get_by_scope(self, scope_url: str, access_token: str = None) -> None:
         try:
             conn = http.client.HTTPConnection(scope_url)
             conn.request("GET", "", None, self._get_headers(access_token))
