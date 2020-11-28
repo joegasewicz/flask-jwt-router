@@ -173,12 +173,13 @@
 
 import logging
 from warnings import warn
-from typing import List
+from typing import List, Dict
 
 from ._config import BaseConfig, Config
 from ._entity import BaseEntity, Entity, _ORMType
 from ._routing import BaseRouting, Routing
 from ._authentication import BaseAuthentication, Authentication
+from flask_jwt_router.oauth2.google import Google
 
 # pylint:disable=invalid-name
 logger = logging.getLogger()
@@ -226,10 +227,17 @@ class JwtRoutes:
     #: for more information.
     ext: BaseConfig
 
+    #: Optional Google OAuth 2.0 Single Sign On. See :class `~flask_jwt_router._google_oauth2`
+    #: for more information.
+    google: Google
+
+    oauth2_google: Dict
+
     def __init__(self, app=None, **kwargs):
         self.entity_models = kwargs.get("entity_models")
         self.config = Config()
         self.auth = Authentication()
+        self.google = Google()
         self.app = app
         if app:
             self.init_app(app, entity_models=self.entity_models)
@@ -242,11 +250,14 @@ class JwtRoutes:
         """
         self.app = app if app else self.app
         entity_models = self.entity_models or kwargs.get("entity_models")
+        self.oauth2_google = kwargs.get("oauth2_google")
         app_config = self.get_app_config(self.app)
         self.config.init_config(app_config, entity_models=entity_models)
         self.entity = Entity(self.config)
         self.routing = Routing(self.app, self.config, self.entity)
         self.app.before_request(self.routing.before_middleware)
+        if self.oauth2_google:
+            self.google.init(**self.oauth2_google)
         if self.config.expire_days:
             self.exp = self.config.expire_days
         else:

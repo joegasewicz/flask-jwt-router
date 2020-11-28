@@ -1,5 +1,5 @@
 import pytest
-from flask import Flask, jsonify, g
+from flask import Flask, jsonify, g, request
 from flask_jwt_router._jwt_routes import JwtRoutes
 from flask_sqlalchemy import SQLAlchemy
 
@@ -59,6 +59,12 @@ def test_entity_two():
             "name": g.teachers.name,
         }
     })
+
+
+@flask_app.route("/api/v1/google_login", methods=["POST"])
+def google_login():
+    data = jwt_routes.google.oauth_login(request)
+    return data, 200
 
 
 @pytest.fixture(scope='module')

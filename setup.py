@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='flask-jwt-router',
-    version='0.0.27',
+    version='0.0.28',
     description='Flask JWT Router is a Python library that adds authorised routes to a Flask app',
     packages=["flask_jwt_router"],
     classifiers=[
@@ -23,6 +23,6 @@ setup(
     author_email="joegasewicz@gmail.com",
     install_requires=[
         "PyJWT",
-        "python-dateutil==2.8.0"
+        "python-dateutil>=2.8.0"
     ]
 )

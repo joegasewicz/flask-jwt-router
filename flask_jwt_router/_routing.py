@@ -142,6 +142,7 @@ class Routing(BaseRouting):
         path = request.path
         method = request.method
         is_static = self._add_static_routes(path)
+        method = request.method
         if not is_static:
             # Handle ignored routes
             if self._does_route_exist(path, method):
