@@ -22,6 +22,8 @@ is supported.
 ![Google-Cloud](assets/Google-Cloud.png)
 
 ### Google OAuth 2.0 Quick Start
+
+Read the detailed instructions here: [Flask-JWT-Router](https://flask-jwt-router.readthedocs.io/en/latest/google.html)
 ```python
 oauth_options = {
     "client_id": "<CLIENT_ID>",
