@@ -67,6 +67,13 @@ def google_login():
     return data, 200
 
 
+@flask_app.route("/api/v1/mock_google_exchange", methods=["POST"])
+def google_exchange():
+    return {
+        "data": "hello!"
+    }
+
+
 @pytest.fixture(scope='module')
 def test_client():
     flask_app.config["SECRET_KEY"] = "__TEST_SECRET__"
@@ -86,7 +93,15 @@ def test_client():
     from tests.fixtures.models import TeacherModel
     flask_app.config["ENTITY_MODELS"] = [TeacherModel]
 
-    jwt_routes.init_app(flask_app)
+    google_oauth = {
+        "client_id": "<CLIENT_ID>",
+        "client_secret": "<CLIENT_SECRET>",
+        "redirect_uri": "http://localhost:3000",
+        "tablename": "oauth_tablename",
+        "email_field": "email",
+        "expires_in": 3600,
+    }
+    jwt_routes.init_app(flask_app, google_oauth=google_oauth)
     db.init_app(flask_app)
 
     with flask_app.app_context():

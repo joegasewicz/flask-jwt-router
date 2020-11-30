@@ -16,7 +16,15 @@ def jwt_router_client(request):
     app.config = {**app.config, **request.param}
     app.config["TESTING"] = True
     app.config["SECRET_KEY"] = "__TEST_SECRET__"
-    jwt_routes.init_app(app)
+    google_oauth = {
+        "client_id": "<CLIENT_ID>",
+        "client_secret": "<CLIENT_SECRET>",
+        "redirect_uri": "http://localhost:3000",
+        "tablename": "oauth_tablename",
+        "email_field": "email",
+        "expires_in": 3600,
+    }
+    jwt_routes.init_app(app, google_oauth=google_oauth)
     client = app.test_client()
     ctx = app.app_context()
     ctx.push()
@@ -24,7 +32,6 @@ def jwt_router_client(request):
     yield client
 
     ctx.pop()
-
 
 
 @pytest.fixture

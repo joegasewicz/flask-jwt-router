@@ -9,6 +9,9 @@ class MockQuery:
         self.results = [(1, u'joe')]
 
     def filter_by(self, **kwargs):
+        email = kwargs.get("email")
+        if email:
+            self.results = [(1, u'jaco@gmail.com')]
         return self
 
     def one(self):
@@ -65,6 +68,19 @@ def MockEntityModelThree():
         user_name = Column(String(10))
 
     return TestEntityThree
+
+
+@pytest.fixture
+def MockAOuthModel():
+    Base = declarative_base()
+    class TestOAuthModel(Base):
+        __tablename__ = "oauth_tablename"
+        query = MockQuery()
+        id = Column(Integer(), primary_key=True)
+        email = Column(String(20))
+
+    return TestOAuthModel
+
 
 
 @pytest.fixture

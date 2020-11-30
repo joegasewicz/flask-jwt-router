@@ -1,6 +1,6 @@
-from http.client import HTTPResponse, HTTPException
-import http.client
-from typing import Dict, Union
+import urllib.request
+from urllib.error import HTTPError, URLError, ContentTooShortError
+from typing import Dict, Tuple
 import logging
 import json
 
@@ -9,32 +9,62 @@ class HttpRequests:
 
     logger = logging.getLogger()
 
-    def _get_headers(self, token: str) -> Dict[str, str]:
+    urls: Dict
+
+    headers: Dict[str, str]
+
+    def __init__(self, urls):
+        self.urls = urls
+
+    def get_url(self, name: str) -> str:
+        return self.urls[name]
+
+    def _get_headers(self, token: str = None) -> Dict[str, str]:
         t = {"Authorization": f"Bearer {token}"} if token else {}
         return {
             **t,
             "Content-type": "application/x-www-form-urlencoded",
         }
 
-    def post_token(self, url: str, token: str = None) -> Union[Dict, None]:
+    def token(self, url: str, verb: str = "POST", data=None) -> Dict:
         try:
-            conn = http.client.HTTPConnection(url)
-            conn.request("POST", "", None, self._get_headers(token))
-            response = conn.getresponse()
-            data = response.read()
+            req = urllib.request.Request(
+                url=url,
+                data=data,
+                method=verb,
+                headers=self._get_headers(),
+            )
+            with urllib.request.urlopen(req) as response:
+                data = response.read().decode("utf-8")
+            assert 200 == response.status
             self.logger.debug(f"Successfully authenticated from {url}")
-            assert 200 == response.status
-            conn.close()
             return json.loads(data)
-        except HTTPException as err:
+        except HTTPError as err:
             self.logger.debug(err, exc_info=True)
+        except ContentTooShortError as err:
+            self.logger.debug(err, exc_info=True)
+        except URLError as err:
+            self.logger.debug(err, exc_info=True)
+        # except AssertionError as err: TODO - move this to _routing.py
+        #     self.logger.debug(err, exc_info=True)
 
-    def get_by_scope(self, scope_url: str, access_token: str = None) -> None:
+    def get_by_scope(self, url: str, token, *, verb="GET", data=None) -> Dict:
         try:
-            conn = http.client.HTTPConnection(scope_url)
-            conn.request("GET", "", None, self._get_headers(access_token))
-            response = conn.getresponse()
+            self.headers = self._get_headers(token)
+            req = urllib.request.Request(
+                url=url,
+                data=data,
+                method=verb,
+                headers=self.headers,
+            )
+            with urllib.request.urlopen(req) as response:
+                data = response.read().decode("utf-8")
             assert 200 == response.status
-            self.logger.debug(f"Successfully authenticated from {scope_url}")
-        except HTTPException as err:
+            self.logger.debug(f"Successfully authenticated from {url}")
+            return json.loads(data)
+        except HTTPError as err:
+            self.logger.debug(err, exc_info=True)
+        except ContentTooShortError as err:
+            self.logger.debug(err, exc_info=True)
+        except URLError as err:
             self.logger.debug(err, exc_info=True)

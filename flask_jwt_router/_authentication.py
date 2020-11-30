@@ -4,24 +4,25 @@ from datetime import datetime
 # pylint:disable=wildcard-import,unused-wildcard-import
 from dateutil.relativedelta import *
 import jwt
+from flask import g
 
-from ._config import _Config
+from ._config import Config
 
 
 class BaseAuthentication(ABC):
     # pylint:disable=missing-class-docstring
     @abstractmethod
-    def create_token(self, config: _Config, exp: int, **kwargs):
+    def create_token(self, config: Config, exp: int, **kwargs):
         # pylint:disable=missing-function-docstring
         pass
 
     @abstractmethod
-    def update_token(self, config: _Config, exp: int, table_name, **kwarg):
+    def update_token(self, config: Config, exp: int, table_name, **kwarg):
         # pylint:disable=missing-function-docstring
         pass
 
     @abstractmethod
-    def encode_token(self, config: _Config, entity_id: Any, exp: int, table_name: str):
+    def encode_token(self, config: Config, entity_id: Any, exp: int, table_name: str):
         # pylint:disable=missing-function-docstring
         pass
 
@@ -45,7 +46,7 @@ class Authentication(BaseAuthentication):
         # pylint:disable=useless-super-delegation
         super(Authentication, self).__init__()
 
-    def encode_token(self, config: _Config, entity_id: Any, exp: int, table_name) -> str:
+    def encode_token(self, config: Config, entity_id: Any, exp: int, table_name) -> str:
         """
         :param config: See :class:`~flask_jwt_router._config`
         :param entity_id: Normally the primary key `id` or `user_id`
@@ -64,7 +65,7 @@ class Authentication(BaseAuthentication):
         }, self.secret_key, algorithm="HS256").decode("utf-8")
         return encoded
 
-    def create_token(self, config: _Config, exp: int, **kwargs) -> str:
+    def create_token(self, config: Config, exp: int, **kwargs) -> str:
         """
         kwargs:
             - entity_id: Represents the entity's primary key
@@ -79,7 +80,7 @@ class Authentication(BaseAuthentication):
         return self.encode_token(config, self.entity_id, exp, table_name)
 
     def update_token(self,
-                     config: _Config,
+                     config: Config,
                      exp: int,
                      table_name: str,
                      **kwargs,
@@ -94,3 +95,9 @@ class Authentication(BaseAuthentication):
         """
         self.entity_id = kwargs.get("entity_id", None)
         return self.encode_token(config, self.entity_id, exp, table_name)
+
+    def get_oauth_token(self) -> str:
+        """
+        :return: A Google OAuth 2.0 token
+        """
+        return g.get("access_token")

@@ -16,18 +16,22 @@ import pytest
 from flask_jwt_router._routing import Routing
 from flask_jwt_router._config import Config
 from flask_jwt_router._entity import Entity
-from tests.fixtures.token_fixture import mock_token
-from tests.fixtures.model_fixtures import TestMockEntity
+from flask_jwt_router.oauth2.google import Google
+from tests.fixtures.token_fixture import mock_token, mock_access_token
+from tests.fixtures.model_fixtures import TestMockEntity, MockAOuthModel
 from tests.fixtures.app_fixtures import jwt_router_client, test_client_static
 from tests.fixtures.main_fixture import test_client
+from tests.fixtures.oauth_fixtures import http_requests, oauth_urls
 
 
 class MockArgs:
-    def __init__(self, token=None, headers=False):
+    def __init__(self, token=None, headers=None):
         self.token = token
         self.headers = headers
 
     def get(self, t):
+        if t == "X-Auth-Token":
+            return f"Bearer {self.token}"
         if self.headers:
             return f"Bearer {self.token}"
         else:
@@ -43,26 +47,41 @@ class TestRouting:
         "JWT_ROUTER_API_NAME": "/api/v1",
         "SECRET_KEY": "__TEST_SECRET__",
     }
-    config = Config()
-    config.init_config(app_config)
+    oauth_options = {
+        "client_id": "<CLIENT_ID>",
+        "client_secret": "<CLIENT_SECRET>",
+        "redirect_uri": "http://localhost:3000",
+        "tablename": "oauth_tablename",
+        "email_field": "email",
+        "expires_in": 3600,
+    }
 
-    def test_before_middleware(self, monkeypatch, TestMockEntity, mock_token):
+    def test_before_middleware(self, monkeypatch, TestMockEntity, MockAOuthModel, mock_token, http_requests):
         app = Flask(__name__)
+
         @app.route("/test", methods=["GET"])
-        def test_one():
+        def fc_one():
             return "/test"
         # Manually set the primary key
         entity = TestMockEntity(id=1, user_name="joe")
+        oauth_entity = MockAOuthModel(id=1, email="jaco@gmail.com")
 
         ctx = app.test_request_context("/test")
         ctx.push()
 
         assert entity.user_name == "joe"
         assert entity.id == 1
+        assert oauth_entity.id == 1
+        assert oauth_entity.email == "jaco@gmail.com"
 
-        self.config.entity_models = [TestMockEntity]
-        entity = Entity(self.config)
-        routing = Routing(app, self.config, entity)
+        config = Config()
+        config.init_config(self.app_config, google_oauth=self.oauth_options)
+
+        config.entity_models = [TestMockEntity, MockAOuthModel]
+        entity = Entity(config)
+        google = Google(http_requests(oauth_urls))
+        google.init(**config.google_oauth)
+        routing = Routing(app, config, entity, google)
 
         with ctx:
             # token from args
@@ -76,6 +95,12 @@ class TestRouting:
             monkeypatch.setattr("flask.request.headers", MockArgs(mock_token, True))
             routing.before_middleware()
             assert ctx.g.test_entities == [(1, 'joe')]
+
+        with ctx:
+            # token from oauth headers
+            monkeypatch.setattr("flask.request.headers", MockArgs("<access_token>", "X-Auth-Token"))
+            routing.before_middleware()
+            assert ctx.g.oauth_tablename == [(1, "jaco@gmail.com")]
 
     @pytest.mark.parametrize(
         "jwt_router_client,entity_model,expected", [

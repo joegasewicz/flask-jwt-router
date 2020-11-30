@@ -2,16 +2,25 @@ from flask import Flask
 import pytest
 
 from flask_jwt_router._jwt_routes import JwtRoutes
-from tests.fixtures.model_fixtures import MockEntityModel
+from tests.fixtures.model_fixtures import MockEntityModel, MockAOuthModel
 
 
 class TestJwtRoutes:
+
+    oauth_options = {
+        "client_id": "<CLIENT_ID>",
+        "client_secret": "<CLIENT_SECRET>",
+        "redirect_uri": "http://localhost:3000",
+        "tablename": "users",
+        "email_field": "email",
+        "expires_in": 3600,
+    }
 
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "__TEST_SECRET__"
     app.config["JWT_EXPIRE_DAYS"] = 8
 
-    def test_init_app(self, MockEntityModel):
+    def test_init_app(self, MockEntityModel, MockAOuthModel):
         jwt = JwtRoutes(self.app, entity_models=[MockEntityModel])
         assert jwt.config.entity_models[0] == MockEntityModel
         assert jwt.app == self.app
@@ -41,6 +50,28 @@ class TestJwtRoutes:
         assert jwt.config.entity_models[0] == MockEntityModel
         assert jwt.app == self.app
         assert jwt.config.expire_days == 8
+
+        self.app.config["ENTITY_MODELS"] = [MockEntityModel, MockAOuthModel]
+        jwt = JwtRoutes()
+        jwt.init_app(self.app, google_oauth=self.oauth_options)
+        assert jwt.config.entity_models[1] == MockAOuthModel
+        assert jwt.config.google_oauth["client_id"] == "<CLIENT_ID>"
+        assert jwt.config.google_oauth["client_secret"] == "<CLIENT_SECRET>"
+        assert jwt.config.google_oauth["redirect_uri"] == "http://localhost:3000"
+        assert jwt.config.google_oauth["tablename"] == "users"
+        assert jwt.config.google_oauth["email_field"] == "email"
+        assert jwt.config.google_oauth["expires_in"] == 3600
+
+        self.app.config["ENTITY_MODELS"] = [MockEntityModel, MockAOuthModel]
+        jwt = JwtRoutes(self.app, google_oauth=self.oauth_options)
+        jwt.init_app()
+        assert jwt.config.entity_models[1] == MockAOuthModel
+        assert jwt.config.google_oauth["client_id"] == "<CLIENT_ID>"
+        assert jwt.config.google_oauth["client_secret"] == "<CLIENT_SECRET>"
+        assert jwt.config.google_oauth["redirect_uri"] == "http://localhost:3000"
+        assert jwt.config.google_oauth["tablename"] == "users"
+        assert jwt.config.google_oauth["email_field"] == "email"
+        assert jwt.config.google_oauth["expires_in"] == 3600
 
     def test_get_secret_key(self):
         class App:

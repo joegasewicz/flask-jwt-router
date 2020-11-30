@@ -15,26 +15,6 @@ class SecretKeyError(Exception):
         super(SecretKeyError, self).__init__(self.message)
 
 
-class _Config:
-    def __init__(self,
-                 secret_key=None,
-                 entity_key="id",
-                 whitelist_routes=None,
-                 api_name=None,
-                 ignored_routes=None,
-                 entity_models=None,
-                 expire_days=None,
-                 ):
-
-        self.secret_key = secret_key
-        self.entity_key = entity_key
-        self.whitelist_routes = whitelist_routes
-        self.api_name = api_name
-        self.ignored_routes = ignored_routes
-        self.entity_models = entity_models
-        self.expire_days = expire_days
-
-
 class BaseConfig(ABC):
     """Abstract Base Class for Extensions"""
 
@@ -56,6 +36,10 @@ class Config(BaseConfig):
     :param ignored_routes: Opt our routes from api name prefixing
     :param entity_models: Multiple entities to be authenticated
     :param expire_days: Expire time for the token in days
+    :param oauth_entity: If google_oauth options are declared then this will indicate the entity key in flight
+    :kwargs:
+        :param entity_models: Multiple entities to be authenticated
+        :param google_oauth: Options if the type or auth is Google's OAuth 2.0
     """
     secret_key: str
     entity_key: str
@@ -64,29 +48,25 @@ class Config(BaseConfig):
     ignored_routes: List[Tuple[str]]
     entity_models: List[_ORMType]
     expire_days: int
+    google_oauth: Dict
+    oauth_entity: str = None
 
     def init_config(self, app_config: Dict[str, Any], **kwargs) -> None:
         """
         :param app_config:
         :return:
         """
-        entity_models = kwargs.get("entity_models")
-        _config = _Config(
-            app_config.get("SECRET_KEY"),
-            app_config.get("ENTITY_KEY") or "id",
-            app_config.get("WHITE_LIST_ROUTES") or [],
-            app_config.get("JWT_ROUTER_API_NAME"),
-            app_config.get("IGNORED_ROUTES") or [],
-            entity_models or app_config.get("ENTITY_MODELS") or [],
-            app_config.get("JWT_EXPIRE_DAYS")
-        )
-        if not _config.secret_key:
+        self.secret_key = app_config.get("SECRET_KEY")
+        self.entity_key = app_config.get("ENTITY_KEY") or "id"
+        self.whitelist_routes = app_config.get("WHITE_LIST_ROUTES") or []
+        self.api_name = app_config.get("JWT_ROUTER_API_NAME")
+        self.ignored_routes = app_config.get("IGNORED_ROUTES") or []
+        self.entity_models = app_config.get("ENTITY_MODELS") or kwargs.get("entity_models") or []
+        self.expire_days = app_config.get("JWT_EXPIRE_DAYS")
+        self.google_oauth = kwargs.get("google_oauth")
+
+        if not self.secret_key:
             raise SecretKeyError
 
-        self.secret_key = _config.secret_key
-        self.entity_key = _config.entity_key
-        self.whitelist_routes = _config.whitelist_routes
-        self.api_name = _config.api_name
-        self.ignored_routes = _config.ignored_routes
-        self.entity_models = _config.entity_models
-        self.expire_days = _config.expire_days
+        if self.google_oauth:
+            self.oauth_entity = self.google_oauth["email_field"]

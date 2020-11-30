@@ -9,9 +9,6 @@ class BaseOAuth(ABC):
     #     pass
 
     @abstractmethod
-    def init(self, *, client_id, client_secret, redirect_uri) -> None:
+    def init(self, *, client_id, client_secret, redirect_uri, expires_in, email_field, tablename) -> None:
         pass
 
-    # @abstractmethod
-    # def refresh_token(self) -> Dict:
-    #     pass
