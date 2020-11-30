@@ -15,6 +15,77 @@
 
         jwt_routes.init_app(app, google_oauth=oauth_options)
 
+    Now your front end needs a token. Create an endpoint &
+    return a new access token from the clients header *code*.
+    For Example::
+
+        from flask import request
+
+        @app.routes("/login", methods=["POST"])
+        def login():
+            jwt_routes.google.oauth_login(request) # Pass in Flask's request
+
+    Now, the next time your front-end requests authorised resources
+    flask-jwt-router will authenticate with this access token until
+    it expires.
+
+    Flask-JWT-Router OAuth 2.0 Flow Explained
+    =========================================
+
+    Client
+    ++++++
+
+    If you're client is a React application, we strongly recommend you use React-Google-Oauth2 -
+    https://github.com/joegasewicz/react-google-oauth2.0 It's maintain by Flask-JWT-Router's author,
+     so if fully compatible.
+
+    The *client* is your front end application, this could be another Flask api that
+    renders jinja2 html templates or a React / Angular / Vue.js single page application.
+    There are 2 steps that your client must successfully complete before Flask-JWT-Router
+    can return a valid Google OAuth 2.0 access token.
+
+    1.  The client must redirect the user to Googles sign in page. The user will then be
+        asked to accept any extra scopes (Only required for advance access to Google Apis).
+        If the user successfully signs in then Google will return a code to the client.
+
+    2.  The client must now make a ``POST`` http request to your Flask api with Google's **code**
+        in the **X-Auth-Token** header. For example
+
+            curl -X POST -H "X-Auth-Token": "<YOUR_GOOGLE_OAUTH2.0_CODE>" http://localhost:5000/login
+
+    Server
+    ++++++
+
+    The server is your Flask app. Now that your client has a code & has made the request to
+    the server, we must provide a Flask view handler to exchange the client's code for an
+    access token. Flask-JWT-Router has public method (See :obj:`~flask_jwt_router.oauth2.google.oauth_login`)
+    that takes Flask's request as a single argument. If the Google OAuth2.0 **code** is valid, then a valid
+    access token will be returned in the response body.
+
+    For example::
+
+        from flask import request
+
+        @app.routes("/login", methods=["POST"])
+        def login():
+            data = jwt_routes.google.oauth_login(request) # Pass in Flask's request
+            return data, 200
+
+        # Returns:
+        # {
+        #   "access_token": "GOOGLE_OAUTH2.0_ACCESS_TOKEN>
+        # }
+
+    Each time the client requires any authorised resources in your Flask app, it must make all requests
+    will the following headers::
+
+        {
+            "X-Auth-Token" : "<YOUR_GOOGLE_OAUTH2.0_CODE>"
+        }
+
+    This will allow the user to gain access to your Flask's app resources until the access token's
+    expire time has ended. The client should then decide whether to redirect the user to Google's
+    login screen.
 """
 from typing import Dict
 from abc import ABC, abstractmethod

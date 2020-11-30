@@ -11,10 +11,8 @@ Welcome to Flask JWT Router
    :maxdepth: 2
 
    jwt_routes
-   authentication
-   entity
-   config
-   routing
+   oauth2
+   classes
 
 
 Features
