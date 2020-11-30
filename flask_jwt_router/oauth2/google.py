@@ -35,9 +35,9 @@
     Client
     ++++++
 
-    If you're client is a React application, we strongly recommend you use React-Google-Oauth2 -
+    If you're client is a React application, we strongly recommend you use React-Google-Oauth2
     https://github.com/joegasewicz/react-google-oauth2.0 It's maintain by Flask-JWT-Router's author,
-     so if fully compatible.
+    so if fully compatible.
 
     The *client* is your front end application, this could be another Flask api that
     renders jinja2 html templates or a React / Angular / Vue.js single page application.

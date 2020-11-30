@@ -9,6 +9,7 @@ twine = "*"
 pyjwt = "*"
 Flask-SQLAlchemy = "*"
 Sphinx = "*"
+tox = "*"
 
 [packages]
 flask = "*"
