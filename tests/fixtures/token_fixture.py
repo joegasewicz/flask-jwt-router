@@ -20,6 +20,11 @@ def mock_token():
 
 
 @pytest.fixture
+def mock_access_token():
+    return "Bearer <ACCESS_TOKEN>"
+
+
+@pytest.fixture
 def mock_decoded_token():
     return jwt.decode(
             new_token,

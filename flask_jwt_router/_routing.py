@@ -5,12 +5,15 @@ from abc import ABC, abstractmethod
 # pylint:disable=invalid-name
 import logging
 from flask import request, abort, g
-from werkzeug.routing import RequestRedirect, MethodNotAllowed, NotFound
+from werkzeug.routing import RequestRedirect
+from werkzeug.exceptions import MethodNotAllowed, NotFound
 from jwt.exceptions import InvalidTokenError
 import jwt
 
 
 from ._entity import BaseEntity
+from .oauth2.google import Google
+from ._config import Config
 
 logger = logging.getLogger()
 
@@ -29,11 +32,12 @@ class Routing(BaseRouting):
     :param config: :class:`~flask_jwt_router._config`
     :param entity: :class:`~flask_jwt_router._entity`
     """
-    def __init__(self, app, config, entity: BaseEntity):
+    def __init__(self, app, config: Config, entity: BaseEntity, google: Google = None):
         self.app = app
         self.config = config
         self.logger = logger
         self.entity = entity
+        self.google = google
 
     def _prefix_api_name(self, w_routes=None):
         """
@@ -142,6 +146,7 @@ class Routing(BaseRouting):
         path = request.path
         method = request.method
         is_static = self._add_static_routes(path)
+        method = request.method
         if not is_static:
             # Handle ignored routes
             if self._does_route_exist(path, method):
@@ -164,9 +169,34 @@ class Routing(BaseRouting):
         try:
             if request.args.get("auth"):
                 token = request.args.get("auth")
-            else:
-                bearer = request.headers.get("Authorization")
+            elif request.headers.get("X-Auth-Token") and self.google:
+                bearer = request.headers.get("X-Auth-Token")
                 token = bearer.split("Bearer ")[1]
+                try:
+                    # Currently token refreshing is not supported, so pass the current token through
+                    auth_results = self.google.authorize(token)
+                    email = auth_results["email"]
+                    setattr(self.entity, "entity_key", self.config.oauth_entity)
+                    entity = self.entity.get_entity_from_token_or_tablename(
+                        tablename=self.google.tablename,
+                        email_value=email,
+                    )
+                    setattr(g, self.entity.get_entity_from_ext().__tablename__, entity)
+                    setattr(g, "access_token", token)
+                    return None
+                except InvalidTokenError:
+                    return abort(401)
+                except AttributeError:
+                    return abort(401)
+            else:
+                # Sometimes a developer may define the auth field name as Bearer or Basic
+                auth_header = request.headers.get("Authorization")
+                if not auth_header:
+                    abort(401)
+                if "Bearer " in auth_header:
+                    token = auth_header.split("Bearer ")[1]
+                elif "Basic " in auth_header:
+                    token = auth_header.split("Basic ")[1]
         except AttributeError:
             return abort(401)
         try:
@@ -178,7 +208,8 @@ class Routing(BaseRouting):
         except InvalidTokenError:
             return abort(401)
         try:
-            entity = self.entity.get_entity_from_token(decoded_token)
+            self.entity_key = self.config.entity_key
+            entity = self.entity.get_entity_from_token_or_tablename(decoded_token)
             setattr(g, self.entity.get_entity_from_ext().__tablename__, entity)
             return None
         except ValueError:

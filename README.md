@@ -6,7 +6,7 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/flask-jwt-router)
 ![PyPI - License](https://img.shields.io/pypi/l/flask-jwt-router?color=pink)
 
-![Greenprint](logo.png?raw=true "Title")
+![Flask JWT Router](asssets/logo.png?raw=true "Title")
 
 # Flask JWT Router
 
@@ -226,6 +226,59 @@ If you require calling a resource without passing headers, then you can use the 
 ```python
     url = "http://example.com/cars?auth=my_token"
 ```
+
+## Google OAuth 2.0 with ReactJS
+Flask-JWT-Router supports auth Google's OAuth 2.0 Single Sign On strategy if you are using React only.
+(We will provide Google's OAuth 2.0 Single Sign On strategy for server to server as soon as possible!).
+
+### Quick Start
+Create a login route for Google's OAuth 2.0
+```python
+   @app.route("/api/v1/google_login", methods=["POST"])
+    def google_login():
+        data = jwt_routes.google.oauth_login(request)
+        return data, 200
+```
+We have created a ReactJS library specifically for Flask-JWT-Router - [react-google-oauth2.0](https://github.com/joegasewicz/react-google-oauth2.0)
+In your React app directory install react-google-oauth2.0:
+```bash
+npm install react-google-oauth2 --save 
+```
+Pass in the `IAuthorizationOptions` options and create the `GoogleButton` component:
+```typescript jsx
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+
+import {  GoogleButton, IAuthorizationOptions } from "../src";
+
+function App(props: any) {
+
+    const options: IAuthorizationOptions = {
+        clientId: (process.env.CLIENT_ID as string),
+        redirectUri: "http://localhost:3000/react-google-Oauth2.0/dist/index.html",
+        scopes: ["openid", "profile", "email"],
+        includeGrantedScopes: true,
+        accessType: "offline",
+    };
+
+    return (
+        <>
+          <GoogleButton
+              placeholder="demo/search.png" // Optional
+              options={options}
+              apiUrl="http://localhost:5000/google_login"
+              defaultStyle={true} // Optional
+          />
+        </>
+    );
+}
+
+ReactDOM.render(
+    </App>,
+    document.getElementById("main"),
+);
+```
+
 
 
 ## Authors

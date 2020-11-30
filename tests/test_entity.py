@@ -19,8 +19,18 @@ from flask_jwt_router._entity import Entity
 from flask_jwt_router._config import Config
 from flask_jwt_router._routing import Routing
 from tests.fixtures.main_fixture import test_client, jwt_routes
-from tests.fixtures.token_fixture import mock_decoded_token, mock_decoded_token_two, mock_decoded_token_three
-from tests.fixtures.model_fixtures import MockEntityModel, NoTableNameEntity, MockEntityModelTwo, MockEntityModelThree
+from tests.fixtures.token_fixture import (
+    mock_decoded_token,
+    mock_decoded_token_two,
+    mock_decoded_token_three,
+)
+from tests.fixtures.model_fixtures import (
+    MockEntityModel,
+    NoTableNameEntity,
+    MockEntityModelTwo,
+    MockEntityModelThree,
+    MockAOuthModel,
+)
 from tests.fixtures.models import TeacherModel
 
 
@@ -47,33 +57,49 @@ class TestEntity:
         "SECRET_KEY": "__TEST_SECRET__",
         "ENTITY_KEY": "id",
     }
+    oauth_options = {
+        "client_id": "<CLIENT_ID>",
+        "client_secret": "<CLIENT_SECRET>",
+        "redirect_uri": "http://localhost:3000",
+        "tablename": "users",
+        "email_field": "email",
+        "expires_in": 3600,
+    }
     config = Config()
     config.init_config(app_config)
 
     token_non_entity = {'id': 12, 'exp': 1577037162}
 
-    def test_get_entity_from_token(self, MockEntityModelThree, mock_decoded_token_three):
+    def test_get_entity_from_token_or_tablename(self, MockEntityModelThree, mock_decoded_token_three, MockAOuthModel):
 
         self.config.entity_models = [MockEntityModelThree]
-
         entity = Entity(self.config)
+        assert entity.get_entity_from_token_or_tablename(mock_decoded_token_three) == [(1, 'joe')]
 
-        assert entity.get_entity_from_token(mock_decoded_token_three) == [(1, 'joe')]
-
-    def test_get_entity_from_token_multiple(self, MockEntityModel, MockEntityModelTwo, mock_decoded_token_two):
-
-        self.config.entity_models = [MockEntityModel, MockEntityModelTwo]
-
+        self.config.entity_models = [MockAOuthModel]
+        self.config.google_oauth = self.oauth_options
         entity = Entity(self.config)
+        entity.entity_key = "email"
+        assert entity.get_entity_from_token_or_tablename(tablename="oauth_tablename") == [(1, 'joe')]
 
-        assert entity.get_entity_from_token(mock_decoded_token_two) == [(1, 'joe')]
+    def test_get_entity_from_token_multiple(self, MockEntityModel, MockEntityModelTwo, MockAOuthModel, mock_decoded_token_two):
+
+        self.config.entity_models = [MockEntityModel, MockAOuthModel, MockEntityModelTwo]
+        entity = Entity(self.config)
+        assert entity.get_entity_from_token_or_tablename(mock_decoded_token_two) == [(1, 'joe')]
+
+        self.config.entity_models = [MockEntityModel, MockAOuthModel, MockEntityModelTwo]
+        self.config.google_oauth = self.oauth_options
+        entity = Entity(self.config)
+        entity.entity_key = "email"
+        assert entity.get_entity_from_token_or_tablename(tablename="oauth_tablename") == [(1, 'joe')]
 
     def test_get_attr_name(self, MockEntityModel, mock_decoded_token):
 
         self.config.entity_models = [MockEntityModel]
 
         entity = Entity(self.config)
-        entity.get_entity_from_token(mock_decoded_token)
+        entity.get_entity_from_token_or_tablename(mock_decoded_token)
 
         result = entity.get_attr_name()
 
