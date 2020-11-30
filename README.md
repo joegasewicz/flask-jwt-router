@@ -6,19 +6,55 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/flask-jwt-router)
 ![PyPI - License](https://img.shields.io/pypi/l/flask-jwt-router?color=pink)
 
-![Flask JWT Router](asssets/logo.png?raw=true "Title")
+![Flask JWT Router](assets/logo.png?raw=true "Title")
 
 # Flask JWT Router
+
+Read the Documentation here: [Flask-JWT-Router](https://flask-jwt-router.readthedocs.io/en/latest/) 
+=======
+Flask JWT Router is a Python library that adds authorised routes to a Flask app. Both basic & Google's OAuth2.0 authentication
+is supported.
+
 
 Flask JWT Router is a Python library that adds authorised routes to a Flask app. Both basic & Google's OAuth2.0 authentication
 is supported.
 
 
-![Google-Cloud](asssets/Google-Cloud.png =100x)
+## Google's OAuth2.0 supported
 
-This library is in a Beta stage.
+![Google-Cloud](assets/Google-Cloud.png)
 
-Read the Documentation here: [Flask-JWT-Router](https://flask-jwt-router.readthedocs.io/en/latest/) 
+### Google OAuth 2.0 Quick Start
+
+Read the detailed instructions here: [Flask-JWT-Router](https://flask-jwt-router.readthedocs.io/en/latest/google.html)
+```python
+oauth_options = {
+    "client_id": "<CLIENT_ID>",
+    "client_secret": "<CLIENT_SECRET>",
+    "redirect_uri": "http://localhost:3000",
+    "tablename": "users",
+    "email_field": "email",
+    "expires_in": 3600,
+}
+
+jwt_routes.init_app(app, google_oauth=oauth_options)
+```
+
+Now your front end needs a token. Create an endpoint &
+return a new access token from the clients header *code*.
+For Example::
+```python
+from flask import request
+
+@app.routes("/login", methods=["POST"])
+def login():
+    jwt_routes.google.oauth_login(request) # Pass in Flask's request
+```
+
+
+Now, the next time your front-end requests authorised resources
+flask-jwt-router will authenticate with this access token until
+it expires.
 
 ## Installation
 
