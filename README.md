@@ -11,10 +11,13 @@
 # Flask JWT Router
 
 Read the Documentation here: [Flask-JWT-Router](https://flask-jwt-router.readthedocs.io/en/latest/) 
-
+=======
 Flask JWT Router is a Python library that adds authorised routes to a Flask app. Both basic & Google's OAuth2.0 authentication
 is supported.
 
+
+Flask JWT Router is a Python library that adds authorised routes to a Flask app. Both basic & Google's OAuth2.0 authentication
+is supported.
 
 
 ## Google's OAuth2.0 supported
