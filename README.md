@@ -146,14 +146,14 @@ app.config["WHITE_LIST_ROUTES"] = [
     ("POST", "/login"),
 ]
 
-@app.route("/register", methods=["POST"])
+@app.route("/login", methods=["POST"])
 def register():
     """I'm registering a new user & returning a token!"""
     return jsonify({
         "token": jwt_routes.create_token(entity_id=1, table_name='users')
     })
 
-@app.route("/login", methods=["POST"])
+@app.route("/your_resource", methods=["POST"])
 def login():
     """I'm authorized & updating my token!"""
     return jsonify({

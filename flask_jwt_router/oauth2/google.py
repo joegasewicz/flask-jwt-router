@@ -112,10 +112,10 @@ class Google(BaseOAuth):
     #: Credentials > OAuth 2.0 Client IDs. Click thru & match from the lists of the redirect domains
     redirect_uri: str
 
-    #: OPTIONAL.  The lifetime in seconds of the access token.  For
+    #: OPTIONAL. Default is 7 days. The lifetime in seconds of the access token.  For
     #: example, the value "3600" denotes that the access token will
     #: expire in one hour from the time the response was generated.
-    expires_in: int
+    expires_in: int = None
 
     #: Value of SQLAlchemy's __tablename__ attribute
     tablename: str
@@ -123,9 +123,9 @@ class Google(BaseOAuth):
     #: Value of the email field column in the
     email_field: str
 
-    _url: str
+    _url: str = None
 
-    _code: str
+    _code: str = None
 
     http: HttpRequests
 
