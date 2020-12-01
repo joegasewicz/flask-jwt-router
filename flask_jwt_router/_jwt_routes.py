@@ -180,6 +180,7 @@ from ._entity import BaseEntity, Entity, _ORMType
 from ._routing import BaseRouting, Routing
 from ._authentication import BaseAuthentication, Authentication
 from .oauth2.google import Google
+from .oauth2._base import BaseOAuth
 from .oauth2.http_requests import HttpRequests
 from .oauth2._urls import GOOGLE_OAUTH_URL
 
@@ -227,7 +228,7 @@ class JwtRoutes:
 
     #: Optional Google OAuth 2.0 Single Sign On. See :class:`~flask_jwt_router.oauth2.google``
     #: for more information.
-    google: Google
+    google: BaseOAuth
 
     #: Optional. See :class:`~flask_jwt_router.oauth2.google`
     google_oauth: Dict

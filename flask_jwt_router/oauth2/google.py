@@ -91,18 +91,8 @@ from typing import Dict
 from abc import ABC, abstractmethod
 
 from .http_requests import HttpRequests
-from ._base import BaseOAuth
+from ._base import BaseOAuth, _FlaskRequestType
 from ._exceptions import RequestAttributeError, ClientExchangeCodeError
-
-
-class _FlaskRequestType(ABC):
-
-    base_url = None
-
-    @staticmethod
-    @abstractmethod
-    def get_json() -> Dict:
-        pass
 
 
 class Google(BaseOAuth):

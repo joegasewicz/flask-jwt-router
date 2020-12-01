@@ -10,13 +10,12 @@ pyjwt = "*"
 Flask-SQLAlchemy = "*"
 Sphinx = "*"
 tox = "*"
+pylint = "*"
 
 [packages]
-flask = "*"
+flask = ">=1.0"
 python-dateutil = ">=2.8.0"
-flask-jwt-router = {editable = true,path = "."}
-pyjwt = "*"
-pylint = "*"
+pyjwt = ">=1.7.1"
 
 [requires]
 python_version = "3.9"
