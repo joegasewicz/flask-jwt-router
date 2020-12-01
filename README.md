@@ -4,7 +4,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c15de26af47d48448392eaa5e0e41bcf)](https://www.codacy.com/manual/joegasewicz/Flask-JWT-Router?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=joegasewicz/Flask-JWT-Router&amp;utm_campaign=Badge_Grade)
 [![Documentation Status](https://readthedocs.org/projects/flask-jwt-router/badge/?version=latest)](https://flask-jwt-router.readthedocs.io/en/latest/?badge=latest)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/flask-jwt-router)
-![PyPI - License](https://img.shields.io/pypi/l/flask-jwt-router?color=pink)
+[![GitHub license](https://img.shields.io/github/license/joegasewicz/flask-jwt-router)](https://github.com/joegasewicz/flask-jwt-router/blob/master/LICENSE.txt)
 
 ![Flask JWT Router](assets/logo.png?raw=true "Title")
 
