@@ -149,9 +149,9 @@ class Google(BaseOAuth):
         self.expires_in = expires_in or self._set_expires()
         self.email_field = email_field
         self.tablename = tablename
-        self._url = self.http.get_url("token")
 
     def update_base_path(self, path: str) -> None:
+        # TODO rename this method
         url = f"{path}?"
         url = f"{url}code={self.code}&"
         url = f"{url}client_id={self.client_id}&"
@@ -188,6 +188,7 @@ class Google(BaseOAuth):
         if not self.code:
             raise ClientExchangeCodeError(request.base_url)
         # Add the rest of the param args to the base_path
+        self._url = self.http.get_url("token")
         self.update_base_path(self._url)
         self._data = self._exchange_auth_access_code()
         res_data = {

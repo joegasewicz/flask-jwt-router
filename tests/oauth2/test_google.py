@@ -64,6 +64,7 @@ class TestGoogle:
         g = Google(http_requests())
         g.init(**self.mock_options)
         g.code = "<CODE>"
+        g._url = "https://oauth2.googleapis.com/token"
         g.update_base_path(g._url)
         expected = "https://oauth2.googleapis.com/token?" \
                    "code=<CODE>&" \
