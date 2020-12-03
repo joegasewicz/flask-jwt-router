@@ -1,0 +1,318 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flask_jwt_router.oauth2.google &#8212; Flask JWT Router 0.0.19 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for flask_jwt_router.oauth2.google</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Google OAuth 2.0 Quick Start</span>
+<span class="sd">    ============================</span>
+
+<span class="sd">    Basic Usage::</span>
+
+<span class="sd">        oauth_options = {</span>
+<span class="sd">            &quot;client_id&quot;: &quot;&lt;CLIENT_ID&gt;&quot;,</span>
+<span class="sd">            &quot;client_secret&quot;: &quot;&lt;CLIENT_SECRET&gt;&quot;,</span>
+<span class="sd">            &quot;redirect_uri&quot;: &quot;http://localhost:3000&quot;,</span>
+<span class="sd">            &quot;tablename&quot;: &quot;users&quot;,</span>
+<span class="sd">            &quot;email_field&quot;: &quot;email&quot;,</span>
+<span class="sd">            &quot;expires_in&quot;: 3600,</span>
+<span class="sd">        }</span>
+
+<span class="sd">        jwt_routes.init_app(app, google_oauth=oauth_options)</span>
+
+<span class="sd">    Now your front end needs a token. Create an endpoint &amp;</span>
+<span class="sd">    return a new access token from the clients header *code*.</span>
+<span class="sd">    For Example::</span>
+
+<span class="sd">        from flask import request</span>
+
+<span class="sd">        @app.routes(&quot;/login&quot;, methods=[&quot;POST&quot;])</span>
+<span class="sd">        def login():</span>
+<span class="sd">            jwt_routes.google.oauth_login(request) # Pass in Flask&#39;s request</span>
+
+<span class="sd">    Now, the next time your front-end requests authorised resources</span>
+<span class="sd">    flask-jwt-router will authenticate with this access token until</span>
+<span class="sd">    it expires.</span>
+
+<span class="sd">    Flask-JWT-Router OAuth 2.0 Flow Explained</span>
+<span class="sd">    =========================================</span>
+
+<span class="sd">    Client</span>
+<span class="sd">    ++++++</span>
+
+<span class="sd">    If you&#39;re client is a React application, we strongly recommend you use React-Google-Oauth2</span>
+<span class="sd">    https://github.com/joegasewicz/react-google-oauth2.0 It&#39;s maintain by Flask-JWT-Router&#39;s author,</span>
+<span class="sd">    so if fully compatible.</span>
+
+<span class="sd">    The *client* is your front end application, this could be another Flask api that</span>
+<span class="sd">    renders jinja2 html templates or a React / Angular / Vue.js single page application.</span>
+<span class="sd">    There are 2 steps that your client must successfully complete before Flask-JWT-Router</span>
+<span class="sd">    can return a valid Google OAuth 2.0 access token.</span>
+
+<span class="sd">    1.  The client must redirect the user to Googles sign in page. The user will then be</span>
+<span class="sd">        asked to accept any extra scopes (Only required for advance access to Google Apis).</span>
+<span class="sd">        If the user successfully signs in then Google will return a code to the client.</span>
+
+<span class="sd">    2.  The client must now make a ``POST`` http request to your Flask api with Google&#39;s **code**</span>
+<span class="sd">        in the **X-Auth-Token** header. For example</span>
+
+<span class="sd">            curl -X POST -H &quot;X-Auth-Token&quot;: &quot;&lt;YOUR_GOOGLE_OAUTH2.0_CODE&gt;&quot; http://localhost:5000/login</span>
+
+<span class="sd">    Server</span>
+<span class="sd">    ++++++</span>
+
+<span class="sd">    The server is your Flask app. Now that your client has a code &amp; has made the request to</span>
+<span class="sd">    the server, we must provide a Flask view handler to exchange the client&#39;s code for an</span>
+<span class="sd">    access token. Flask-JWT-Router has public method (See :obj:`~flask_jwt_router.oauth2.google.oauth_login`)</span>
+<span class="sd">    that takes Flask&#39;s request as a single argument. If the Google OAuth2.0 **code** is valid, then a valid</span>
+<span class="sd">    access token will be returned in the response body.</span>
+
+<span class="sd">    For example::</span>
+
+<span class="sd">        from flask import request</span>
+
+<span class="sd">        @app.routes(&quot;/login&quot;, methods=[&quot;POST&quot;])</span>
+<span class="sd">        def login():</span>
+<span class="sd">            data = jwt_routes.google.oauth_login(request) # Pass in Flask&#39;s request</span>
+<span class="sd">            return data, 200</span>
+
+<span class="sd">        # Returns:</span>
+<span class="sd">        # {</span>
+<span class="sd">        #   &quot;access_token&quot;: &quot;GOOGLE_OAUTH2.0_ACCESS_TOKEN&gt;</span>
+<span class="sd">        # }</span>
+
+<span class="sd">    Each time the client requires any authorised resources in your Flask app, it must make all requests</span>
+<span class="sd">    will the following headers::</span>
+
+<span class="sd">        {</span>
+<span class="sd">            &quot;X-Auth-Token&quot; : &quot;&lt;YOUR_GOOGLE_OAUTH2.0_CODE&gt;&quot;</span>
+<span class="sd">        }</span>
+
+<span class="sd">    This will allow the user to gain access to your Flask&#39;s app resources until the access token&#39;s</span>
+<span class="sd">    expire time has ended. The client should then decide whether to redirect the user to Google&#39;s</span>
+<span class="sd">    login screen.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+
+<span class="kn">from</span> <span class="nn">.http_requests</span> <span class="kn">import</span> <span class="n">HttpRequests</span>
+<span class="kn">from</span> <span class="nn">._base</span> <span class="kn">import</span> <span class="n">BaseOAuth</span><span class="p">,</span> <span class="n">_FlaskRequestType</span>
+<span class="kn">from</span> <span class="nn">._exceptions</span> <span class="kn">import</span> <span class="n">RequestAttributeError</span><span class="p">,</span> <span class="n">ClientExchangeCodeError</span>
+
+
+<div class="viewcode-block" id="Google"><a class="viewcode-back" href="../../../google.html#flask_jwt_router.oauth2.google.Google">[docs]</a><span class="k">class</span> <span class="nc">Google</span><span class="p">(</span><span class="n">BaseOAuth</span><span class="p">):</span>
+    <span class="c1">#: As defined in https://tools.ietf.org/html/rfc6749#section-4.1.3</span>
+    <span class="c1">#: Value MUST be set to &quot;authorization_code&quot;.</span>
+    <span class="n">grant_type</span> <span class="o">=</span> <span class="s2">&quot;authorization_code&quot;</span>
+
+    <span class="c1">#: Found in https://console.developers.google.com/apis/dashboard &gt; Credentials &gt; OAuth 2.0 Client IDs</span>
+    <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="c1">#: Found in https://console.developers.google.com/apis/dashboard &gt; Credentials &gt; OAuth 2.0 Client IDs</span>
+    <span class="c1">#: Never share this value with any client side code!</span>
+    <span class="n">client_secret</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="c1">#: This field must match exactly the client side redirect string.</span>
+    <span class="c1">#: See https://console.developers.google.com/apis/dashboard &gt;</span>
+    <span class="c1">#: Credentials &gt; OAuth 2.0 Client IDs. Click thru &amp; match from the lists of the redirect domains</span>
+    <span class="n">redirect_uri</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="c1">#: OPTIONAL. Default is 7 days. The lifetime in seconds of the access token.  For</span>
+    <span class="c1">#: example, the value &quot;3600&quot; denotes that the access token will</span>
+    <span class="c1">#: expire in one hour from the time the response was generated.</span>
+    <span class="n">expires_in</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1">#: Value of SQLAlchemy&#39;s __tablename__ attribute</span>
+    <span class="n">tablename</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="c1">#: Value of the email field column in the</span>
+    <span class="n">email_field</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="n">_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">_code</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">http</span><span class="p">:</span> <span class="n">HttpRequests</span>
+
+    <span class="n">_data</span><span class="p">:</span> <span class="n">Dict</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">http</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">http</span> <span class="o">=</span> <span class="n">http</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">code</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_code</span>
+
+    <span class="nd">@code</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_code</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">client_id</span><span class="p">,</span> <span class="n">client_secret</span><span class="p">,</span> <span class="n">redirect_uri</span><span class="p">,</span> <span class="n">expires_in</span><span class="p">,</span> <span class="n">email_field</span><span class="p">,</span> <span class="n">tablename</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client_id</span> <span class="o">=</span> <span class="n">client_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client_secret</span> <span class="o">=</span> <span class="n">client_secret</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">redirect_uri</span> <span class="o">=</span> <span class="n">redirect_uri</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expires_in</span> <span class="o">=</span> <span class="n">expires_in</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_expires</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">email_field</span> <span class="o">=</span> <span class="n">email_field</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tablename</span> <span class="o">=</span> <span class="n">tablename</span>
+
+    <span class="k">def</span> <span class="nf">update_base_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># TODO rename this method</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">?&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">code=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">&amp;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">client_id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">client_id</span><span class="si">}</span><span class="s2">&amp;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">client_secret=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">client_secret</span><span class="si">}</span><span class="s2">&amp;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">redirect_uri=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">redirect_uri</span><span class="si">}</span><span class="s2">&amp;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">grant_type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">grant_type</span><span class="si">}</span><span class="s2">&amp;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">expires_in=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">expires_in</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">=</span> <span class="n">url</span>
+
+    <span class="k">def</span> <span class="nf">_exchange_auth_access_code</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return:</span>
+<span class="sd">            {</span>
+<span class="sd">              &quot;access_token&quot;: &quot;&lt;access_token&gt;&quot;,</span>
+<span class="sd">              &quot;expires_in&quot;: 3920,</span>
+<span class="sd">              &quot;token_type&quot;: &quot;Bearer&quot;,</span>
+<span class="sd">              &quot;scope&quot;: &quot;https://www.googleapis.com/auth/drive.metadata.readonly&quot;,</span>
+<span class="sd">              &quot;refresh_token&quot;: &quot;&lt;refresh_token&gt;&quot;</span>
+<span class="sd">            }</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">http</span><span class="o">.</span><span class="n">token</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+<div class="viewcode-block" id="Google.oauth_login"><a class="viewcode-back" href="../../../google.html#flask_jwt_router.oauth2.google.Google.oauth_login">[docs]</a>    <span class="k">def</span> <span class="nf">oauth_login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">_FlaskRequestType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param request: Flask request object</span>
+<span class="sd">        :return Dict:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">RequestAttributeError</span><span class="p">()</span>
+        <span class="n">req_data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">req_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;code&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ClientExchangeCodeError</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">base_url</span><span class="p">)</span>
+        <span class="c1"># Add the rest of the param args to the base_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">http</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;token&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_base_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exchange_auth_access_code</span><span class="p">()</span>
+        <span class="n">res_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;access_token&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;access_token&quot;</span><span class="p">],</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">res_data</span></div>
+
+<div class="viewcode-block" id="Google.authorize"><a class="viewcode-back" href="../../../google.html#flask_jwt_router.oauth2.google.Google.authorize">[docs]</a>    <span class="k">def</span> <span class="nf">authorize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call to a Google API to authenticate via access_token</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">http</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;user_info.email&quot;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">http</span><span class="o">.</span><span class="n">get_by_scope</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+    <span class="k">def</span> <span class="nf">_set_expires</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The default expire is set to 7 days</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expires_in</span> <span class="o">=</span> <span class="mi">3600</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">7</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Flask JWT Router</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../jwt_routes.html">JwtRoutes API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../google.html">Google OAuth2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../authentication.html">Authentication Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entity.html">Entity Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../config.html">Extensions Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../routing.html">Routing Class</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Joe Gasewicz.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

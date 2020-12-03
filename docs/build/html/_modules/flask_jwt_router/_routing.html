@@ -1,0 +1,322 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flask_jwt_router._routing &#8212; Flask JWT Router 0.0.19 documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for flask_jwt_router._routing</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main class for routing</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="c1"># pylint:disable=invalid-name</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">request</span><span class="p">,</span> <span class="n">abort</span><span class="p">,</span> <span class="n">g</span>
+<span class="kn">from</span> <span class="nn">werkzeug.routing</span> <span class="kn">import</span> <span class="n">RequestRedirect</span>
+<span class="kn">from</span> <span class="nn">werkzeug.exceptions</span> <span class="kn">import</span> <span class="n">MethodNotAllowed</span><span class="p">,</span> <span class="n">NotFound</span>
+<span class="kn">from</span> <span class="nn">jwt.exceptions</span> <span class="kn">import</span> <span class="n">InvalidTokenError</span>
+<span class="kn">import</span> <span class="nn">jwt</span>
+
+
+<span class="kn">from</span> <span class="nn">._entity</span> <span class="kn">import</span> <span class="n">BaseEntity</span>
+<span class="kn">from</span> <span class="nn">.oauth2.google</span> <span class="kn">import</span> <span class="n">Google</span>
+<span class="kn">from</span> <span class="nn">._config</span> <span class="kn">import</span> <span class="n">Config</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="BaseRouting"><a class="viewcode-back" href="../../routing.html#flask_jwt_router._routing.BaseRouting">[docs]</a><span class="k">class</span> <span class="nc">BaseRouting</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="c1"># pylint:disable=missing-class-docstring</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">before_middleware</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># pylint:disable=missing-function-docstring</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Routing"><a class="viewcode-back" href="../../routing.html#flask_jwt_router._routing.Routing">[docs]</a><span class="k">class</span> <span class="nc">Routing</span><span class="p">(</span><span class="n">BaseRouting</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :param app: Flask application instance</span>
+<span class="sd">    :param config: :class:`~flask_jwt_router._config`</span>
+<span class="sd">    :param entity: :class:`~flask_jwt_router._entity`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">,</span> <span class="n">entity</span><span class="p">:</span> <span class="n">BaseEntity</span><span class="p">,</span> <span class="n">google</span><span class="p">:</span> <span class="n">Google</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">entity</span> <span class="o">=</span> <span class="n">entity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">google</span> <span class="o">=</span> <span class="n">google</span>
+
+    <span class="k">def</span> <span class="nf">_prefix_api_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w_routes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If the config has JWT_ROUTER_API_NAME defined then</span>
+<span class="sd">        update each white listed route with an api name</span>
+<span class="sd">        :example: &quot;/user&quot; -&gt; &quot;/api/v1/user&quot;</span>
+<span class="sd">        :param w_routes:</span>
+<span class="sd">        :return List[str]:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">api_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">api_name</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">api_name</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">w_routes</span>
+        <span class="c1"># Prepend the api name to the white listed route</span>
+        <span class="n">named_white_routes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">route_name</span> <span class="ow">in</span> <span class="n">w_routes</span><span class="p">:</span>
+            <span class="n">verb</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">route_name</span>
+            <span class="n">named_white_routes</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">verb</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">api_name</span><span class="si">}{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">named_white_routes</span>
+
+    <span class="k">def</span> <span class="nf">_add_static_routes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Always allow /static/ in path and handle static_url_path from Flask **kwargs</span>
+<span class="sd">        :param path:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="n">defined_static</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">static_url_path</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="o">==</span> <span class="s2">&quot;favicon.ico&quot;</span> <span class="ow">or</span>\
+                <span class="n">paths</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;static&quot;</span> <span class="ow">or</span>\
+                <span class="n">paths</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">defined_static</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># pylint:disable=no-self-use</span>
+    <span class="k">def</span> <span class="nf">_handle_pre_flight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle pre-flight requests with any verb</span>
+<span class="sd">        :param method</span>
+<span class="sd">        :return: {bool}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;OPTIONS&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_handle_query_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">white_route</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handles dynamic query params</span>
+<span class="sd">        All we care about that a path segment has no url conversion.</span>
+<span class="sd">        We compare it&#39;s the same as the whitelist segment &amp; let Flask</span>
+<span class="sd">        / Werkzeug handle the url matching</span>
+<span class="sd">        :param white_route:</span>
+<span class="sd">        :param path:</span>
+<span class="sd">        :return bool:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;&lt;&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">white_route</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">route_segments</span> <span class="o">=</span> <span class="n">white_route</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="n">path_segments</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">route_segments</span><span class="p">,</span> <span class="n">path_segments</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">r</span> <span class="o">!=</span> <span class="n">p</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">_allow_public_routes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">white_routes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a list of tuples ie [(&quot;POST&quot;, &quot;/users&quot;)] as public routes.</span>
+<span class="sd">        Returns False if current route and verb are white listed.</span>
+<span class="sd">        :param flask_request:</span>
+<span class="sd">        :param white_routes: List[Tuple]:</span>
+<span class="sd">        :returns bool:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">path</span>
+        <span class="k">for</span> <span class="n">white_route</span> <span class="ow">in</span> <span class="n">white_routes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_pre_flight</span><span class="p">(</span><span class="n">method</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="n">white_route</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">path</span> <span class="o">==</span> <span class="n">white_route</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="n">white_route</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_query_params</span><span class="p">(</span><span class="n">white_route</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">path</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">_does_route_exist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">adapter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">url_map</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">adapter</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">RequestRedirect</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># recursively match redirects</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_does_route_exist</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">new_url</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">MethodNotAllowed</span><span class="p">,</span> <span class="n">NotFound</span><span class="p">):</span>
+            <span class="c1"># no match</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="Routing.before_middleware"><a class="viewcode-back" href="../../routing.html#flask_jwt_router._routing.Routing.before_middleware">[docs]</a>    <span class="k">def</span> <span class="nf">before_middleware</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handles ignored &amp; whitelisted &amp; static routes with api name</span>
+<span class="sd">        If it&#39;s not static, ignored whitelisted then authorize</span>
+<span class="sd">        :return: Callable or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#pylint:disable=inconsistent-return-statements</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">path</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span>
+        <span class="n">is_static</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_static_routes</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_static</span><span class="p">:</span>
+            <span class="c1"># Handle ignored routes</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_does_route_exist</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+                <span class="n">is_ignored</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">ignored_routes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">ignored_routes</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ignored_routes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">is_ignored</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allow_public_routes</span><span class="p">(</span><span class="n">ignored_routes</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">is_ignored</span><span class="p">:</span>
+                    <span class="n">white_routes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefix_api_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">whitelist_routes</span><span class="p">)</span>
+                    <span class="n">not_whitelist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allow_public_routes</span><span class="p">(</span><span class="n">white_routes</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">not_whitelist</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_token</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_handle_token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks the headers contain a Bearer string OR params.</span>
+<span class="sd">        Checks to see that the route is white listed.</span>
+<span class="sd">        :return None:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;auth&quot;</span><span class="p">):</span>
+                <span class="n">token</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;auth&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;X-Auth-Token&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">google</span><span class="p">:</span>
+                <span class="n">bearer</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;X-Auth-Token&quot;</span><span class="p">)</span>
+                <span class="n">token</span> <span class="o">=</span> <span class="n">bearer</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;Bearer &quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># Currently token refreshing is not supported, so pass the current token through</span>
+                    <span class="n">auth_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">google</span><span class="o">.</span><span class="n">authorize</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+                    <span class="n">email</span> <span class="o">=</span> <span class="n">auth_results</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">entity</span><span class="p">,</span> <span class="s2">&quot;entity_key&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">oauth_entity</span><span class="p">)</span>
+                    <span class="n">entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">entity</span><span class="o">.</span><span class="n">get_entity_from_token_or_tablename</span><span class="p">(</span>
+                        <span class="n">tablename</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">google</span><span class="o">.</span><span class="n">tablename</span><span class="p">,</span>
+                        <span class="n">email_value</span><span class="o">=</span><span class="n">email</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">entity</span><span class="o">.</span><span class="n">get_entity_from_ext</span><span class="p">()</span><span class="o">.</span><span class="n">__tablename__</span><span class="p">,</span> <span class="n">entity</span><span class="p">)</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s2">&quot;access_token&quot;</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+                <span class="k">except</span> <span class="n">InvalidTokenError</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">abort</span><span class="p">(</span><span class="mi">401</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">abort</span><span class="p">(</span><span class="mi">401</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Sometimes a developer may define the auth field name as Bearer or Basic</span>
+                <span class="n">auth_header</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Authorization&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">auth_header</span><span class="p">:</span>
+                    <span class="n">abort</span><span class="p">(</span><span class="mi">401</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s2">&quot;Bearer &quot;</span> <span class="ow">in</span> <span class="n">auth_header</span><span class="p">:</span>
+                    <span class="n">token</span> <span class="o">=</span> <span class="n">auth_header</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;Bearer &quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="s2">&quot;Basic &quot;</span> <span class="ow">in</span> <span class="n">auth_header</span><span class="p">:</span>
+                    <span class="n">token</span> <span class="o">=</span> <span class="n">auth_header</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;Basic &quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">abort</span><span class="p">(</span><span class="mi">401</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">decoded_token</span> <span class="o">=</span> <span class="n">jwt</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span>
+                <span class="n">token</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">secret_key</span><span class="p">,</span>
+                <span class="n">algorithms</span><span class="o">=</span><span class="s2">&quot;HS256&quot;</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">InvalidTokenError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">abort</span><span class="p">(</span><span class="mi">401</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">entity_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">entity_key</span>
+            <span class="n">entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">entity</span><span class="o">.</span><span class="n">get_entity_from_token_or_tablename</span><span class="p">(</span><span class="n">decoded_token</span><span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">entity</span><span class="o">.</span><span class="n">get_entity_from_ext</span><span class="p">()</span><span class="o">.</span><span class="n">__tablename__</span><span class="p">,</span> <span class="n">entity</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">abort</span><span class="p">(</span><span class="mi">401</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">Flask JWT Router</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../jwt_routes.html">JwtRoutes API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../google.html">Google OAuth2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authentication.html">Authentication Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../entity.html">Entity Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../config.html">Extensions Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../routing.html">Routing Class</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Joe Gasewicz.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

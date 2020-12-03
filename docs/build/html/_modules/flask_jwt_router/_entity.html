@@ -1,0 +1,297 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flask_jwt_router._entity &#8212; Flask JWT Router 0.0.19 documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for flask_jwt_router._entity</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Entity is a service class concerned with Database / ORM / sessions &amp; transaction</span>
+<span class="sd">    Includes static utilities consumed by AuthStrategy classes</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="n">_ORMType</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]])</span>
+
+
+<div class="viewcode-block" id="NoTokenInHeadersError"><a class="viewcode-back" href="../../entity.html#flask_jwt_router._entity.NoTokenInHeadersError">[docs]</a><span class="k">class</span> <span class="nc">NoTokenInHeadersError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;No token in headers error!</span><span class="se">\n</span><span class="s2">&quot;</span> \
+              <span class="s2">&quot;Did you mean to call create_token? &quot;</span> \
+              <span class="s2">&quot;See https://flask-jwt-router.readthedocs.io/en/latest/jwt_routes.html#authorization-tokens&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">err</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">NoTokenInHeadersError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseEntity"><a class="viewcode-back" href="../../entity.html#flask_jwt_router._entity.BaseEntity">[docs]</a><span class="k">class</span> <span class="nc">BaseEntity</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="c1"># pylint:disable=missing-class-docstring</span>
+
+    <span class="nd">@property</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">entity_key</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="c1"># pylint:disable=missing-function-docstring</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">get_attr_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="c1"># pylint:disable=missing-function-docstring</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">get_entity_from_token_or_tablename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decoded_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">tablename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">email_value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="c1"># pylint:disable=missing-function-docstring</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">get_entity_from_ext</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_ORMType</span><span class="p">:</span>
+        <span class="c1"># pylint:disable=missing-function-docstring</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Entity"><a class="viewcode-back" href="../../entity.html#flask_jwt_router._entity.Entity">[docs]</a><span class="k">class</span> <span class="nc">Entity</span><span class="p">(</span><span class="n">BaseEntity</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :param config:</span>
+<span class="sd">    :param auth_model:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: The result from the decoded token.</span>
+    <span class="c1">#: This gets assigned in :class:`~get_entity_from_token`</span>
+    <span class="n">decoded_token</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1">#: The assigned entity model in the current request</span>
+    <span class="c1">#: This gets assigned in :class:`~flask_jwt_router._entity.get_entity_from_token`</span>
+    <span class="n">auth_model</span><span class="p">:</span> <span class="n">_ORMType</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1">#: The table name value from :class: `~flask_jwt_router.oauth2.google`. This</span>
+    <span class="c1">#: indicates we are now using oauth 2.0.</span>
+    <span class="n">tablename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1">#: This will override the config.entity_key for oauth 2.0 in flight tokens</span>
+    <span class="n">_entity_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">entity_key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entity_key</span>
+
+    <span class="nd">@entity_key</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">entity_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_entity_key</span> <span class="o">=</span> <span class="n">val</span>
+
+<div class="viewcode-block" id="Entity.get_attr_name"><a class="viewcode-back" href="../../entity.html#flask_jwt_router._entity.Entity.get_attr_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_attr_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If SQLAlchemy is the ORM then expect there to be a</span>
+<span class="sd">        __mapper__.primary_key path. This returns a list</span>
+<span class="sd">        but for our purposes we only need the first</span>
+<span class="sd">        primary key attribute name. This method maintains the</span>
+<span class="sd">        existing option of specifying a primary key name directly</span>
+<span class="sd">        for scenarios when not using SqlAlchemy etc.</span>
+<span class="sd">        :param table_name:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_model</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">auth_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_entity_from_ext</span><span class="p">(</span><span class="n">table_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_model</span><span class="p">,</span> <span class="s2">&quot;__mapper__&quot;</span><span class="p">):</span>
+            <span class="c1"># SqlAlchemy is the ORM being used</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_model</span><span class="o">.</span><span class="n">__mapper__</span><span class="o">.</span><span class="n">primary_key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">entity_key</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_from_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">entity_value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_ORMType</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param entity_key: The SqlAlchemy field name to query against</span>
+<span class="sd">        :param entity_value: The field row value to filter with</span>
+<span class="sd">        :return: {_ORMType}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># entity_key: str = self.get_attr_name()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_model</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">entity_key</span><span class="p">:</span> <span class="n">entity_value</span><span class="p">})</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+<div class="viewcode-block" id="Entity.get_entity_from_ext"><a class="viewcode-back" href="../../entity.html#flask_jwt_router._entity.Entity.get_entity_from_ext">[docs]</a>    <span class="k">def</span> <span class="nf">get_entity_from_ext</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tablename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_ORMType</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Exception raised if SQLAlchemy ORM not being used</span>
+<span class="sd">        (SQLAlchemy will throw if `__tablename__` doesn&#39;t exist</span>
+<span class="sd">        or it can&#39;t create the name from the db engine&#39;s table object.</span>
+<span class="sd">        :return: {_ORMType}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># If oauth 2.0 is active then self.tablename has priority</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tablename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tablename</span> <span class="ow">or</span> <span class="n">tablename</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">tablename</span><span class="p">:</span>
+            <span class="c1"># In case `update_token()` is called, `table_name` is in the token</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tablename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoded_token</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;table_name&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">NoTokenInHeadersError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="n">auth_model</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">entity_models</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;__tablename__&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tablename</span> <span class="o">==</span> <span class="n">model</span><span class="o">.</span><span class="n">__tablename__</span><span class="p">:</span>
+                    <span class="n">auth_model</span> <span class="o">=</span> <span class="n">model</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                    <span class="s2">&quot;[FLASK-JWT-ROUTER ERROR]: Your Entity model must have a `__tablename__` that&quot;</span>
+                    <span class="s2">&quot; is equal to the table_name specified in create_token().&quot;</span>
+                    <span class="s2">&quot;For details visit:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="c1"># pylint:disable=line-too-long</span>
+                    <span class="s2">&quot;https://flask-jwt-router.readthedocs.io/en/latest/jwt_routes.html#authorization-tokens&quot;</span>
+                <span class="p">)</span>
+        <span class="k">if</span> <span class="n">auth_model</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">auth_model</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+            <span class="s2">&quot;[FLASK-JWT-ROUTER ERROR]: Your Entity model must have a `__tablename__` attribute!&quot;</span>
+            <span class="s2">&quot; If you are running flask-jwt-router against tests, make sure&quot;</span>
+            <span class="s2">&quot; you assign a `__tablename__` attribute to your Model class.&quot;</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Entity.get_entity_from_token_or_tablename"><a class="viewcode-back" href="../../entity.html#flask_jwt_router._entity.Entity.get_entity_from_token_or_tablename">[docs]</a>    <span class="k">def</span> <span class="nf">get_entity_from_token_or_tablename</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">decoded_token</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="o">*</span><span class="p">,</span>
+            <span class="n">tablename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">email_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Entity class main public method.</span>
+<span class="sd">        Attaches a __get_entity__ method to the AuthModel class &amp;</span>
+<span class="sd">        calling the attached method returns the entity data</span>
+<span class="sd">        :param decoded_token: {Dict[str, Any]}</span>
+<span class="sd">        :kwargs:</span>
+<span class="sd">            :param tablename: This is passed in directly from any oauth 2.0 sessions</span>
+<span class="sd">        :return: {str}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">decoded_token</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">decoded_token</span> <span class="o">=</span> <span class="n">decoded_token</span>
+        <span class="k">if</span> <span class="n">tablename</span><span class="p">:</span>
+            <span class="c1"># This means that the user has logged in via a oauth 2.0 strategy</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tablename</span> <span class="o">=</span> <span class="n">tablename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">auth_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_entity_from_ext</span><span class="p">()</span>
+        <span class="n">entity_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_attr_name</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attach_method</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># If self.entity_key exists then we have a google oauth 2.0 access token</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">entity_key</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_model</span><span class="o">.</span><span class="n">__get_entity__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">entity_key</span><span class="p">,</span> <span class="n">email_value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_model</span><span class="o">.</span><span class="n">__get_entity__</span><span class="p">(</span><span class="n">entity_key</span><span class="p">,</span> <span class="n">decoded_token</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_attr_name</span><span class="p">()])</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">_</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+    <span class="k">def</span> <span class="nf">_attach_method</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if __get__entity__ doesn&#39;t already exist &amp; attach</span>
+<span class="sd">        __get_entity__ onto the entity model class</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">methods</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_model</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="n">inspect</span><span class="o">.</span><span class="n">ismethod</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;__get_entity__&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;__get_entity__ method already exists&quot;</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">auth_model</span><span class="p">,</span>
+            <span class="s2">&quot;__get_entity__&quot;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_from_model</span>
+        <span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">Flask JWT Router</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../jwt_routes.html">JwtRoutes API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../google.html">Google OAuth2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authentication.html">Authentication Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../entity.html">Entity Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../config.html">Extensions Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../routing.html">Routing Class</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Joe Gasewicz.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

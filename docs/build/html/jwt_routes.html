@@ -1,0 +1,445 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JwtRoutes API &#8212; Flask JWT Router 0.0.19 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Google OAuth2.0" href="google.html" />
+    <link rel="prev" title="Welcome to Flask JWT Router" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-flask_jwt_router._jwt_routes">
+<span id="jwtroutes-api"></span><h1>JwtRoutes API<a class="headerlink" href="#module-flask_jwt_router._jwt_routes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
+<p>Installation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">flask</span><span class="o">-</span><span class="n">jwt</span><span class="o">-</span><span class="n">router</span>
+</pre></div>
+</div>
+<p>Basic Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<span class="kn">from</span> <span class="nn">flask_jwt_router</span> <span class="kn">import</span> <span class="n">JwtRoutes</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="c1"># You are required to always set a unique SECRET_KEY for your app</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;SECRET_KEY&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;your_app_secret_key&quot;</span>
+
+<span class="n">JwtRoutes</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+
+<span class="c1"># If you&#39;re using the Flask factory pattern:</span>
+<span class="n">jwt_routes</span> <span class="o">=</span> <span class="n">JwtRoutes</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">create_app</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="n">jwt_routes</span><span class="o">.</span><span class="n">init_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="authorizing-routes">
+<h2>Authorizing Routes<a class="headerlink" href="#authorizing-routes" title="Permalink to this headline">¶</a></h2>
+<p>Define as a list of tuples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;WHITE_LIST_ROUTES&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="s2">&quot;/register&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/register&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;POST&quot;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">register</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s2">&quot;I don&#39;t need authorizing!&quot;</span>
+</pre></div>
+</div>
+<p>Prefix your api name to whitelisted routes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># All routes will</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;JWT_ROUTER_API_NAME&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;/api/v1&quot;</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;WHITE_LIST_ROUTES&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="s2">&quot;/register&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/api/v1/register&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;POST&quot;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">register</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s2">&quot;I don&#39;t need authorizing!&quot;</span>
+</pre></div>
+</div>
+<p>Bypass Flask-JWT-Router on specified routes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define homepage template routes for example on JWT_IGNORE_ROUTES</span>
+<span class="c1"># &amp; still get to use the api name on request handlers returning resources</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;IGNORED_ROUTES&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>Declare an entity model:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create your entity model (example uses Flask-SqlAlchemy)</span>
+
+<span class="k">class</span> <span class="nc">UserModel</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;users&quot;</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+
+<span class="n">JwtRoutes</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">entity_models</span><span class="o">=</span><span class="p">[</span><span class="n">UserModel</span><span class="p">,</span> <span class="n">TeacherModel</span><span class="p">,</span> <span class="o">...</span><span class="n">etc</span><span class="p">])</span>
+
+<span class="c1"># Or pass later with `init_app`</span>
+<span class="k">def</span> <span class="nf">create_app</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="n">jwt_routes</span><span class="o">.</span><span class="n">init_app</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">entity_models</span><span class="o">=</span><span class="p">[</span><span class="n">UserModel</span><span class="p">,</span> <span class="n">TeacherModel</span><span class="p">,</span> <span class="o">...</span><span class="n">etc</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="setting-the-token-expire-duration">
+<h2>Setting the Token Expire Duration<a class="headerlink" href="#setting-the-token-expire-duration" title="Permalink to this headline">¶</a></h2>
+<p>There are two ways to set the expire duration of the JWT.</p>
+<p>from your app config:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set the token expire duration to 7 days</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;JWT_EXPIRE_DAYS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">7</span>
+</pre></div>
+</div>
+<p>using the <code class="xref py py-class docutils literal notranslate"><span class="pre">set_exp</span></code> method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set the token expire duration to 14 days</span>
+<span class="n">jwt_routes</span> <span class="o">=</span> <span class="n">JwtRoutes</span><span class="p">()</span>
+<span class="c1"># jwt_routes.init_app( ...etc</span>
+<span class="n">jwt_routes</span><span class="o">.</span><span class="n">set_exp</span><span class="p">(</span><span class="n">expire_days</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>By default the expire duration is set to 30 days</p>
+</div>
+<div class="section" id="authorization-tokens">
+<h2>Authorization &amp; Tokens<a class="headerlink" href="#authorization-tokens" title="Permalink to this headline">¶</a></h2>
+<p>From your_app import jwt_routes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># white list the routes</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;WHITE_LIST_ROUTES&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="s2">&quot;/register&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="s2">&quot;/login&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/register&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;POST&quot;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">register</span><span class="p">():</span>
+    <span class="c1"># I&#39;m registering a new user &amp; returning a token!</span>
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span>
+        <span class="s2">&quot;token&quot;</span><span class="p">:</span> <span class="n">jwt_routes</span><span class="o">.</span><span class="n">create_token</span><span class="p">(</span><span class="n">entity_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="p">})</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;POST&quot;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">login</span><span class="p">():</span>
+    <span class="c1"># I&#39;m authorized &amp; updating my token!</span>
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span>
+        <span class="s2">&quot;token&quot;</span><span class="p">:</span> <span class="n">jwt_routes</span><span class="o">.</span><span class="n">update_token</span><span class="p">(</span><span class="n">entity_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="p">})</span>
+</pre></div>
+</div>
+<p>Create a new entity &amp; return a new token:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/register&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;POST&quot;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">register</span><span class="p">():</span>
+    <span class="n">user_data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">UserModel</span><span class="p">(</span><span class="o">**</span><span class="n">user_data</span><span class="p">)</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">create_user</span><span class="p">()</span> <span class="c1"># your entity creation logic</span>
+
+        <span class="c1"># Here we pass the id as a kwarg to `create_token`</span>
+        <span class="n">token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">jwt_routes</span><span class="o">.</span><span class="n">create_token</span><span class="p">(</span><span class="n">entity_id</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">table_name</span><span class="o">=</span><span class="s2">&quot;user&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Now we can return a new token!</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;User successfully created.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;token&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">token</span><span class="p">),</span>  <span class="c1"># casting is optional</span>
+        <span class="p">},</span> <span class="mi">200</span>
+</pre></div>
+</div>
+<p>Access entity on Flask’s global context:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">app</span><span class="p">,</span> <span class="n">jwt_routes</span>
+
+<span class="c1"># Example uses Marshmallow to serialize entity object</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">login</span><span class="p">():</span>
+    <span class="n">user_data</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;entity&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">user_dumped</span> <span class="o">=</span> <span class="n">UserSchema</span><span class="p">()</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">user_data</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">_</span><span class="p">:</span>
+       <span class="k">return</span> <span class="p">{</span>
+                   <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;User requested does not exist.&quot;</span>
+               <span class="p">},</span> <span class="mi">401</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">user_dumped</span><span class="p">,</span>
+        <span class="s2">&quot;token&quot;</span><span class="p">:</span> <span class="n">jwt_routes</span><span class="o">.</span><span class="n">create_token</span><span class="p">(</span><span class="n">entity_id</span><span class="o">=</span><span class="n">user_data</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">table_name</span><span class="o">=</span><span class="s2">&quot;user&quot;</span><span class="p">),</span>
+    <span class="p">},</span> <span class="mi">200</span>
+</pre></div>
+</div>
+<p>If you are handling a request with a token in the headers you can call:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jwt_routes</span><span class="o">.</span><span class="n">update_token</span><span class="p">(</span><span class="n">entity_id</span><span class="o">=</span><span class="n">user_data</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you are handling a request without a token in the headers you can call:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jwt_routes</span><span class="o">.</span><span class="n">create_token</span><span class="p">(</span><span class="n">entity_id</span><span class="o">=</span><span class="n">user_data</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">table_name</span><span class="o">=</span><span class="s2">&quot;user&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt id="flask_jwt_router._jwt_routes.JwtRoutes">
+<em class="property">class </em><code class="sig-prename descclassname">flask_jwt_router._jwt_routes.</code><code class="sig-name descname">JwtRoutes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">app</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_jwt_router/_jwt_routes.html#JwtRoutes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask_jwt_router._jwt_routes.JwtRoutes" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>If there app is None then self.init_app(app=None, <a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs) need to be called
+inside the Flask app factory pattern.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>app</strong> – Flask application instance</p></li>
+<li><p><strong>kwargs</strong> – entity_model</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="flask_jwt_router._jwt_routes.JwtRoutes.app">
+<code class="sig-name descname">app</code><em class="property"> = None</em><a class="headerlink" href="#flask_jwt_router._jwt_routes.JwtRoutes.app" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Flask application instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="flask_jwt_router._jwt_routes.JwtRoutes.config">
+<code class="sig-name descname">config</code><em class="property">: <a class="reference internal" href="config.html#flask_jwt_router._config.Config" title="flask_jwt_router._config.Config">flask_jwt_router._config.Config</a></em><a class="headerlink" href="#flask_jwt_router._jwt_routes.JwtRoutes.config" title="Permalink to this definition">¶</a></dt>
+<dd><p>The class that is used to create Config objects.  See <a class="reference internal" href="config.html#module-flask_jwt_router._config" title="flask_jwt_router._config"><code class="xref py py-class docutils literal notranslate"><span class="pre">_config</span></code></a>
+for more information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="flask_jwt_router._jwt_routes.JwtRoutes.create_token">
+<code class="sig-name descname">create_token</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/flask_jwt_router/_jwt_routes.html#JwtRoutes.create_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask_jwt_router._jwt_routes.JwtRoutes.create_token" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>kwargs</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="flask_jwt_router._jwt_routes.JwtRoutes.encode_token">
+<code class="sig-name descname">encode_token</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">entity_id</span></em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/flask_jwt_router/_jwt_routes.html#JwtRoutes.encode_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask_jwt_router._jwt_routes.JwtRoutes.encode_token" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>entity_id</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="flask_jwt_router._jwt_routes.JwtRoutes.entity">
+<code class="sig-name descname">entity</code><em class="property">: <a class="reference internal" href="entity.html#flask_jwt_router._entity.BaseEntity" title="flask_jwt_router._entity.BaseEntity">flask_jwt_router._entity.BaseEntity</a></em><a class="headerlink" href="#flask_jwt_router._jwt_routes.JwtRoutes.entity" title="Permalink to this definition">¶</a></dt>
+<dd><p>The class that is used to create Entity objects.  See <a class="reference internal" href="entity.html#module-flask_jwt_router._entity" title="flask_jwt_router._entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">_entity</span></code></a>
+for more information.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="flask_jwt_router._jwt_routes.JwtRoutes.entity_models">
+<code class="sig-name descname">entity_models</code><em class="property">: List<span class="p">[</span>_GenericAlias<span class="p">]</span></em><a class="headerlink" href="#flask_jwt_router._jwt_routes.JwtRoutes.entity_models" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of entity models</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="flask_jwt_router._jwt_routes.JwtRoutes.exp">
+<code class="sig-name descname">exp</code><em class="property">: int</em><a class="headerlink" href="#flask_jwt_router._jwt_routes.JwtRoutes.exp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Low level expire member. See <a class="reference internal" href="config.html#module-flask_jwt_router._config" title="flask_jwt_router._config"><code class="xref py py-class docutils literal notranslate"><span class="pre">_config</span></code></a> &amp; set with JWT_EXPIRE_DAYS
+or use <code class="xref py py-class docutils literal notranslate"><span class="pre">set_exp</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="flask_jwt_router._jwt_routes.JwtRoutes.get_app_config">
+<code class="sig-name descname">get_app_config</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">app</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_jwt_router/_jwt_routes.html#JwtRoutes.get_app_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask_jwt_router._jwt_routes.JwtRoutes.get_app_config" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>app</strong> – Flask Application Instance</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="flask_jwt_router._jwt_routes.JwtRoutes.get_entity_id">
+<code class="sig-name descname">get_entity_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_jwt_router/_jwt_routes.html#JwtRoutes.get_entity_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask_jwt_router._jwt_routes.JwtRoutes.get_entity_id" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>kwargs</strong> – Dict[str, int]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="flask_jwt_router._jwt_routes.JwtRoutes.google">
+<code class="sig-name descname">google</code><em class="property">: flask_jwt_router.oauth2._base.BaseOAuth</em><a class="headerlink" href="#flask_jwt_router._jwt_routes.JwtRoutes.google" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional Google OAuth 2.0 Single Sign On. See <code class="xref py py-class docutils literal notranslate"><span class="pre">google`</span></code>
+for more information.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="flask_jwt_router._jwt_routes.JwtRoutes.google_oauth">
+<code class="sig-name descname">google_oauth</code><em class="property">: Dict</em><a class="headerlink" href="#flask_jwt_router._jwt_routes.JwtRoutes.google_oauth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional. See <a class="reference internal" href="google.html#module-flask_jwt_router.oauth2.google" title="flask_jwt_router.oauth2.google"><code class="xref py py-class docutils literal notranslate"><span class="pre">google</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="flask_jwt_router._jwt_routes.JwtRoutes.init_app">
+<code class="sig-name descname">init_app</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">app</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_jwt_router/_jwt_routes.html#JwtRoutes.init_app"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask_jwt_router._jwt_routes.JwtRoutes.init_app" title="Permalink to this definition">¶</a></dt>
+<dd><p>You can use this to set up your config at runtime
+:param app: Flask application instance
+:return:</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="flask_jwt_router._jwt_routes.JwtRoutes.logger">
+<code class="sig-name descname">logger</code><em class="property"> = &lt;module 'logging' from '/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/logging/__init__.py'&gt;</em><a class="headerlink" href="#flask_jwt_router._jwt_routes.JwtRoutes.logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logging.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="flask_jwt_router._jwt_routes.JwtRoutes.routing">
+<code class="sig-name descname">routing</code><em class="property">: <a class="reference internal" href="routing.html#flask_jwt_router._routing.BaseRouting" title="flask_jwt_router._routing.BaseRouting">flask_jwt_router._routing.BaseRouting</a></em><a class="headerlink" href="#flask_jwt_router._jwt_routes.JwtRoutes.routing" title="Permalink to this definition">¶</a></dt>
+<dd><p>The class that is used to create Routing objects.  See <a class="reference internal" href="routing.html#module-flask_jwt_router._routing" title="flask_jwt_router._routing"><code class="xref py py-class docutils literal notranslate"><span class="pre">_routing</span></code></a>
+for more information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="flask_jwt_router._jwt_routes.JwtRoutes.set_exp">
+<code class="sig-name descname">set_exp</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/flask_jwt_router/_jwt_routes.html#JwtRoutes.set_exp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask_jwt_router._jwt_routes.JwtRoutes.set_exp" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>kwargs</strong> – Dict[str, int]
+- expire_days: The expire time for the JWT in days</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="flask_jwt_router._jwt_routes.JwtRoutes.update_token">
+<code class="sig-name descname">update_token</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/flask_jwt_router/_jwt_routes.html#JwtRoutes.update_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask_jwt_router._jwt_routes.JwtRoutes.update_token" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>kwargs</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Flask JWT Router</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">JwtRoutes API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#quick-start">Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#authorizing-routes">Authorizing Routes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#setting-the-token-expire-duration">Setting the Token Expire Duration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#authorization-tokens">Authorization &amp; Tokens</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="google.html">Google OAuth2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="entity.html">Entity Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Extensions Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="routing.html">Routing Class</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to Flask JWT Router</a></li>
+      <li>Next: <a href="google.html" title="next chapter">Google OAuth2.0</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Joe Gasewicz.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/jwt_routes.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

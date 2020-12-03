@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Extensions Class &#8212; Flask JWT Router 0.0.19 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Routing Class" href="routing.html" />
+    <link rel="prev" title="Entity Class" href="entity.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-flask_jwt_router._config">
+<span id="extensions-class"></span><h1>Extensions Class<a class="headerlink" href="#module-flask_jwt_router._config" title="Permalink to this headline">¶</a></h1>
+<p>The main configuration class for Flask-JWT-Router</p>
+<dl class="py class">
+<dt id="flask_jwt_router._config.BaseConfig">
+<em class="property">class </em><code class="sig-prename descclassname">flask_jwt_router._config.</code><code class="sig-name descname">BaseConfig</code><a class="reference internal" href="_modules/flask_jwt_router/_config.html#BaseConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask_jwt_router._config.BaseConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract Base Class for Extensions</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="flask_jwt_router._config.Config">
+<em class="property">class </em><code class="sig-prename descclassname">flask_jwt_router._config.</code><code class="sig-name descname">Config</code><a class="reference internal" href="_modules/flask_jwt_router/_config.html#Config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask_jwt_router._config.Config" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>secret_key</strong> – User defined secret key</p></li>
+<li><p><strong>entity_key</strong> – The name of the model’s entity attribute</p></li>
+<li><p><strong>whitelist_routes</strong> – List of tuple pairs of verb &amp; url path</p></li>
+<li><p><strong>api_name</strong> – the api name prefix e.g <cite>/api/v1</cite></p></li>
+<li><p><strong>ignored_routes</strong> – Opt our routes from api name prefixing</p></li>
+<li><p><strong>entity_models</strong> – Multiple entities to be authenticated</p></li>
+<li><p><strong>expire_days</strong> – Expire time for the token in days</p></li>
+<li><p><strong>oauth_entity</strong> – If google_oauth options are declared then this will indicate the entity key in flight</p></li>
+</ul>
+</dd>
+<dt class="field-even">Kwargs</dt>
+<dd class="field-even"><dl class="field-list simple">
+<dt class="field-odd">param entity_models</dt>
+<dd class="field-odd"><p>Multiple entities to be authenticated</p>
+</dd>
+<dt class="field-even">param google_oauth</dt>
+<dd class="field-even"><p>Options if the type or auth is Google’s OAuth 2.0</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="flask_jwt_router._config.Config.init_config">
+<code class="sig-name descname">init_config</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">app_config</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>Any<span class="p">]</span></span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/flask_jwt_router/_config.html#Config.init_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask_jwt_router._config.Config.init_config" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>app_config</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt id="flask_jwt_router._config.SecretKeyError">
+<em class="property">exception </em><code class="sig-prename descclassname">flask_jwt_router._config.</code><code class="sig-name descname">SecretKeyError</code><a class="reference internal" href="_modules/flask_jwt_router/_config.html#SecretKeyError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flask_jwt_router._config.SecretKeyError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Flask JWT Router</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="jwt_routes.html">JwtRoutes API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="google.html">Google OAuth2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="entity.html">Entity Class</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Extensions Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="routing.html">Routing Class</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="entity.html" title="previous chapter">Entity Class</a></li>
+      <li>Next: <a href="routing.html" title="next chapter">Routing Class</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Joe Gasewicz.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/config.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
