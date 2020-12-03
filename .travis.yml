@@ -13,4 +13,6 @@ matrix:
 
 script:
   - tox -v -e py
+
+after_success:
   - codecov
