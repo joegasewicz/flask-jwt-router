@@ -21,7 +21,7 @@ copyright = '2019, Joe Gasewicz'
 author = 'Joe Gasewicz'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.19'
+release = '0.1.0rc1'
 master_doc = 'index'
 issues_github_path = "joegasewicz/Flask-JWT-Router"
 # -- General configuration ---------------------------------------------------
