@@ -56,7 +56,7 @@
     Server
     ++++++
 
-    The server is your Flask app. Now that your client has a code & has made the request to
+    **The server is your Flask app.** Now that your client has a code & has made the request to
     the server, we must provide a Flask view handler to exchange the client's code for an
     access token. Flask-JWT-Router has public method (See :obj:`~flask_jwt_router.oauth2.google.oauth_login`)
     that takes Flask's request as a single argument. If the Google OAuth2.0 **code** is valid, then a valid
@@ -107,8 +107,8 @@ class Google(BaseOAuth):
     #: Never share this value with any client side code!
     client_secret: str
 
-    #: This field must match exactly the client side redirect string.
-    #: See https://console.developers.google.com/apis/dashboard >
+    #: This field must match exactly the client side redirect string you have defined in
+    #: *Google developer Credentials* page: See https://console.developers.google.com/apis/dashboard >
     #: Credentials > OAuth 2.0 Client IDs. Click thru & match from the lists of the redirect domains
     redirect_uri: str
 

@@ -18,7 +18,7 @@ is supported.
 
 ## ![Google-Cloud](assets/Google-Cloud1.png) Google's OAuth2.0 supported 
 
-### Google OAuth 2.0 Quick Start (`flask-jwt-router==0.1.0rc1`)
+### Google OAuth 2.0 Quick Start (`flask-jwt-router==0.1.0rc2`)
 
 Read the detailed instructions here: [Flask-JWT-Router](https://flask-jwt-router.readthedocs.io/en/latest/google.html)
 ```python
