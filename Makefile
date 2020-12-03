@@ -3,7 +3,7 @@ build-docs:
 
 release:
 	python setup.py sdist
-	twine upload dist/*
+	twine upload dist/* --verbose
 
 python-tests:
 	tox

@@ -18,7 +18,7 @@ is supported.
 
 ## ![Google-Cloud](assets/Google-Cloud1.png) Google's OAuth2.0 supported 
 
-### Google OAuth 2.0 Quick Start (flask-jwt-router 0.1.0a1)
+### Google OAuth 2.0 Quick Start (`flask-jwt-router==0.1.0rc1`)
 
 Read the detailed instructions here: [Flask-JWT-Router](https://flask-jwt-router.readthedocs.io/en/latest/google.html)
 ```python
@@ -52,13 +52,14 @@ it expires.
 
 ## Installation
 
+Stable version
 ```bash
 pip install flask-jwt-router
 ```
 
-The latest Alpha version (with Google OAuth2.0 support)
+The latest Release Candidate version (includes Google OAuth2.0 support)
 ```
-pip install flask-jwt-router==0.1.0a1
+pip install flask-jwt-router==0.1.0rc1
 ```
 
 ## Basic Usage
