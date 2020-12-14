@@ -4,7 +4,7 @@
 """
 import inspect
 from abc import ABC, abstractmethod
-from typing import Any, ClassVar, List, Tuple, Dict, Union
+from typing import Any, ClassVar, List, Tuple, Dict, Union, Optional
 
 _ORMType = type(List[Tuple[int, str]])
 
@@ -65,7 +65,7 @@ class Entity(BaseEntity):
 
     #: The table name value from :class: `~flask_jwt_router.oauth2.google`. This
     #: indicates we are now using oauth 2.0.
-    tablename: str = None
+    tablename: Optional[str] = None
 
     #: This will override the config.entity_key for oauth 2.0 in flight tokens
     _oauth_entity_key: str = None
@@ -203,3 +203,4 @@ class Entity(BaseEntity):
         Cleans up the oauth entity key state between requests
         """
         self.oauth_entity_key = None
+        self.tablename = None

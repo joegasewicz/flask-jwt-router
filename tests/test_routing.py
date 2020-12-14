@@ -92,6 +92,7 @@ class TestRouting:
             routing.before_middleware()
             assert ctx.g.test_entities == [(1, 'joe')]
             assert routing.entity.entity_key == None
+            assert routing.entity.tablename == None
 
         with ctx:
             # token from OAuth headers - X-Auth-Token
@@ -101,6 +102,7 @@ class TestRouting:
             assert ctx.g.test_entities == [(1, 'joe')]
             assert routing.entity.entity_key == None
             assert routing.entity.oauth_entity_key == None
+            assert routing.entity.tablename == None
 
         with ctx:
             # token from oauth headers
@@ -109,6 +111,7 @@ class TestRouting:
             assert ctx.g.oauth_tablename == [(1, "jaco@gmail.com")]
             assert routing.entity.entity_key == None
             assert routing.entity.oauth_entity_key == None
+            assert routing.entity.tablename == None
 
         # Fixes bug - "entity key state gets stale between requests #171"
         # https://github.com/joegasewicz/flask-jwt-router/issues/171
@@ -117,6 +120,7 @@ class TestRouting:
             routing.before_middleware()
             assert routing.entity.entity_key == None
             assert routing.entity.oauth_entity_key == None
+            assert routing.entity.tablename == None
 
     @pytest.mark.parametrize(
         "jwt_router_client,entity_model,expected", [
