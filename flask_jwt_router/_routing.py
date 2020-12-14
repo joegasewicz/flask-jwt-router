@@ -186,8 +186,10 @@ class Routing(BaseRouting):
                     self.entity.clean_up()
                     return None
                 except InvalidTokenError:
+                    self.entity.clean_up()
                     return abort(401)
                 except AttributeError:
+                    self.entity.clean_up()
                     return abort(401)
             else:
                 # Sometimes a developer may define the auth field name as Bearer or Basic
@@ -212,6 +214,8 @@ class Routing(BaseRouting):
             self.entity_key = self.config.entity_key
             entity = self.entity.get_entity_from_token_or_tablename(decoded_token)
             setattr(g, self.entity.get_entity_from_ext().__tablename__, entity)
+            self.entity.clean_up()
             return None
         except ValueError:
+            self.entity.clean_up()
             return abort(401)
