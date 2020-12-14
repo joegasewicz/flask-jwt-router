@@ -18,7 +18,7 @@ from flask import jsonify
 from flask_jwt_router._entity import Entity
 from flask_jwt_router._config import Config
 from flask_jwt_router._routing import Routing
-from tests.fixtures.main_fixture import test_client, jwt_routes
+from tests.fixtures.main_fixture import request_client, jwt_routes
 from tests.fixtures.token_fixture import (
     mock_decoded_token,
     mock_decoded_token_two,
@@ -31,8 +31,6 @@ from tests.fixtures.model_fixtures import (
     MockEntityModelThree,
     MockAOuthModel,
 )
-from tests.fixtures.models import TeacherModel
-
 
 class MockArgs:
     def __init__(self, token=None, headers=False):
@@ -79,7 +77,7 @@ class TestEntity:
         self.config.entity_models = [MockAOuthModel]
         self.config.google_oauth = self.oauth_options
         entity = Entity(self.config)
-        entity.entity_key = "email"
+        entity.oauth_entity_key = "email"
         assert entity.get_entity_from_token_or_tablename(tablename="oauth_tablename") == [(1, 'joe')]
 
     def test_get_entity_from_token_multiple(self, MockEntityModel, MockEntityModelTwo, MockAOuthModel, mock_decoded_token_two):
@@ -91,7 +89,7 @@ class TestEntity:
         self.config.entity_models = [MockEntityModel, MockAOuthModel, MockEntityModelTwo]
         self.config.google_oauth = self.oauth_options
         entity = Entity(self.config)
-        entity.entity_key = "email"
+        entity.oauth_entity_key = "email"
         assert entity.get_entity_from_token_or_tablename(tablename="oauth_tablename") == [(1, 'joe')]
 
     def test_get_attr_name(self, MockEntityModel, mock_decoded_token):
@@ -105,8 +103,13 @@ class TestEntity:
 
         assert result == "id"
 
-    def test_get_attr_name(self, test_client):
-        rv = test_client.post("/api/v1/test_entity")
+    def test_get_attr_name(self, request_client):
+        from tests.fixtures.models import TeacherModel
+        from tests.fixtures.main_fixture import db
+        teacher = TeacherModel(name="joe")
+        db.session.add(teacher)
+        db.session.commit()
+        rv = request_client.post("/api/v1/test_entity")
         assert "200" in str(rv.status)
         assert "token" in str(rv.get_json())
 
@@ -124,7 +127,7 @@ class TestEntity:
             "Content-Type": "application/json",
             "Authorization": f"Bearer {token}",
         }
-        rv_get = test_client.get("/api/v1/test_entity", headers=headers)
+        rv_get = request_client.get("/api/v1/test_entity", headers=headers)
 
         assert "200" in str(rv_get.status)
         assert "token" in str(rv_get.get_json())
