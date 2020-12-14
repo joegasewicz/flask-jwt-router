@@ -189,6 +189,9 @@ class Routing(BaseRouting):
                     return abort(401)
                 except AttributeError:
                     return abort(401)
+                except TypeError:
+                    # This is raised from auth_results["email"] not present
+                    abort(401)
             else:
                 # Sometimes a developer may define the auth field name as Bearer or Basic
                 auth_header = request.headers.get("Authorization")
