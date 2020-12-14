@@ -31,6 +31,7 @@ def TestMockEntity():
         user_name = Column(String(10))
 
         def get_id_from_token(self, t):
+
             return [(1, u'joe')]
     return TestEntity
 

@@ -2,9 +2,9 @@ import pytest
 
 
 TEST_OAUTH_URL = {
-    "local_flask": "http://localhost:5000/ibanez/api/v1/staffs/login",
-    "server_thread": "http://localhost:5000/mock_google_exchange",
-    "shut_down": "http://localhost:5000/shut_down",
+    "local_flask": "http://localhost:5009/ibanez/api/v1/staffs/login",
+    "server_thread": "http://localhost:5009/mock_google_exchange",
+    "shut_down": "http://localhost:5009/shut_down",
     "token": "https://oauth2.googleapis.com/token",
     "user_info.email": "https://www.googleapis.com/oauth2/v2/userinfo",
 }

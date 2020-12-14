@@ -176,13 +176,14 @@ class Routing(BaseRouting):
                     # Currently token refreshing is not supported, so pass the current token through
                     auth_results = self.google.authorize(token)
                     email = auth_results["email"]
-                    setattr(self.entity, "entity_key", self.config.oauth_entity)
+                    self.entity.oauth_entity_key = self.config.oauth_entity
                     entity = self.entity.get_entity_from_token_or_tablename(
                         tablename=self.google.tablename,
                         email_value=email,
                     )
                     setattr(g, self.entity.get_entity_from_ext().__tablename__, entity)
                     setattr(g, "access_token", token)
+                    self.entity.clean_up()
                     return None
                 except InvalidTokenError:
                     return abort(401)

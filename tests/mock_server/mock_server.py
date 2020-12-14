@@ -35,4 +35,4 @@ def mock_google_exchange():
     return mock_exchange_response
 
 
-server_thread = threading.Thread(target=app.run)
+server_thread = threading.Thread(target=app.run, kwargs={"host": "localhost", "port": 5009})

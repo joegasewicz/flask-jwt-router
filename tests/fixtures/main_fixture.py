@@ -3,33 +3,34 @@ from flask import Flask, jsonify, g, request
 from flask_jwt_router._jwt_routes import JwtRoutes
 from flask_sqlalchemy import SQLAlchemy
 
+
 flask_app = Flask(__name__)
 jwt_routes = JwtRoutes()
 db = SQLAlchemy()
 
 
 @flask_app.route("/api/v1/test", methods=["GET"])
-def test_two():
+def request_two():
     return "/test"
 
 
 @flask_app.route("/api/v1/bananas/sub", methods=["GET"])
-def test_sub():
+def request_sub():
     return jsonify({"data": "sub"})
 
 
 @flask_app.route("/api/v1/test/sub_two", methods=["GET"])
-def test_sub_two():
+def request_sub_two():
     return jsonify({"data": "sub2"})
 
 
 @flask_app.route("/api/v1/apples/sub/<int:user_id>", methods=["PUT"])
-def test_three(user_id=1):
+def request_three(user_id=1):
     return jsonify({"data": user_id})
 
 
 @flask_app.route("/ignore", methods=["GET"])
-def test_sub_four():
+def request_sub_four():
     return jsonify({"data": "ignore"})
 
 
@@ -39,26 +40,26 @@ def test_sub_five():
 
 
 @flask_app.route("/api/v1/test_entity", methods=["POST"])
-def test_entity():
-    from tests.fixtures.models import TeacherModel
-    teacher = TeacherModel(name="joe")
-    teacher.save()
+def request_entity():
     token = jwt_routes.create_token(entity_id=1, table_name="teachers")
-    return jsonify({
+    return {
         "token": token,
-    })
+    }, 200
 
 
 @flask_app.route("/api/v1/test_entity", methods=["GET"])
-def test_entity_two():
-    token = jwt_routes.update_token(entity_id=1)
-    return jsonify({
-        "token": token,
-        "data": {
-            "teacher_id": g.teachers.teacher_id,
-            "name": g.teachers.name,
-        }
-    })
+def request_entity_two():
+    if request.method == "GET":
+        token = jwt_routes.update_token(entity_id=1)
+        teacher_id = g.teachers.teacher_id
+        name = g.teachers.name
+        return jsonify({
+            "token": token,
+            "data": {
+                "teacher_id": teacher_id,
+                "name": name,
+            }
+        })
 
 
 @flask_app.route("/api/v1/google_login", methods=["POST"])
@@ -75,7 +76,7 @@ def google_exchange():
 
 
 @pytest.fixture(scope='module')
-def test_client():
+def request_client():
     flask_app.config["SECRET_KEY"] = "__TEST_SECRET__"
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
     flask_app.config["JWT_ROUTER_API_NAME"] = "/api/v1"

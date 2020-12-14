@@ -42,6 +42,12 @@ class BaseEntity(ABC):
         # pylint:disable=missing-function-docstring
         pass
 
+    @abstractmethod
+    def clean_up(self) -> None:
+        # pylint:disable=missing-function-docstring
+        pass
+
+
 
 class Entity(BaseEntity):
     """
@@ -62,18 +68,20 @@ class Entity(BaseEntity):
     tablename: str = None
 
     #: This will override the config.entity_key for oauth 2.0 in flight tokens
-    _entity_key: str = None
+    _oauth_entity_key: str = None
+
+    entity_key: str = None
 
     def __init__(self, config: ClassVar):
         self.config = config
 
     @property
-    def entity_key(self):
-        return self._entity_key
+    def oauth_entity_key(self):
+        return self._oauth_entity_key
 
-    @entity_key.setter
-    def entity_key(self, val: str):
-        self._entity_key = val
+    @oauth_entity_key.setter
+    def oauth_entity_key(self, val: str):
+        self._oauth_entity_key = val
 
     def get_attr_name(self, table_name: str = None) -> str:
         """
@@ -165,9 +173,9 @@ class Entity(BaseEntity):
         entity_key: str = self.get_attr_name()
         self._attach_method()
         try:
-            # If self.entity_key exists then we have a google oauth 2.0 access token
-            if self.entity_key:
-                result = self.auth_model.__get_entity__(self.entity_key, email_value)
+            # If self.oauth_entity_key exists then we have a google oauth 2.0 access token
+            if self.oauth_entity_key:
+                result = self.auth_model.__get_entity__(self.oauth_entity_key, email_value)
             else:
                 result = self.auth_model.__get_entity__(entity_key, decoded_token[self.get_attr_name()])
             return result
@@ -189,3 +197,9 @@ class Entity(BaseEntity):
             "__get_entity__",
             self._get_from_model
         )
+
+    def clean_up(self) -> None:
+        """
+        Cleans up the oauth entity key state between requests
+        """
+        self.oauth_entity_key = None
