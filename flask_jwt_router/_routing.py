@@ -166,6 +166,7 @@ class Routing(BaseRouting):
         Checks to see that the route is white listed.
         :return None:
         """
+        self.entity.clean_up()
         try:
             if request.args.get("auth"):
                 token = request.args.get("auth")
@@ -183,13 +184,10 @@ class Routing(BaseRouting):
                     )
                     setattr(g, self.entity.get_entity_from_ext().__tablename__, entity)
                     setattr(g, "access_token", token)
-                    self.entity.clean_up()
                     return None
                 except InvalidTokenError:
-                    self.entity.clean_up()
                     return abort(401)
                 except AttributeError:
-                    self.entity.clean_up()
                     return abort(401)
             else:
                 # Sometimes a developer may define the auth field name as Bearer or Basic
@@ -214,8 +212,6 @@ class Routing(BaseRouting):
             self.entity_key = self.config.entity_key
             entity = self.entity.get_entity_from_token_or_tablename(decoded_token)
             setattr(g, self.entity.get_entity_from_ext().__tablename__, entity)
-            self.entity.clean_up()
             return None
         except ValueError:
-            self.entity.clean_up()
             return abort(401)

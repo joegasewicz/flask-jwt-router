@@ -89,38 +89,44 @@ class TestRouting:
         with ctx:
             # token from args
             monkeypatch.setattr("flask.request.args", MockArgs(mock_token))
-            routing.before_middleware()
-            assert ctx.g.test_entities == [(1, 'joe')]
+            entity.clean_up()
             assert routing.entity.entity_key == None
             assert routing.entity.tablename == None
+            routing.before_middleware()
+            assert ctx.g.test_entities == [(1, 'joe')]
 
+        entity.clean_up()
         with ctx:
             # token from OAuth headers - X-Auth-Token
             monkeypatch.setattr("flask.request.args", MockArgs())
             monkeypatch.setattr("flask.request.headers", MockArgs(mock_token, True))
-            routing.before_middleware()
-            assert ctx.g.test_entities == [(1, 'joe')]
-            assert routing.entity.entity_key == None
+            entity.clean_up()
             assert routing.entity.oauth_entity_key == None
             assert routing.entity.tablename == None
+            routing.before_middleware()
+            assert ctx.g.test_entities == [(1, 'joe')]
+
 
         with ctx:
             # token from oauth headers
             monkeypatch.setattr("flask.request.headers", MockArgs("<access_token>", "X-Auth-Token"))
-            routing.before_middleware()
-            assert ctx.g.oauth_tablename == [(1, "jaco@gmail.com")]
+            entity.clean_up()
             assert routing.entity.entity_key == None
             assert routing.entity.oauth_entity_key == None
             assert routing.entity.tablename == None
+            routing.before_middleware()
+            assert ctx.g.oauth_tablename == [(1, "jaco@gmail.com")]
+
 
         # Fixes bug - "entity key state gets stale between requests #171"
         # https://github.com/joegasewicz/flask-jwt-router/issues/171
         with ctx:
             monkeypatch.setattr("flask.request.headers", MockArgs("<after_token>", "Authorization"))
-            routing.before_middleware()
+            entity.clean_up()
             assert routing.entity.entity_key == None
             assert routing.entity.oauth_entity_key == None
             assert routing.entity.tablename == None
+            routing.before_middleware()
 
     @pytest.mark.parametrize(
         "jwt_router_client,entity_model,expected", [
