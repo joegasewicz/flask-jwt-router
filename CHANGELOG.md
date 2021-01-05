@@ -1,7 +1,7 @@
 # Changelog
 
 ### Changed
-**Releases 0.0.29 to 0.1.3** -
+**Releases 0.0.29 to 0.1.4** -
 
 - README.md references `user` but example table is `users`. [Issue #154](https://github.com/joegasewicz/flask-jwt-router/issues/154)
 - Add OAuth 2.0 & compatibility with react-google-oauth2 npm pkg. [Issue #158](https://github.com/joegasewicz/flask-jwt-router/issues/158)
