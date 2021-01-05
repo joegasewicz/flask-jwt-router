@@ -1,6 +1,23 @@
 # Changelog
 
 ### Changed
+**Releases 0.0.29 to 0.1.3** -
+
+- README.md references `user` but example table is `users`. [Issue #154](https://github.com/joegasewicz/flask-jwt-router/issues/154)
+- Add OAuth 2.0 & compatibility with react-google-oauth2 npm pkg. [Issue #158](https://github.com/joegasewicz/flask-jwt-router/issues/158)
+- Fix docs. [Issue #162](https://github.com/joegasewicz/flask-jwt-router/issues/162)
+- Fix url is mutated. [Issue #169](https://github.com/joegasewicz/flask-jwt-router/issues/169)
+- Entity key state gets stale between requests. [Issue #171](https://github.com/joegasewicz/flask-jwt-router/issues/171)
+- Table name form oauth request is stale. [Issue #173](https://github.com/joegasewicz/flask-jwt-router/issues/173)
+- Clean up entity state before auth routing . [Issue #175](https://github.com/joegasewicz/flask-jwt-router/issues/175)
+- Return 401 status is oauth returns none. [Issue #177](https://github.com/joegasewicz/flask-jwt-router/issues/177)
+- PyJWT 2.0 causes Breaking change. [Issue #179](https://github.com/joegasewicz/flask-jwt-router/issues/179)
+
+**Release 0.0.28** -
+
+- Created custom error for `update_token` method called on non existent token [Issue #151](https://github.com/joegasewicz/flask-jwt-router/issues/151)
+- Updated `Authenticate`'s `update_token` method's doc string with entity_id kwarg. [Issue #150](https://github.com/joegasewicz/flask-jwt-router/issues/150) 
+- README.md references `user` but example table is `users` [Issue #154](https://github.com/joegasewicz/flask-jwt-router/issues/154)
 
 **Release 0.0.27** - 2020-09-14
 
@@ -22,9 +39,3 @@
 -   Add Models to JWTRoutes class & init_app method [Issue #119](https://github.com/joegasewicz/Flask-JWT-Router/issues/119)
 
 ## Unreleased
-
-**Release 0.0.28** -
-
-- Created custom error for `update_token` method called on non existent token [Issue #151](https://github.com/joegasewicz/flask-jwt-router/issues/151)
-- Updated `Authenticate`'s `update_token` method's doc string with entity_id kwarg. [Issue #150](https://github.com/joegasewicz/flask-jwt-router/issues/150) 
-- README.md references `user` but example table is `users` [Issue #154](https://github.com/joegasewicz/flask-jwt-router/issues/154)
