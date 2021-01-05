@@ -20,8 +20,8 @@ from flask_jwt_router.oauth2.google import Google
 from tests.fixtures.token_fixture import mock_token, mock_access_token
 from tests.fixtures.model_fixtures import TestMockEntity, MockAOuthModel
 from tests.fixtures.app_fixtures import jwt_router_client, test_client_static
-from tests.fixtures.main_fixture import request_client
-from tests.fixtures.oauth_fixtures import http_requests, oauth_urls
+from tests.fixtures.main_fixture import request_client,  jwt_routes
+from tests.fixtures.oauth_fixtures import http_requests, oauth_urls, google_oauth_user
 
 
 class MockArgs:
@@ -106,7 +106,6 @@ class TestRouting:
             routing.before_middleware()
             assert ctx.g.test_entities == [(1, 'joe')]
 
-
         with ctx:
             # token from oauth headers
             monkeypatch.setattr("flask.request.headers", MockArgs("<access_token>", "X-Auth-Token"))
@@ -116,7 +115,6 @@ class TestRouting:
             assert routing.entity.tablename == None
             routing.before_middleware()
             assert ctx.g.oauth_tablename == [(1, "jaco@gmail.com")]
-
 
         # Fixes bug - "entity key state gets stale between requests #171"
         # https://github.com/joegasewicz/flask-jwt-router/issues/171
@@ -188,3 +186,31 @@ class TestRouting:
     def test_handle_pre_flight_request(self, request_client):
         rv = request_client.options("/")
         assert "200" in str(rv.status)
+
+    def test_routing_with_google_create_test_headers(self, request_client, MockAOuthModel, google_oauth_user):
+        email = "test_one@oauth.com"
+        test_user = MockAOuthModel(email="test_one@oauth.com")
+
+        assert jwt_routes.google.test_metadata is None
+        # Pure stateless test with no db
+        oauth_headers = jwt_routes.google.create_test_headers(email=email, entity=test_user)
+
+        assert jwt_routes.google.test_metadata == {"email": email, "entity": test_user}
+        assert oauth_headers == {'X-Auth-Token': 'Bearer <GOOGLE_OAUTH2_TEST>'}
+
+        rv = request_client.get("/api/v1/test_google_oauth", headers=oauth_headers)
+        assert "200" in str(rv.status)
+        assert email == rv.get_json()["email"]
+        assert jwt_routes.google.test_metadata is None
+
+        # Tests with side effects to db
+        oauth_headers = jwt_routes.google.create_test_headers(email=google_oauth_user.email)
+
+        assert jwt_routes.google.test_metadata == {"email": email, "entity": None}
+        assert oauth_headers == {'X-Auth-Token': 'Bearer <GOOGLE_OAUTH2_TEST>'}
+
+        rv = request_client.get("/api/v1/test_google_oauth", headers=oauth_headers)
+        assert "200" in str(rv.status)
+        assert email == rv.get_json()["email"]
+        assert jwt_routes.google.test_metadata is None
+

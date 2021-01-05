@@ -30,7 +30,6 @@ def jwt_router_client(request):
     ctx.push()
 
     yield client
-
     ctx.pop()
 
 

@@ -280,6 +280,33 @@ In your React app directory install react-google-oauth2.0:
 npm install react-google-oauth2 --save 
 ```
 
+## Testing
+
+Testing OAuth2.0 in a Flask app is non-trivial, especially if you rely on Flask-JWT-Router
+to append your user onto Flask's global context (or `g`). Therefore we have provided a
+utility method that returns a headers Dict that you can then use in your test view handler
+request. This example is using the Pytest library:
+
+```python
+    @pytest.fixture()
+    def client():
+        # See https://flask.palletsprojects.com/en/1.1.x/testing/ for details
+
+
+    def test_blogs(client):
+        user_headers = jwt_routes.google.create_test_headers(email="user@gmail.com")
+        rv = client.get("/blogs", headers=user_headers)
+```
+
+If you are not running a db in your tests, then you can use the `entity` kwarg.
+For example:
+
+```python
+# user is an instantiated SqlAlchemy object
+user_headers = jwt_routes.google.create_test_headers(email="user@gmail.com", entity=user)
+# user_headers: { "X-Auth-Token": "Bearer <GOOGLE_OAUTH2_TEST>" }
+```
+
 
 ## Authors
 

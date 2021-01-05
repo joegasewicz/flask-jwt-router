@@ -21,3 +21,7 @@ class BaseOAuth(ABC):
     @abstractmethod
     def oauth_login(self, request: _FlaskRequestType) -> Dict:
         pass
+
+    @abstractmethod
+    def create_test_headers(self, *, email: str, entity=None) -> Dict[str, str]:
+        pass

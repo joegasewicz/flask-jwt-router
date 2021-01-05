@@ -1,5 +1,7 @@
 import pytest
 
+from tests.fixtures.main_fixture import db
+from tests.fixtures.models import OAuthUserModel
 
 TEST_OAUTH_URL = {
     "local_flask": "http://localhost:5009/ibanez/api/v1/staffs/login",
@@ -13,6 +15,14 @@ TEST_OAUTH_URL = {
 @pytest.fixture
 def oauth_urls():
     return TEST_OAUTH_URL
+
+
+@pytest.fixture
+def google_oauth_user():
+    oauth_user = OAuthUserModel(email="test_one@oauth.com")
+    db.session.add(oauth_user)
+    db.session.commit()
+    return oauth_user
 
 
 @pytest.fixture
