@@ -11,7 +11,7 @@ new_token = jwt.encode({
         },
             "__TEST_SECRET__",
             algorithm="HS256"
-        ).decode("utf-8")
+        )
 
 
 @pytest.fixture
@@ -40,7 +40,7 @@ new_token_two = jwt.encode({
         },
             "__TEST_SECRET__",
             algorithm="HS256"
-        ).decode("utf-8")
+        )
 
 
 @pytest.fixture
@@ -64,7 +64,7 @@ new_token_three = jwt.encode({
         },
             "__TEST_SECRET__",
             algorithm="HS256"
-        ).decode("utf-8")
+        )
 
 
 @pytest.fixture
