@@ -57,12 +57,18 @@ class Authentication(BaseAuthentication):
         self.entity_key = config.entity_key
         self.secret_key = config.secret_key
         # pylint: disable=line-too-long
+
         encoded = jwt.encode({
             "table_name": table_name,
             self.entity_key: entity_id,
             # pylint: disable=no-member
             "exp": datetime.utcnow() + relativedelta(days=+exp)
-        }, self.secret_key, algorithm="HS256").decode("utf-8")
+        }, self.secret_key, algorithm="HS256")
+        try:
+            # Handle < pyJWT==2.0
+            encoded = encoded.decode("utf-8")
+        except AttributeError:
+            pass
         return encoded
 
     def create_token(self, config: Config, exp: int, **kwargs) -> str:
