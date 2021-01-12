@@ -89,6 +89,7 @@
 """
 from typing import Dict
 from abc import ABC, abstractmethod
+from urllib.parse import urlencode
 
 from .http_requests import HttpRequests
 from ._base import BaseOAuth, _FlaskRequestType
@@ -152,14 +153,13 @@ class Google(BaseOAuth):
 
     def update_base_path(self, path: str) -> None:
         # TODO rename this method
-        url = f"{path}?"
-        url = f"{url}code={self.code}&"
-        url = f"{url}client_id={self.client_id}&"
-        url = f"{url}client_secret={self.client_secret}&"
-        url = f"{url}redirect_uri={self.redirect_uri}&"
-        url = f"{url}grant_type={self.grant_type}&"
-        url = f"{url}expires_in={self.expires_in}"
-        self._url = url
+        self._url = path + urlencode(dict(
+          code=self.code,
+          client_id=self.client_id,
+          client_secret=self.client_secret,
+          redirect_uri=self.redirect_uri,
+          grant_type=self.grant_type,
+          expires_in=self.expires_in))
 
     def _exchange_auth_access_code(self) -> Dict:
         """
