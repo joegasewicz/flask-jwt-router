@@ -153,7 +153,7 @@ class Google(BaseOAuth):
 
     def update_base_path(self, path: str) -> None:
         # TODO rename this method
-        self._url = path + urlencode(dict(
+        self._url = f"{path}?" + urlencode(dict(
           code=self.code,
           client_id=self.client_id,
           client_secret=self.client_secret,
