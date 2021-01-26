@@ -311,6 +311,7 @@ user_headers = jwt_routes.google.create_test_headers(email="user@gmail.com", ent
 ## Authors
 
 * **joegasewicz** - *Initial work* - [@joegasewicz](https://twitter.com/joegasewicz)
+* **Kousik Mitra** - *Initial work* - [@kousikmitra](https://github.com/kousikmitra)
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
