@@ -75,6 +75,14 @@ def google_exchange():
     }
 
 
+@flask_app.route("/api/v1/test_google_oauth", methods=["GET"])
+def request_google_oauth():
+    oauth_tablename = g.oauth_tablename
+    return {
+        "email": oauth_tablename.email,
+    }, 200
+
+
 @pytest.fixture(scope='module')
 def request_client():
     flask_app.config["SECRET_KEY"] = "__TEST_SECRET__"
@@ -91,8 +99,8 @@ def request_client():
         ("GET", "/ignore"),
     ]
 
-    from tests.fixtures.models import TeacherModel
-    flask_app.config["ENTITY_MODELS"] = [TeacherModel]
+    from tests.fixtures.models import TeacherModel, OAuthUserModel
+    flask_app.config["ENTITY_MODELS"] = [TeacherModel, OAuthUserModel]
 
     google_oauth = {
         "client_id": "<CLIENT_ID>",

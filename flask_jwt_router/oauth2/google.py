@@ -86,6 +86,31 @@
     This will allow the user to gain access to your Flask's app resources until the access token's
     expire time has ended. The client should then decide whether to redirect the user to Google's
     login screen.
+
+    Testing
+    +++++++
+
+    Testing OAuth2.0 in a Flask app is non-trivial, especially if you rely on Flask-JWT-Router
+    to append your user onto Flask's global context (or `g`). Therefore we have provided a
+    utility method that returns a headers Dict that you can then use in your test view handler
+    request. This example is using the Pytest library::
+
+        @pytest.fixture()
+        def client():
+            # See https://flask.palletsprojects.com/en/1.1.x/testing/ for details
+
+
+        def test_blogs(client):
+            user_headers = jwt_routes.google.create_test_headers(email="user@gmail.com")
+            rv = client.get("/blogs", headers=user_headers)
+
+    If you are not running a db in your tests, then you can use the `entity` kwarg.
+    For example::
+
+        # user is an instantiated SqlAlchemy object
+        user_headers = jwt_routes.google.create_test_headers(email="user@gmail.com", entity=user)
+        # user_headers: { "X-Auth-Token": "Bearer <GOOGLE_OAUTH2_TEST>" }
+
 """
 from typing import Dict
 from abc import ABC, abstractmethod
@@ -130,6 +155,8 @@ class Google(BaseOAuth):
     http: HttpRequests
 
     _data: Dict
+
+    test_metadata: Dict[str, str] = None
 
     def __init__(self, http):
         self.http = http
@@ -210,3 +237,32 @@ class Google(BaseOAuth):
         :return: None
         """
         self.expires_in = 3600 * 24 * 7
+
+    def create_test_headers(self, *, email: str, entity=None) -> Dict[str, str]:
+        """
+        :key email: SqlAlchemy object will be filtered against the email value.
+        :key entity: SqlAlchemy object if you prefer not to run a db in your tests.
+
+        If you are running your tests against a test db then just pass in the `email` kwarg.
+        For example::
+
+            user_headers = jwt_routes.google.create_test_headers(email="user@gmail.com")
+            # user_headers: { "X-Auth-Token": "Bearer <GOOGLE_OAUTH2_TEST>" }
+
+        If you are not running a db in your tests, then you can use the `entity` kwarg.
+        For example::
+
+            # user is an instantiated SqlAlchemy object
+            user_headers = jwt_routes.google.create_test_headers(email="user@gmail.com", entity=user)
+            # user_headers: { "X-Auth-Token": "Bearer <GOOGLE_OAUTH2_TEST>" }
+
+
+        :return: Python Dict containing header key value for OAuth routing with FJR
+        """
+        self.test_metadata = {
+            "email": email,
+            "entity": entity,
+        }
+        return {
+            "X-Auth-Token": "Bearer <GOOGLE_OAUTH2_TEST>",
+        }

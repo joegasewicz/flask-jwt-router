@@ -6,6 +6,7 @@ from flask_jwt_router.oauth2.google import Google, _FlaskRequestType
 from flask_jwt_router.oauth2.http_requests import HttpRequests
 from flask_jwt_router.oauth2._urls import GOOGLE_OAUTH_URL
 from tests.fixtures.oauth_fixtures import TEST_OAUTH_URL, http_requests
+from tests.fixtures.model_fixtures import MockAOuthModel
 
 mock_exchange_response = {
     "access_token": "<access_token>",
@@ -97,7 +98,6 @@ class TestGoogle:
         result = g.oauth_login(_MockFlaskRequest())
         assert result["access_token"] == "<access_token>"
 
-    @pytest.mark.skip
     def test_authorize(self, http_requests):
         """
         {
@@ -117,22 +117,18 @@ class TestGoogle:
         result = g.authorize(token)
         assert "email" in result
 
-    @pytest.mark.skip
-    def test_local_oauth_login(self):
-        class _Request(_FlaskRequestType):  # TODO make into fixture
-            base_url = "http://localhost:3000/google_login"
+    def test_create_test_headers(self, http_requests, MockAOuthModel):
 
-            @staticmethod
-            def get_json() -> Dict:
-                return {
-                    "code": "",
-                    "scope": "",
-                }
-
+        mock_user = MockAOuthModel(email="test@email.com")
         g = Google(http_requests(GOOGLE_OAUTH_URL))
-        g.init(**{
-            "client_id": "",
-            "client_secret": "",
-            "redirect_uri": "",
-        })
-        result = g.oauth_login(_Request())
+        g.init(**self.mock_options)
+
+        result = g.create_test_headers(email="test@email.com")
+        assert result == {'X-Auth-Token': 'Bearer <GOOGLE_OAUTH2_TEST>'}
+        assert g.test_metadata["email"] == "test@email.com"
+        assert g.test_metadata["entity"] is None
+
+        result = g.create_test_headers(email="test@email.com", entity=mock_user)
+        assert result == {'X-Auth-Token': 'Bearer <GOOGLE_OAUTH2_TEST>'}
+        assert g.test_metadata["email"] == "test@email.com"
+        assert g.test_metadata["entity"] == mock_user

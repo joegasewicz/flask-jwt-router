@@ -167,6 +167,7 @@ class Routing(BaseRouting):
         :return None:
         """
         self.entity.clean_up()
+        entity = None
         try:
             if request.args.get("auth"):
                 token = request.args.get("auth")
@@ -174,16 +175,25 @@ class Routing(BaseRouting):
                 bearer = request.headers.get("X-Auth-Token")
                 token = bearer.split("Bearer ")[1]
                 try:
-                    # Currently token refreshing is not supported, so pass the current token through
-                    auth_results = self.google.authorize(token)
-                    email = auth_results["email"]
+                    if self.google.test_metadata:
+                        email = self.google.test_metadata["email"]
+                        entity = self.google.test_metadata["entity"]
+                    else:
+                        # Currently token refreshing is not supported, so pass the current token through
+                        auth_results = self.google.authorize(token)
+                        email = auth_results["email"]
                     self.entity.oauth_entity_key = self.config.oauth_entity
-                    entity = self.entity.get_entity_from_token_or_tablename(
-                        tablename=self.google.tablename,
-                        email_value=email,
-                    )
-                    setattr(g, self.entity.get_entity_from_ext().__tablename__, entity)
+                    if not entity:
+                        entity = self.entity.get_entity_from_token_or_tablename(
+                            tablename=self.google.tablename,
+                            email_value=email,
+                        )
+                        setattr(g, self.entity.get_entity_from_ext().__tablename__, entity)
+                    else:
+                        setattr(g, entity.__tablename__, entity)
                     setattr(g, "access_token", token)
+                    # Clean up google test util
+                    self.google.test_metadata = None
                     return None
                 except InvalidTokenError:
                     return abort(401)
