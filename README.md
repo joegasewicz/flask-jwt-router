@@ -8,7 +8,7 @@
 
 ![Flask JWT Router](assets/logo.png?raw=true "Title")
 
-Read the docs: [Flask-JWT-Router](https://flask-jwt-router.readthedocs.io/en/stable/) 
+Read the docs: [Flask-JWT-Router](https://flask-jwt-router.readthedocs.io/en/latest/) 
 
 # Flask JWT Router
 
