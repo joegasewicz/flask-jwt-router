@@ -39,17 +39,14 @@ def test_sub_five():
     return jsonify({"data": "/"})
 
 
-@flask_app.route("/api/v1/test_entity", methods=["POST"])
+@flask_app.route("/api/v1/test_entity", methods=["POST", "GET"])
 def request_entity():
-    token = jwt_routes.create_token(entity_id=1, table_name="teachers")
-    return {
-        "token": token,
-    }, 200
-
-
-@flask_app.route("/api/v1/test_entity", methods=["GET"])
-def request_entity_two():
-    if request.method == "GET":
+    if request.method == "POST":
+        token = jwt_routes.create_token(entity_id=1, table_name="teachers")
+        return {
+            "token": token,
+        }, 200
+    elif request.method == "GET":
         token = jwt_routes.update_token(entity_id=1)
         teacher_id = g.teachers.teacher_id
         name = g.teachers.name
@@ -60,7 +57,6 @@ def request_entity_two():
                 "name": name,
             }
         })
-
 
 @flask_app.route("/api/v1/google_login", methods=["POST"])
 def google_login():

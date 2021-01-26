@@ -171,7 +171,7 @@ class Routing(BaseRouting):
         try:
             if request.args.get("auth"):
                 token = request.args.get("auth")
-            elif request.headers.get("X-Auth-Token") and self.google:
+            elif request.headers.get("X-Auth-Token") is not None and self.google:
                 bearer = request.headers.get("X-Auth-Token")
                 token = bearer.split("Bearer ")[1]
                 try:

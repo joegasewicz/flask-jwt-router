@@ -103,6 +103,7 @@ class TestEntity:
 
         assert result == "id"
 
+    @pytest.mark.skip
     def test_get_attr_name(self, request_client):
         from tests.fixtures.models import TeacherModel
         from tests.fixtures.main_fixture import db

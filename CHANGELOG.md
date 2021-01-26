@@ -1,6 +1,9 @@
 # Changelog
 
 ### Changed
+**Releases 0.1.5** -
+- Provide a utility method for testing & mocking OAuth headers. [Issue #183](https://github.com/joegasewicz/flask-jwt-router/issues/183)
+
 **Releases 0.0.29 to 0.1.4** -
 
 - README.md references `user` but example table is `users`. [Issue #154](https://github.com/joegasewicz/flask-jwt-router/issues/154)

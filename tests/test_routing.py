@@ -12,6 +12,7 @@
 from flask import Flask
 from typing import Any
 import pytest
+import jwt
 
 from flask_jwt_router._routing import Routing
 from flask_jwt_router._config import Config
@@ -213,4 +214,3 @@ class TestRouting:
         assert "200" in str(rv.status)
         assert email == rv.get_json()["email"]
         assert jwt_routes.google.test_metadata is None
-
