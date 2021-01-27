@@ -79,7 +79,7 @@ def request_google_oauth():
     }, 200
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='class')
 def request_client():
     flask_app.config["SECRET_KEY"] = "__TEST_SECRET__"
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"

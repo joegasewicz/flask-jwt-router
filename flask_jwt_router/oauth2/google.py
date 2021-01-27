@@ -109,7 +109,7 @@
 
         # user is an instantiated SqlAlchemy object
         user_headers = jwt_routes.google.create_test_headers(email="user@gmail.com", entity=user)
-        # user_headers: { "X-Auth-Token": "Bearer <GOOGLE_OAUTH2_TEST>" }
+        # user_headers: { "X-Auth-Token": "Bearer user@gmail.com" }
 
     If you require more than one request to a Flask view handler in a single unit test, then set
     the *scope* kwarg to **application**.
@@ -161,7 +161,9 @@ class Google(BaseOAuth):
 
     _data: Dict
 
-    test_metadata: Optional[Dict[str, str]] = None
+    test_metadata: Dict[str, Dict[str, str]] = {}
+
+    _current_test_email: str = None
 
     def __init__(self, http):
         self.http = http
@@ -254,31 +256,33 @@ class Google(BaseOAuth):
         For example::
 
             user_headers = jwt_routes.google.create_test_headers(email="user@gmail.com")
-            # user_headers: { "X-Auth-Token": "Bearer <GOOGLE_OAUTH2_TEST>" }
+            # user_headers: { "X-Auth-Token": "Bearer user@gmail.com" }
 
         If you are not running a db in your tests, then you can use the `entity` kwarg.
         For example::
 
             # user is an instantiated SqlAlchemy object
             user_headers = jwt_routes.google.create_test_headers(email="user@gmail.com", entity=user)
-            # user_headers: { "X-Auth-Token": "Bearer <GOOGLE_OAUTH2_TEST>" }
+            # user_headers: { "X-Auth-Token": "Bearer user@gmail.com" }
 
         If you require more than one request to a Flask view handler in a single unit test, then set
         the *scope* kwarg to **application**.
         For example::
 
-        _ = jwt_routes.google.create_test_headers(email="user@gmail.com", scope="application")
+            _ = jwt_routes.google.create_test_headers(email="user@gmail.com", scope="application")
 
 
         :return: Python Dict containing header key value for OAuth routing with FJR
         """
-        self.test_metadata = {
+        _meta = {
             "email": email,
             "entity": entity,
             "scope": scope,
         }
+        self.test_metadata[f"{email}"] = _meta
+
         return {
-            "X-Auth-Token": "Bearer <GOOGLE_OAUTH2_TEST>",
+            "X-Auth-Token": f"Bearer {email}",
         }
 
     def tear_down(self, *, scope: str = "function"):
@@ -288,24 +292,28 @@ class Google(BaseOAuth):
         (unittest or pytest etc.). Calling *tear_down()* will clean up the authorised OAuth state.
         For example::
 
-        @pytest.fixture()
-            def client():
-                ... # See https://flask.palletsprojects.com/en/1.1.x/testing/ for details
-                jwt_routes.google.tear_down(scope="application")
+            @pytest.fixture()
+                def client():
+                    ... # See https://flask.palletsprojects.com/en/1.1.x/testing/ for details
+                    jwt_routes.google.tear_down(scope="application")
 
         :key scope: Optional. Default is *function*. Set to "application" to teardown all oauth state
         """
         if scope == "application":
-            self.test_metadata = None
-        elif self.test_metadata and self.test_metadata.get("scope") != "application":
-            self.test_metadata = None
+            self.test_metadata = {}
+        elif self._current_test_email in self.test_metadata:
+            if self.test_metadata[self._current_test_email].get("scope") != "application":
+                del self.test_metadata[self._current_test_email]
 
-    def _update_test_metadata(self) -> Tuple[str, object]:
+    def _update_test_metadata(self, email: str) -> Tuple[str, object]:
         """
         Updates test_metadata from passed values to create_test_headers
+        :email: The email comes from the `Bearer <email>` token
         :private:
         :return:
         """
-        email = self.test_metadata["email"]
-        entity = self.test_metadata["entity"]
+        self._current_test_email = email
+
+        email = self.test_metadata[email]["email"]
+        entity = self.test_metadata[email]["entity"]
         return email, entity

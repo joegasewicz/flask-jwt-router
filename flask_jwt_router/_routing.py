@@ -176,7 +176,7 @@ class Routing(BaseRouting):
                 token = bearer.split("Bearer ")[1]
                 try:
                     if self.google.test_metadata:
-                        email, entity = self.google._update_test_metadata()
+                        email, entity = self.google._update_test_metadata(token)
                     else:
                         # Currently token refreshing is not supported, so pass the current token through
                         auth_results = self.google.authorize(token)

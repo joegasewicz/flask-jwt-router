@@ -11,7 +11,7 @@ def test_one():
     return "/test"
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def jwt_router_client(request):
     app.config = {**app.config, **request.param}
     app.config["TESTING"] = True
