@@ -1,7 +1,10 @@
 # Changelog
 
 ### Changed
-**Releases 0.1.5** -
+**Releases 0.1.6** - 2021-01-27
+- Google test utility method can be scoped between tests. [Issue #185](https://github.com/joegasewicz/flask-jwt-router/issues/185)
+
+**Releases 0.1.5** - 2021-01-26
 - Added extra test in  [_routing.py line 174](https://github.com/joegasewicz/flask-jwt-router/blob/6ee5bcfb772b6cb66a5c621cf466014b94eaf635/flask_jwt_router/_routing.py#L174) for better check for X-Auth-Token headers.
 - Provide a utility method for testing & mocking OAuth headers. [Issue #183](https://github.com/joegasewicz/flask-jwt-router/issues/183)
 
