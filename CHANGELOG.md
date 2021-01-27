@@ -1,6 +1,9 @@
 # Changelog
 
 ### Changed
+**Releases 0.1.7** - 2021-01-27
+- Test utils for OAuth users should handle multiple user states. [Issue #188](https://github.com/joegasewicz/flask-jwt-router/pull/188)
+
 **Releases 0.1.6** - 2021-01-27
 - Google test utility method can be scoped between tests. [Issue #185](https://github.com/joegasewicz/flask-jwt-router/issues/185)
 
