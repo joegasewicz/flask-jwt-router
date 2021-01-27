@@ -176,8 +176,7 @@ class Routing(BaseRouting):
                 token = bearer.split("Bearer ")[1]
                 try:
                     if self.google.test_metadata:
-                        email = self.google.test_metadata["email"]
-                        entity = self.google.test_metadata["entity"]
+                        email, entity = self.google._update_test_metadata()
                     else:
                         # Currently token refreshing is not supported, so pass the current token through
                         auth_results = self.google.authorize(token)
@@ -193,7 +192,7 @@ class Routing(BaseRouting):
                         setattr(g, entity.__tablename__, entity)
                     setattr(g, "access_token", token)
                     # Clean up google test util
-                    self.google.test_metadata = None
+                    self.google.tear_down()
                     return None
                 except InvalidTokenError:
                     return abort(401)

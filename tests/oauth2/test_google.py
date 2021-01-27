@@ -127,8 +127,31 @@ class TestGoogle:
         assert result == {'X-Auth-Token': 'Bearer <GOOGLE_OAUTH2_TEST>'}
         assert g.test_metadata["email"] == "test@email.com"
         assert g.test_metadata["entity"] is None
+        assert g.test_metadata["scope"] is "function"
 
         result = g.create_test_headers(email="test@email.com", entity=mock_user)
         assert result == {'X-Auth-Token': 'Bearer <GOOGLE_OAUTH2_TEST>'}
         assert g.test_metadata["email"] == "test@email.com"
         assert g.test_metadata["entity"] == mock_user
+        assert g.test_metadata["scope"] is "function"
+
+        result = g.create_test_headers(email="test@email.com", entity=mock_user, scope="application")
+        assert result == {'X-Auth-Token': 'Bearer <GOOGLE_OAUTH2_TEST>'}
+        assert g.test_metadata["email"] == "test@email.com"
+        assert g.test_metadata["entity"] == mock_user
+        assert g.test_metadata["scope"] is "application"
+
+    def test_tear_down(self, http_requests, MockAOuthModel):
+        mock_user = MockAOuthModel(email="test@email.com")
+        g = Google(http_requests(GOOGLE_OAUTH_URL))
+        g.init(**self.mock_options)
+
+        result = g.create_test_headers(email="test@email.com", entity=mock_user, scope="application")
+        assert result == {'X-Auth-Token': 'Bearer <GOOGLE_OAUTH2_TEST>'}
+        assert g.test_metadata["email"] == "test@email.com"
+        assert g.test_metadata["entity"] == mock_user
+        assert g.test_metadata["scope"] is "application"
+        g.tear_down()
+        assert g.test_metadata["email"] == "test@email.com"
+        g.tear_down(scope="application")
+        assert g.test_metadata is None
