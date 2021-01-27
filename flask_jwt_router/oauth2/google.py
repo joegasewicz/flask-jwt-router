@@ -111,9 +111,14 @@
         user_headers = jwt_routes.google.create_test_headers(email="user@gmail.com", entity=user)
         # user_headers: { "X-Auth-Token": "Bearer <GOOGLE_OAUTH2_TEST>" }
 
+    If you require more than one request to a Flask view handler in a single unit test, then set
+    the *scope* kwarg to **application**.
+    For example::
+
+    _ = jwt_routes.google.create_test_headers(email="user@gmail.com", scope="application")
+
 """
-from typing import Dict
-from abc import ABC, abstractmethod
+from typing import Dict, Optional, Tuple
 
 from .http_requests import HttpRequests
 from ._base import BaseOAuth, _FlaskRequestType
@@ -156,7 +161,7 @@ class Google(BaseOAuth):
 
     _data: Dict
 
-    test_metadata: Dict[str, str] = None
+    test_metadata: Optional[Dict[str, str]] = None
 
     def __init__(self, http):
         self.http = http
@@ -238,10 +243,12 @@ class Google(BaseOAuth):
         """
         self.expires_in = 3600 * 24 * 7
 
-    def create_test_headers(self, *, email: str, entity=None) -> Dict[str, str]:
+    def create_test_headers(self, *, email: str, entity=None, scope="function") -> Dict[str, str]:
         """
         :key email: SqlAlchemy object will be filtered against the email value.
-        :key entity: SqlAlchemy object if you prefer not to run a db in your tests.
+        :key entity: Optional. SqlAlchemy object if you prefer not to run a db in your tests.
+        :key scope: Optional. Default is *function*. Pass *application* if each unit test requires
+        more than one request to a Flask view handler.
 
         If you are running your tests against a test db then just pass in the `email` kwarg.
         For example::
@@ -256,13 +263,49 @@ class Google(BaseOAuth):
             user_headers = jwt_routes.google.create_test_headers(email="user@gmail.com", entity=user)
             # user_headers: { "X-Auth-Token": "Bearer <GOOGLE_OAUTH2_TEST>" }
 
+        If you require more than one request to a Flask view handler in a single unit test, then set
+        the *scope* kwarg to **application**.
+        For example::
+
+        _ = jwt_routes.google.create_test_headers(email="user@gmail.com", scope="application")
+
 
         :return: Python Dict containing header key value for OAuth routing with FJR
         """
         self.test_metadata = {
             "email": email,
             "entity": entity,
+            "scope": scope,
         }
         return {
             "X-Auth-Token": "Bearer <GOOGLE_OAUTH2_TEST>",
         }
+
+    def tear_down(self, *, scope: str = "function"):
+        """
+        If you are setting the *scope* to *application* in :class:`~flask_jwt_router.google.create_test_headers`
+        then you may want to clean up the state outside or the teardown scope of your test runner
+        (unittest or pytest etc.). Calling *tear_down()* will clean up the authorised OAuth state.
+        For example::
+
+        @pytest.fixture()
+            def client():
+                ... # See https://flask.palletsprojects.com/en/1.1.x/testing/ for details
+                jwt_routes.google.tear_down(scope="application")
+
+        :key scope: Optional. Default is *function*. Set to "application" to teardown all oauth state
+        """
+        if scope == "application":
+            self.test_metadata = None
+        elif self.test_metadata and self.test_metadata.get("scope") != "application":
+            self.test_metadata = None
+
+    def _update_test_metadata(self) -> Tuple[str, object]:
+        """
+        Updates test_metadata from passed values to create_test_headers
+        :private:
+        :return:
+        """
+        email = self.test_metadata["email"]
+        entity = self.test_metadata["entity"]
+        return email, entity

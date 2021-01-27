@@ -23,5 +23,5 @@ class BaseOAuth(ABC):
         pass
 
     @abstractmethod
-    def create_test_headers(self, *, email: str, entity=None) -> Dict[str, str]:
+    def create_test_headers(self, *, email: str, entity: object = None, scope: str = "function") -> Dict[str, str]:
         pass
