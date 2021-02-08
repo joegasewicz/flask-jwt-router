@@ -91,9 +91,9 @@
     +++++++
 
     Testing OAuth2.0 in a Flask app is non-trivial, especially if you rely on Flask-JWT-Router
-    to append your user onto Flask's global context (or `g`). Therefore we have provided a
-    utility method that returns a headers Dict that you can then use in your test view handler
-    request. This example is using the Pytest library::
+    to append your user onto Flask's global context (or `g`). Therefore we have provided a utility
+    method that you can then use in your test view handler request. This example is using the
+    Pytest library::
 
         @pytest.fixture()
         def client():
@@ -245,7 +245,7 @@ class Google(BaseOAuth):
         """
         self.expires_in = 3600 * 24 * 7
 
-    def create_test_headers(self, *, email: str, entity=None, scope="function") -> Dict[str, str]:
+    def create_test_headers(self, *, email: str, entity=None, scope="function") -> str:
         """
         :key email: SqlAlchemy object will be filtered against the email value.
         :key entity: Optional. SqlAlchemy object if you prefer not to run a db in your tests.
@@ -263,7 +263,7 @@ class Google(BaseOAuth):
 
             # user is an instantiated SqlAlchemy object
             user_headers = jwt_routes.google.create_test_headers(email="user@gmail.com", entity=user)
-            # user_headers: { "X-Auth-Token": "Bearer user@gmail.com" }
+            # user_headers: "Bearer your@email.com"
 
         If you require more than one request to a Flask view handler in a single unit test, then set
         the *scope* kwarg to **application**.
