@@ -49,3 +49,4 @@
 -   Add Models to JWTRoutes class & init_app method [Issue #119](https://github.com/joegasewicz/Flask-JWT-Router/issues/119)
 
 ## Unreleased
+-   Outdated docstring - nice easy fix for a beginner developer! #192 [Issue #192](https://github.com/joegasewicz/flask-jwt-router/issues/192)
