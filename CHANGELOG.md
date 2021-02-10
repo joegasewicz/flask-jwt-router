@@ -50,3 +50,4 @@
 
 ## Unreleased
 -   Outdated docstring - nice easy fix for a beginner developer! #192 [Issue #192](https://github.com/joegasewicz/flask-jwt-router/issues/192)
+-   Bump cryptography from 3.3.1 to 3.3.2 #197
