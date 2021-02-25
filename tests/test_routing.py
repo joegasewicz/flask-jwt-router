@@ -97,7 +97,6 @@ class TestRouting:
             routing.before_middleware()
             assert ctx.g.test_entities == [(1, 'joe')]
 
-        entity.clean_up()
         with ctx:
             # token from OAuth headers - X-Auth-Token
             monkeypatch.setattr("flask.request.args", {})
