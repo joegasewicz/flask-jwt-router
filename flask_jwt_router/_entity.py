@@ -4,6 +4,7 @@
 """
 import inspect
 from abc import ABC, abstractmethod
+from flask import g
 from typing import Any, ClassVar, List, Tuple, Dict, Union, Optional
 
 _ORMType = type(List[Tuple[int, str]])
@@ -200,7 +201,14 @@ class Entity(BaseEntity):
 
     def clean_up(self) -> None:
         """
-        Cleans up the oauth entity key state between requests
+        Cleans up the following from the previous request:
+            - oauth_entity_key
+            - tablename
+            - Removes any entities from g contained in config.entity_models
         """
         self.oauth_entity_key = None
         self.tablename = None
+        # This removes all entities attached from the previous request
+        for v in self.config.entity_models:
+            if hasattr(g, v.__tablename__):
+                delattr(g, v.__tablename__)
