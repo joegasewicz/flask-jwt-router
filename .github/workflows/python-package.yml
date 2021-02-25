@@ -28,4 +28,4 @@ jobs:
         make install
     - name: Test with tox
       run: |
-        make python-tests
+        make test
