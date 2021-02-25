@@ -307,10 +307,12 @@ user_headers = jwt_routes.google.create_test_headers(email="user@gmail.com", ent
 # user_headers: { "X-Auth-Token": "Bearer <GOOGLE_OAUTH2_TEST>" }
 ```
 If you require more than one request to a Flask view handler in a single unit test, then set
-the *scope* kwarg to **application**. (Default is *function*)
+the *scope* kwarg to **application**. (Default is *function*). If you are testing different 
+entities within a single unit test method or function then you must pass in your entity.
 For example:
 ```python
-_ = jwt_routes.google.create_test_headers(email="user@gmail.com", scope="application")
+my_entity = User(email="user@gmail.com") # If you're testing against a real db, make sure this is an entry in the db
+_ = jwt_routes.google.create_test_headers(email="user@gmail.com", scope="application", entity=my_entity)
 
 ```
 
