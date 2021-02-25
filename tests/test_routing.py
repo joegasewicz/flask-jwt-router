@@ -10,6 +10,7 @@
     "JWT_ROUTER_API_NAME" = "/api/v1"
 """
 from flask import Flask
+import flask
 from typing import Any
 import pytest
 import jwt
@@ -99,16 +100,17 @@ class TestRouting:
         entity.clean_up()
         with ctx:
             # token from OAuth headers - X-Auth-Token
-            monkeypatch.setattr("flask.request.args", MockArgs())
+            monkeypatch.setattr("flask.request.args", {})
             monkeypatch.setattr("flask.request.headers", MockArgs(mock_token, True))
             entity.clean_up()
             assert routing.entity.oauth_entity_key == None
             assert routing.entity.tablename == None
             routing.before_middleware()
-            assert ctx.g.test_entities == [(1, 'joe')]
+            assert ctx.g.oauth_tablename == [(1, 'jaco@gmail.com')]
 
         with ctx:
             # token from oauth headers
+            monkeypatch.setattr("flask.request.args", {})
             monkeypatch.setattr("flask.request.headers", MockArgs("<access_token>", "X-Auth-Token"))
             entity.clean_up()
             assert routing.entity.entity_key == None

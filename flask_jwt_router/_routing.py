@@ -144,7 +144,6 @@ class Routing(BaseRouting):
         """
         #pylint:disable=inconsistent-return-statements
         path = request.path
-        method = request.method
         is_static = self._add_static_routes(path)
         method = request.method
         if not is_static:
@@ -158,6 +157,7 @@ class Routing(BaseRouting):
                     white_routes = self._prefix_api_name(self.config.whitelist_routes)
                     not_whitelist = self._allow_public_routes(white_routes)
                     if not_whitelist:
+                        self.entity.clean_up()
                         self._handle_token()
 
     def _handle_token(self):
@@ -166,7 +166,6 @@ class Routing(BaseRouting):
         Checks to see that the route is white listed.
         :return None:
         """
-        self.entity.clean_up()
         entity = None
         try:
             if request.args.get("auth"):
