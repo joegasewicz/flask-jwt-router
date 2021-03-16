@@ -1,6 +1,11 @@
 # Changelog
 
 ### Changed
+**Releases 0.1.8** - 2021-03-16
+-   Outdated docstring - nice easy fix for a beginner developer! [Issue #192](https://github.com/joegasewicz/flask-jwt-router/issues/192)
+-   Bump cryptography from 3.3.1 to 3.3.2 #197
+-   Multiple redirect URI's for Google OAuth #203 [Issue #203](https://github.com/joegasewicz/flask-jwt-router/issues/203)
+
 **Releases 0.1.7** - 2021-01-27
 - Test utils for OAuth users should handle multiple user states. [Issue #188](https://github.com/joegasewicz/flask-jwt-router/pull/188)
 
@@ -49,5 +54,3 @@
 -   Add Models to JWTRoutes class & init_app method [Issue #119](https://github.com/joegasewicz/Flask-JWT-Router/issues/119)
 
 ## Unreleased
--   Outdated docstring - nice easy fix for a beginner developer! #192 [Issue #192](https://github.com/joegasewicz/flask-jwt-router/issues/192)
--   Bump cryptography from 3.3.1 to 3.3.2 #197

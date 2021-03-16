@@ -98,6 +98,9 @@ class TestGoogle:
         result = g.oauth_login(_MockFlaskRequest())
         assert result["access_token"] == "<access_token>"
 
+        g.oauth_login(_MockFlaskRequest(), redirect_uri="<new_redirect_uri>")
+        assert g.redirect_uri == "<new_redirect_uri>"
+
     def test_authorize(self, http_requests):
         """
         {
