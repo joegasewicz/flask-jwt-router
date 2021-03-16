@@ -87,6 +87,13 @@
     expire time has ended. The client should then decide whether to redirect the user to Google's
     login screen.
 
+    If your app requires multiple redirect uri's then
+    you can use the *redirect_uri* kwarg to assign a uri for the current
+    request handler. For example::
+
+        data = jwt_routes.google.oauth_login(request, redirect="http://another_redirect.com")
+
+
     Testing
     +++++++
 
@@ -215,6 +222,12 @@ class Google(BaseOAuth):
     def oauth_login(self, request: _FlaskRequestType, **kwargs) -> Dict:
         """
         :param request: Flask request object
+        :key redirect_uri: If your app requires multiple redirect uri's then
+        you can use the *redirect_uri* kwarg to assign a uri for the current
+        request handler. For example::
+
+            data = jwt_routes.google.oauth_login(request, redirect="http://another_redirect.com")
+
         :return Dict:
         """
         redirect_uri = kwargs.get("redirect_uri")
