@@ -274,6 +274,14 @@ Create a login route for Google's OAuth 2.0
         data = jwt_routes.google.oauth_login(request)
         return data, 200
 ```
+
+If your app requires multiple redirect uri's then
+you can use the `redirect_uri` kwarg to assign a uri for the current
+request handler. For example:
+```python
+data = jwt_routes.google.oauth_login(request, redirect="http://another_redirect.com")
+```
+
 We have created a ReactJS library specifically for Flask-JWT-Router - [react-google-oauth2.0](https://github.com/joegasewicz/react-google-oauth2.0)
 In your React app directory install react-google-oauth2.0:
 ```bash
