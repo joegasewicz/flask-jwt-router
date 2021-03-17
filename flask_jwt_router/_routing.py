@@ -168,11 +168,15 @@ class Routing(BaseRouting):
         """
         entity = None
         try:
+            resource_headers = request.headers.get("X-Auth-Resource")
+            oauth_headers = request.headers.get("X-Auth-Token")
             if request.args.get("auth"):
                 token = request.args.get("auth")
-            elif request.headers.get("X-Auth-Token") is not None and self.google:
-                bearer = request.headers.get("X-Auth-Token")
+            elif oauth_headers is not None and self.google:
+                bearer = oauth_headers
                 token = bearer.split("Bearer ")[1]
+                if not token:
+                    abort(401)
                 try:
                     if self.google.test_metadata:
                         email, entity = self.google._update_test_metadata(token)
@@ -182,12 +186,25 @@ class Routing(BaseRouting):
                         email = auth_results["email"]
                     self.entity.oauth_entity_key = self.config.oauth_entity
                     if not entity:
-                        entity = self.entity.get_entity_from_token_or_tablename(
-                            tablename=self.google.tablename,
-                            email_value=email,
-                        )
-                        setattr(g, self.entity.get_entity_from_ext().__tablename__, entity)
+                        if resource_headers:
+                            # If multiple tables are used to look up against incoming oauth users
+                            # then assign the value from the X-Auth-Resource headers as the entity table name.
+                            entity = self.entity.get_entity_from_token_or_tablename(
+                                tablename=resource_headers,
+                                email_value=email,
+                            )
+                            setattr(g, resource_headers, entity)
+                        else:
+                            # This is the normal case without testing tools or resource headers.
+                            # Attach the the entity using the table name as the attribute name to Flask's
+                            # global context object.
+                            entity = self.entity.get_entity_from_token_or_tablename(
+                                tablename=self.google.tablename,
+                                email_value=email,
+                            )
+                            setattr(g, self.entity.get_entity_from_ext().__tablename__, entity)
                     else:
+                        # Entity from the google testing tools
                         setattr(g, entity.__tablename__, entity)
                     setattr(g, "access_token", token)
                     # Clean up google test util

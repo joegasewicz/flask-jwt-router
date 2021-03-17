@@ -66,7 +66,7 @@ class TestGoogle:
         g.init(**self.mock_options)
         g.code = "<CODE>"
         g._url = "https://oauth2.googleapis.com/token"
-        g.update_base_path(g._url)
+        g.update_base_path(g._url, "http://localhost:3000")
         expected = "https://oauth2.googleapis.com/token?" \
                    "code=<CODE>&" \
                    "client_id=<CLIENT_ID>&" \
@@ -97,9 +97,10 @@ class TestGoogle:
         g.init(**self.mock_options)
         result = g.oauth_login(_MockFlaskRequest())
         assert result["access_token"] == "<access_token>"
-
+        # TODO better tests
         g.oauth_login(_MockFlaskRequest(), redirect_uri="<new_redirect_uri>")
-        assert g.redirect_uri == "<new_redirect_uri>"
+        g.update_base_path("<url>", "<new_redirect_uri>")
+        assert "<new_redirect_uri>" in g._url
 
     def test_authorize(self, http_requests):
         """

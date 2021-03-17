@@ -1,6 +1,9 @@
 # Changelog
 
 ### Changed
+**Releases 0.1.9rc1** - 2021-03-16
+-   Allow for multiple tablenames for Google OAuth  [Issue #206](https://github.com/joegasewicz/flask-jwt-router/issues/206)
+
 **Releases 0.1.8** - 2021-03-16
 -   Outdated docstring - nice easy fix for a beginner developer! [Issue #192](https://github.com/joegasewicz/flask-jwt-router/issues/192)
 -   Bump cryptography from 3.3.1 to 3.3.2 #197
