@@ -193,13 +193,13 @@ class Google(BaseOAuth):
         self.email_field = email_field
         self.tablename = tablename
 
-    def update_base_path(self, path: str) -> None:
+    def update_base_path(self, path: str, redirect_uri: str) -> None:
         # TODO rename this method
         url = f"{path}?"
         url = f"{url}code={self.code}&"
         url = f"{url}client_id={self.client_id}&"
         url = f"{url}client_secret={self.client_secret}&"
-        url = f"{url}redirect_uri={self.redirect_uri}&"
+        url = f"{url}redirect_uri={redirect_uri}&"
         url = f"{url}grant_type={self.grant_type}&"
         url = f"{url}expires_in={self.expires_in}"
         self._url = url
@@ -231,8 +231,6 @@ class Google(BaseOAuth):
         :return Dict:
         """
         redirect_uri = kwargs.get("redirect_uri")
-        if redirect_uri:
-            self.redirect_uri = redirect_uri
         if not request:
             raise RequestAttributeError()
         req_data = request.get_json()
@@ -241,7 +239,8 @@ class Google(BaseOAuth):
             raise ClientExchangeCodeError(request.base_url)
         # Add the rest of the param args to the base_path
         self._url = self.http.get_url("token")
-        self.update_base_path(self._url)
+        redirect = redirect_uri or self.redirect_uri
+        self.update_base_path(self._url, redirect)
         self._data = self._exchange_auth_access_code()
         res_data = {
             "access_token": self._data["access_token"],

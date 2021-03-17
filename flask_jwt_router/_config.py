@@ -30,7 +30,7 @@ class BaseConfig(ABC):
 class Config(BaseConfig):
     """
     :param secret_key: User defined secret key
-    :param entity_key: The name of the model's entity attribute
+    :param entity_key: The entity's primary key (ie id or user_id etc.). Default is *id*
     :param whitelist_routes: List of tuple pairs of verb & url path
     :param api_name: the api name prefix e.g `/api/v1`
     :param ignored_routes: Opt our routes from api name prefixing
