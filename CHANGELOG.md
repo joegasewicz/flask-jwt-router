@@ -54,3 +54,4 @@
 -   Add Models to JWTRoutes class & init_app method [Issue #119](https://github.com/joegasewicz/Flask-JWT-Router/issues/119)
 
 ## Unreleased
+-   Allow for multiple tablenames for Google OAuth  [Issue #206](https://github.com/joegasewicz/flask-jwt-router/issues/206)
