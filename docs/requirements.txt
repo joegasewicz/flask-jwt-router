@@ -52,7 +52,7 @@ toml==0.10.2
 tox==3.20.1
 tqdm==4.54.0
 twine==3.2.0
-urllib3==1.26.4
+urllib3==1.26.5
 virtualenv==20.2.1
 webencodings==0.5.1
 Werkzeug==1.0.1
