@@ -1,6 +1,14 @@
 # Changelog
 
 ### Changed
+**Releases 0.1.7 - 0.1.9** - 2021-06-04
+- Allow for multiple tablenames for Google OAuth [Issue #206](https://github.com/joegasewicz/flask-jwt-router/pull/206)
+- Multiple redirect URI's for Google OAuth. [Issue #203](https://github.com/joegasewicz/flask-jwt-router/pull/203)
+- Tear down g context entity members between requests. [Issue #201](https://github.com/joegasewicz/flask-jwt-router/pull/201)
+- test stores X-Auth-Token between tests in scope function. [Issue #199](https://github.com/joegasewicz/flask-jwt-router/pull/199)
+- Outdated docstring - nice easy fix for a beginner developer! . [Issue #192](https://github.com/joegasewicz/flask-jwt-router/pull/192)
+- Fix CI [Issue #190](https://github.com/joegasewicz/flask-jwt-router/pull/190)
+
 **Releases 0.1.7** - 2021-01-27
 - Test utils for OAuth users should handle multiple user states. [Issue #188](https://github.com/joegasewicz/flask-jwt-router/pull/188)
 
