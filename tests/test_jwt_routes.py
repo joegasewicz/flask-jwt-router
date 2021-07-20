@@ -1,7 +1,7 @@
 from flask import Flask
 import pytest
 
-from flask_jwt_router._jwt_routes import JwtRoutes
+from flask_jwt_router import JwtRoutes, GoogleTestUtil
 from tests.fixtures.model_fixtures import MockEntityModel, MockAOuthModel
 
 
@@ -53,7 +53,7 @@ class TestJwtRoutes:
 
         self.app.config["ENTITY_MODELS"] = [MockEntityModel, MockAOuthModel]
         jwt = JwtRoutes()
-        jwt.init_app(self.app, google_oauth=self.oauth_options)
+        jwt.init_app(self.app, google_oauth=self.oauth_options, strategies=[GoogleTestUtil])
         assert jwt.config.entity_models[1] == MockAOuthModel
         assert jwt.config.google_oauth["client_id"] == "<CLIENT_ID>"
         assert jwt.config.google_oauth["client_secret"] == "<CLIENT_SECRET>"
@@ -63,7 +63,7 @@ class TestJwtRoutes:
         assert jwt.config.google_oauth["expires_in"] == 3600
 
         self.app.config["ENTITY_MODELS"] = [MockEntityModel, MockAOuthModel]
-        jwt = JwtRoutes(self.app, google_oauth=self.oauth_options)
+        jwt = JwtRoutes(self.app, google_oauth=self.oauth_options, strategies=[GoogleTestUtil])
         jwt.init_app()
         assert jwt.config.entity_models[1] == MockAOuthModel
         assert jwt.config.google_oauth["client_id"] == "<CLIENT_ID>"

@@ -1,9 +1,9 @@
 import pytest
 from flask import Flask, jsonify
-from flask_jwt_router._jwt_routes import JwtRoutes
+from flask_jwt_router import JwtRoutes, Google, GoogleTestUtil
 
 
-app = Flask(__name__)
+app = Flask(__name__, )
 jwt_routes = JwtRoutes()
 
 @app.route("/test", methods=["GET"])
@@ -24,7 +24,7 @@ def jwt_router_client(request):
         "email_field": "email",
         "expires_in": 3600,
     }
-    jwt_routes.init_app(app, google_oauth=google_oauth)
+    jwt_routes.init_app(app, google_oauth=google_oauth, strategies=[GoogleTestUtil])
     client = app.test_client()
     ctx = app.app_context()
     ctx.push()
