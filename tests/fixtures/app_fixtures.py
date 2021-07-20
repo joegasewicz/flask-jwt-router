@@ -1,5 +1,5 @@
 import pytest
-from flask import Flask, jsonify
+from flask import Flask, jsonify, g
 from flask_jwt_router import JwtRoutes, Google, GoogleTestUtil
 
 
@@ -11,9 +11,22 @@ def test_one():
     return "/test"
 
 
+
+@app.route("/api/v1/test_google_oauth", methods=["GET"])
+def request_google_oauth():
+    oauth_tablename = g.oauth_tablename
+    return {
+        "email": oauth_tablename.email,
+    }, 200
+
+
 @pytest.fixture
 def jwt_router_client(request):
-    app.config = {**app.config, **request.param}
+    if hasattr(request, "param"):
+        param = request.param
+    else:
+        param = {}
+    app.config = {**app.config, **param}
     app.config["TESTING"] = True
     app.config["SECRET_KEY"] = "__TEST_SECRET__"
     google_oauth = {

@@ -191,11 +191,10 @@ class TestRouting:
         rv = request_client.options("/")
         assert "200" in str(rv.status)
 
-    @pytest.mark.skip
     def test_routing_with_google_create_test_headers(self, request_client, MockAOuthModel, google_oauth_user):
         email = "test_one@oauth.com"
         test_user = MockAOuthModel(email="test_one@oauth.com")
-        google = jwt_routes.strategies[0]({})
+        google = jwt_routes.get_strategy("GoogleTestUtil")
         assert google.test_metadata == {}
         # Pure stateless test with no db
         oauth_headers = google.create_test_headers(email=email, entity=test_user)
@@ -207,32 +206,31 @@ class TestRouting:
         assert "200" in str(rv.status)
         assert email == rv.get_json()["email"]
         assert google.test_metadata == {}
-
-        # Tests with side effects to db
+        #
+        # # Tests with side effects to db
         oauth_headers = google.create_test_headers(email=google_oauth_user.email)
-
+        #
         assert google.test_metadata[email] == {"email": email, "entity": None, "scope": "function"}
         assert oauth_headers == {'X-Auth-Token': f'Bearer {email}'}
-
+        #
         rv = request_client.get("/api/v1/test_google_oauth", headers=oauth_headers)
         assert "200" in str(rv.status)
         assert email == rv.get_json()["email"]
         assert google.test_metadata == {}
 
-    @pytest.mark.skip
     def test_routing_with_google_create_headers_scope(self, request_client, MockAOuthModel, google_oauth_user):
         email = "test_one@oauth.com"
         test_user = MockAOuthModel(email="test_one@oauth.com")
         test_metadata = {"email": email, "entity": test_user, "scope": "application"}
-
-        assert jwt_routes.strategies[0].test_metadata == {}
+        google = jwt_routes.get_strategy("GoogleTestUtil")
+        assert google.test_metadata == {}
         # Pure stateless test with no db
-        oauth_headers = jwt_routes.strategies[0].create_test_headers(email=email, entity=test_user, scope="application")
+        oauth_headers = google.create_test_headers(email=email, entity=test_user, scope="application")
 
-        assert jwt_routes.strategies[0].test_metadata[email] == test_metadata
+        assert google.test_metadata[email] == test_metadata
         assert oauth_headers == {'X-Auth-Token': f'Bearer {email}'}
 
         rv = request_client.get("/api/v1/test_google_oauth", headers=oauth_headers)
         assert "200" in str(rv.status)
         assert email == rv.get_json()["email"]
-        assert jwt_routes.google.test_metadata[email] == test_metadata
+        assert google.test_metadata[email] == test_metadata

@@ -138,7 +138,7 @@ class Google(BaseOAuth):
     # test_metadata: Dict[str, Dict[str, str]] = {} TODO remove
 
     #: The X header name used for the Google Auth2.0 Strategy (subsequent strategies should be "X-<STRATEGY_NAME>-Token"
-    header_name = "X-Google-Token"
+    header_name = "X-Auth-Token"
 
     #: As defined in https://tools.ietf.org/html/rfc6749#section-4.1.3
     #: Value MUST be set to "authorization_code".

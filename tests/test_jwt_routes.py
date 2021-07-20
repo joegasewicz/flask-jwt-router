@@ -155,3 +155,9 @@ class TestJwtRoutes:
         assert jwt.exp == 99
         jwt.set_exp(expire_days=22)
         assert jwt.exp == 22
+
+    def test_get_strategy(self):
+        jwt = JwtRoutes()
+        jwt.init_app(self.app, google_oauth=self.oauth_options, strategies=[GoogleTestUtil])
+        strategy = jwt.get_strategy("GoogleTestUtil")
+        assert isinstance(strategy, GoogleTestUtil)

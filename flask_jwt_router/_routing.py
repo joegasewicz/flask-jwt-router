@@ -4,7 +4,7 @@
 from abc import ABC, abstractmethod
 # pylint:disable=invalid-name
 import logging
-from typing import List, Optional
+from typing import List, Optional, Dict
 from flask import request, abort, g, Flask
 from werkzeug.routing import RequestRedirect
 from werkzeug.exceptions import MethodNotAllowed, NotFound
@@ -28,6 +28,10 @@ class BaseRouting(ABC):
         # pylint:disable=missing-function-docstring
         pass
 
+    @abstractmethod
+    def init(self, app, config: Config, entity: BaseEntity, strategy_dict: Dict[str, BaseOAuth] = None) -> None:
+        pass
+
 
 class Routing(BaseRouting):
     """
@@ -43,14 +47,14 @@ class Routing(BaseRouting):
 
     entity: BaseEntity
 
-    strategies: List[BaseOAuth]
+    strategy_dict: Dict[str, BaseOAuth]
 
-    def init(self, app, config: Config, entity: BaseEntity, strategies: List[BaseOAuth] = None):
+    def init(self, app, config: Config, entity: BaseEntity, strategy_dict: Dict[str, BaseOAuth] = None) -> None:
         self.app = app
         self.config = config
         self.logger = logger
         self.entity = entity
-        self.strategies = strategies
+        self.strategy_dict = strategy_dict
 
     def _prefix_api_name(self, w_routes=None):
         """
@@ -188,8 +192,8 @@ class Routing(BaseRouting):
                 token = request.args.get("auth")
             # Strategies --------------------------------------------------------- #
 
-            elif oauth_headers is not None and len(self.strategies):
-                for s in self.strategies:
+            elif oauth_headers is not None and len(self.strategy_dict.keys()):
+                for s in self.strategy_dict.values():
                     if s.header_name == oauth_headers:
                         strategy = s
                 if not strategy:
@@ -265,8 +269,6 @@ class _TestMixin(Routing):
 
     def handle_token(self):
 
-        super(_TestMixin, self).handle_token()
-
         strategy: Optional[TestBaseOAuth] = None
 
         try:
@@ -275,9 +277,9 @@ class _TestMixin(Routing):
             if request.args.get("auth"):
                 super(_TestMixin, self).handle_token()
             # Strategies --------------------------------------------------------- #
-            elif oauth_headers is not None and len(self.strategies):
-                for s in self.strategies:
-                    if s.header_name == oauth_headers:
+            elif oauth_headers is not None and len(self.strategy_dict.keys()):
+                for s in self.strategy_dict.values():
+                    if s.header_name == "X-Auth-Token":
                         strategy = s
                 if not strategy:
                     abort(401)
