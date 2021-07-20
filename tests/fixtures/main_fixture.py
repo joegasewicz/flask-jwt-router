@@ -5,7 +5,15 @@ from flask_sqlalchemy import SQLAlchemy
 
 
 flask_app = Flask(__name__)
-jwt_routes = JwtRoutes()
+google_oauth = {
+    "client_id": "<CLIENT_ID>",
+    "client_secret": "<CLIENT_SECRET>",
+    "redirect_uri": "http://localhost:3000",
+    "tablename": "oauth_tablename",
+    "email_field": "email",
+    "expires_in": 3600,
+}
+jwt_routes = JwtRoutes(google_oauth=google_oauth, strategies=[GoogleTestUtil])
 db = SQLAlchemy()
 
 
@@ -98,15 +106,8 @@ def request_client():
     from tests.fixtures.models import TeacherModel, OAuthUserModel
     flask_app.config["ENTITY_MODELS"] = [TeacherModel, OAuthUserModel]
 
-    google_oauth = {
-        "client_id": "<CLIENT_ID>",
-        "client_secret": "<CLIENT_SECRET>",
-        "redirect_uri": "http://localhost:3000",
-        "tablename": "oauth_tablename",
-        "email_field": "email",
-        "expires_in": 3600,
-    }
-    jwt_routes.init_app(flask_app, google_oauth=google_oauth, strategies=[GoogleTestUtil])
+
+    jwt_routes.init_app(flask_app)
     db.init_app(flask_app)
 
     with flask_app.app_context():

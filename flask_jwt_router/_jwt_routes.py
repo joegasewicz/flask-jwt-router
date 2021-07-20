@@ -228,7 +228,7 @@ class BaseJwtRoutes:
 
     #: Optional Google OAuth 2.0 Single Sign On. See :class:`~flask_jwt_router.oauth2.google``
     #: for more information.
-    google: BaseOAuth
+    # google: BaseOAuth TODO remove
 
     #: Optional. See :class:`~flask_jwt_router.oauth2.google`
     google_oauth: Dict  # TODO needs to be a list
@@ -242,7 +242,7 @@ class BaseJwtRoutes:
         self.strategies = kwargs.get("strategies")
         self.config = Config()
         self.auth = Authentication()
-        self.google = Google(HttpRequests(GOOGLE_OAUTH_URL))
+        # self.google = Google(HttpRequests(GOOGLE_OAUTH_URL))
         self.app = app
         if app:
             self.init_app(app, entity_models=self.entity_models)
