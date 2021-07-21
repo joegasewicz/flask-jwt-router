@@ -19,6 +19,7 @@ from flask_jwt_router._routing import Routing
 from flask_jwt_router._config import Config
 from flask_jwt_router._entity import Entity
 from flask_jwt_router.oauth2.google import Google
+from flask_jwt_router import GoogleTestUtil
 from tests.fixtures.token_fixture import mock_token, mock_access_token
 from tests.fixtures.model_fixtures import TestMockEntity, MockAOuthModel
 from tests.fixtures.app_fixtures import jwt_router_client, test_client_static
@@ -86,7 +87,8 @@ class TestRouting:
         entity = Entity(config)
         google = Google(http_requests(oauth_urls))
         google.init(**config.google_oauth)
-        routing = Routing(app, config, entity, google)
+        routing = Routing()
+        routing.init(app, config, entity, google)
 
         with ctx:
             # token from args
@@ -192,43 +194,43 @@ class TestRouting:
     def test_routing_with_google_create_test_headers(self, request_client, MockAOuthModel, google_oauth_user):
         email = "test_one@oauth.com"
         test_user = MockAOuthModel(email="test_one@oauth.com")
-
-        assert jwt_routes.google.test_metadata == {}
+        google = jwt_routes.get_strategy("GoogleTestUtil")
+        assert google.test_metadata == {}
         # Pure stateless test with no db
-        oauth_headers = jwt_routes.google.create_test_headers(email=email, entity=test_user)
+        oauth_headers = google.create_test_headers(email=email, entity=test_user)
 
-        assert jwt_routes.google.test_metadata[email] == {"email": email, "entity": test_user, "scope": "function"}
+        assert google.test_metadata[email] == {"email": email, "entity": test_user, "scope": "function"}
         assert oauth_headers == {'X-Auth-Token': f'Bearer {email}'}
-
+        #
         rv = request_client.get("/api/v1/test_google_oauth", headers=oauth_headers)
         assert "200" in str(rv.status)
         assert email == rv.get_json()["email"]
-        assert jwt_routes.google.test_metadata == {}
-
-        # Tests with side effects to db
-        oauth_headers = jwt_routes.google.create_test_headers(email=google_oauth_user.email)
-
-        assert jwt_routes.google.test_metadata[email] == {"email": email, "entity": None, "scope": "function"}
+        assert google.test_metadata == {}
+        #
+        # # Tests with side effects to db
+        oauth_headers = google.create_test_headers(email=google_oauth_user.email)
+        #
+        assert google.test_metadata[email] == {"email": email, "entity": None, "scope": "function"}
         assert oauth_headers == {'X-Auth-Token': f'Bearer {email}'}
-
+        #
         rv = request_client.get("/api/v1/test_google_oauth", headers=oauth_headers)
         assert "200" in str(rv.status)
         assert email == rv.get_json()["email"]
-        assert jwt_routes.google.test_metadata == {}
+        assert google.test_metadata == {}
 
     def test_routing_with_google_create_headers_scope(self, request_client, MockAOuthModel, google_oauth_user):
         email = "test_one@oauth.com"
         test_user = MockAOuthModel(email="test_one@oauth.com")
         test_metadata = {"email": email, "entity": test_user, "scope": "application"}
-
-        assert jwt_routes.google.test_metadata == {}
+        google = jwt_routes.get_strategy("GoogleTestUtil")
+        assert google.test_metadata == {}
         # Pure stateless test with no db
-        oauth_headers = jwt_routes.google.create_test_headers(email=email, entity=test_user, scope="application")
+        oauth_headers = google.create_test_headers(email=email, entity=test_user, scope="application")
 
-        assert jwt_routes.google.test_metadata[email] == test_metadata
+        assert google.test_metadata[email] == test_metadata
         assert oauth_headers == {'X-Auth-Token': f'Bearer {email}'}
 
         rv = request_client.get("/api/v1/test_google_oauth", headers=oauth_headers)
         assert "200" in str(rv.status)
         assert email == rv.get_json()["email"]
-        assert jwt_routes.google.test_metadata[email] == test_metadata
+        assert google.test_metadata[email] == test_metadata

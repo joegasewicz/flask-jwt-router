@@ -173,14 +173,14 @@
 
 import logging
 from warnings import warn
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from ._config import Config
 from ._entity import BaseEntity, Entity, _ORMType
-from ._routing import BaseRouting, Routing
+from ._routing import BaseRouting, RoutingMixin
 from ._authentication import BaseAuthentication, Authentication
 from .oauth2.google import Google
-from .oauth2._base import BaseOAuth
+from .oauth2._base import BaseOAuth, TestBaseOAuth
 from .oauth2.http_requests import HttpRequests
 from .oauth2._urls import GOOGLE_OAUTH_URL
 
@@ -190,10 +190,10 @@ logger = logging.getLogger()
 EXPIRE_DEFAULT = 30
 
 
-class JwtRoutes:
+class BaseJwtRoutes:
     """
-        If there app is None then self.init_app(app=None, **kwargs) need to be called
-        inside the Flask app factory pattern.
+    If there app is None then self.init_app(app=None, **kwargs) need to be called
+    inside the Flask app factory pattern.
     :param app: Flask application instance
     :param kwargs: entity_model
     """
@@ -228,17 +228,23 @@ class JwtRoutes:
 
     #: Optional Google OAuth 2.0 Single Sign On. See :class:`~flask_jwt_router.oauth2.google``
     #: for more information.
-    google: BaseOAuth
+    # google: BaseOAuth TODO remove
 
     #: Optional. See :class:`~flask_jwt_router.oauth2.google`
-    google_oauth: Dict
+    google_oauth: Dict  # TODO needs to be a list
+
+    #: Optional. A Lust of strategies to be implement in the routing
+    strategies: List[BaseOAuth]
+
+    #: List of instantiated strategies
+    strategy_dict: Dict[str, BaseOAuth] = {}
 
     def __init__(self, app=None, **kwargs):
         self.entity_models = kwargs.get("entity_models")
         self.google_oauth = kwargs.get("google_oauth")
+        self.strategies = kwargs.get("strategies")
         self.config = Config()
         self.auth = Authentication()
-        self.google = Google(HttpRequests(GOOGLE_OAUTH_URL))
         self.app = app
         if app:
             self.init_app(app, entity_models=self.entity_models)
@@ -252,12 +258,17 @@ class JwtRoutes:
         self.app = app if app else self.app
         entity_models = self.entity_models or kwargs.get("entity_models")
         self.google_oauth = self.google_oauth or kwargs.get("google_oauth")
+        self.strategies = self.strategies or kwargs.get("strategies") or []
         app_config = self.get_app_config(self.app)
-        if self.google_oauth:
-            self.google.init(**self.google_oauth)
+        if len(self.strategies):
+            for S in self.strategies:
+                strategy = S(HttpRequests(GOOGLE_OAUTH_URL))
+                strategy.init(**self.google_oauth)
+                self.strategy_dict[strategy.__class__.__name__] = strategy
+
         self.config.init_config(app_config, entity_models=entity_models, google_oauth=self.google_oauth)
         self.entity = Entity(self.config)
-        self.routing = Routing(self.app, self.config, self.entity, self.google)
+        self.routing.init(self.app, self.config, self.entity, self.strategy_dict)
         self.app.before_request(self.routing.before_middleware)
         if self.config.expire_days:
             self.exp = self.config.expire_days
@@ -328,3 +339,17 @@ class JwtRoutes:
         self.config.entity_key = self.entity.get_attr_name()
         table_name = self.entity.get_entity_from_ext().__tablename__
         return self.auth.encode_token(self.config, entity_id, self.exp, table_name)
+
+    def get_strategy(self, name: str) -> Optional[BaseOAuth]:
+        """
+        :param name: The name of the strategy
+        :return:
+        """
+        try:
+            return self.strategy_dict[name]
+        except KeyError:
+            return None
+
+
+class JwtRoutes(RoutingMixin, BaseJwtRoutes):
+    pass

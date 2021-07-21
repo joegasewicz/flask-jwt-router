@@ -4,7 +4,8 @@
 from abc import ABC, abstractmethod
 # pylint:disable=invalid-name
 import logging
-from flask import request, abort, g
+from typing import List, Optional, Dict
+from flask import request, abort, g, Flask
 from werkzeug.routing import RequestRedirect
 from werkzeug.exceptions import MethodNotAllowed, NotFound
 from jwt.exceptions import InvalidTokenError
@@ -12,17 +13,23 @@ import jwt
 
 
 from ._entity import BaseEntity
-from .oauth2.google import Google
+from .oauth2.google import BaseOAuth
 from ._config import Config
+from flask_jwt_router.oauth2._base import BaseOAuth, TestBaseOAuth
 
 logger = logging.getLogger()
 
 
 class BaseRouting(ABC):
     # pylint:disable=missing-class-docstring
+
     @abstractmethod
-    def before_middleware(self) -> None:
+    def handle_token(self) -> None:
         # pylint:disable=missing-function-docstring
+        pass
+
+    @abstractmethod
+    def init(self, app, config: Config, entity: BaseEntity, strategy_dict: Dict[str, BaseOAuth] = None) -> None:
         pass
 
 
@@ -32,12 +39,22 @@ class Routing(BaseRouting):
     :param config: :class:`~flask_jwt_router._config`
     :param entity: :class:`~flask_jwt_router._entity`
     """
-    def __init__(self, app, config: Config, entity: BaseEntity, google: Google = None):
+    app: Flask
+
+    config: Config
+
+    logger: logging
+
+    entity: BaseEntity
+
+    strategy_dict: Dict[str, BaseOAuth]
+
+    def init(self, app, config: Config, entity: BaseEntity, strategy_dict: Dict[str, BaseOAuth] = None) -> None:
         self.app = app
         self.config = config
         self.logger = logger
         self.entity = entity
-        self.google = google
+        self.strategy_dict = strategy_dict
 
     def _prefix_api_name(self, w_routes=None):
         """
@@ -158,57 +175,55 @@ class Routing(BaseRouting):
                     not_whitelist = self._allow_public_routes(white_routes)
                     if not_whitelist:
                         self.entity.clean_up()
-                        self._handle_token()
+                        self.handle_token()
 
-    def _handle_token(self):
+    def handle_token(self):
         """
         Checks the headers contain a Bearer string OR params.
         Checks to see that the route is white listed.
         :return None:
         """
-        entity = None
+        strategy: Optional[BaseOAuth] = None
         try:
+            # TODO update docs
             resource_headers = request.headers.get("X-Auth-Resource")
             oauth_headers = request.headers.get("X-Auth-Token")
             if request.args.get("auth"):
                 token = request.args.get("auth")
-            elif oauth_headers is not None and self.google:
+            # Strategies --------------------------------------------------------- #
+
+            elif oauth_headers is not None and len(self.strategy_dict.keys()):
+                for s in self.strategy_dict.values():
+                    if s.header_name == oauth_headers:
+                        strategy = s
+                if not strategy:
+                    abort(401)
                 bearer = oauth_headers
                 token = bearer.split("Bearer ")[1]
                 if not token:
                     abort(401)
                 try:
-                    if self.google.test_metadata:
-                        email, entity = self.google._update_test_metadata(token)
-                    else:
-                        # Currently token refreshing is not supported, so pass the current token through
-                        auth_results = self.google.authorize(token)
-                        email = auth_results["email"]
+                    # Currently token refreshing is not supported, so pass the current token through
+                    auth_results = strategy.authorize(token)
+                    email = auth_results["email"]
                     self.entity.oauth_entity_key = self.config.oauth_entity
-                    if not entity:
-                        if resource_headers:
-                            # If multiple tables are used to look up against incoming oauth users
-                            # then assign the value from the X-Auth-Resource headers as the entity table name.
-                            entity = self.entity.get_entity_from_token_or_tablename(
-                                tablename=resource_headers,
-                                email_value=email,
-                            )
-                            setattr(g, resource_headers, entity)
-                        else:
-                            # This is the normal case without testing tools or resource headers.
-                            # Attach the the entity using the table name as the attribute name to Flask's
-                            # global context object.
-                            entity = self.entity.get_entity_from_token_or_tablename(
-                                tablename=self.google.tablename,
-                                email_value=email,
-                            )
-                            setattr(g, self.entity.get_entity_from_ext().__tablename__, entity)
+                    if resource_headers:
+                        # If multiple tables are used to look up against incoming oauth users
+                        # then assign the value from the X-Auth-Resource headers as the entity table name.
+                        entity = self.entity.get_entity_from_token_or_tablename(
+                            tablename=resource_headers,
+                            email_value=email,
+                        )
+                        setattr(g, resource_headers, entity)
                     else:
-                        # Entity from the google testing tools
-                        setattr(g, entity.__tablename__, entity)
+                        # Attach the the entity using the table name as the attribute name to Flask's
+                        # global context object.
+                        entity = self.entity.get_entity_from_token_or_tablename(
+                            tablename=strategy.tablename,
+                            email_value=email,
+                        )
+                        setattr(g, self.entity.get_entity_from_ext().__tablename__, entity)
                     setattr(g, "access_token", token)
-                    # Clean up google test util
-                    self.google.tear_down()
                     return None
                 except InvalidTokenError:
                     return abort(401)
@@ -218,6 +233,7 @@ class Routing(BaseRouting):
                     # This is raised from auth_results["email"] not present
                     abort(401)
             else:
+                # Basic Auth --------------------------------------------------------- #
                 # Sometimes a developer may define the auth field name as Bearer or Basic
                 auth_header = request.headers.get("Authorization")
                 if not auth_header:
@@ -234,12 +250,90 @@ class Routing(BaseRouting):
                 self.config.secret_key,
                 algorithms="HS256"
             )
-        except InvalidTokenError:
-            return abort(401)
-        try:
             self.entity_key = self.config.entity_key
             entity = self.entity.get_entity_from_token_or_tablename(decoded_token)
             setattr(g, self.entity.get_entity_from_ext().__tablename__, entity)
             return None
         except ValueError:
             return abort(401)
+        except InvalidTokenError:
+            return abort(401)
+
+
+class _TestMixin(Routing):
+
+    strategies: List[TestBaseOAuth]
+
+    def __init__(self):
+        super(_TestMixin, self).__init__()
+
+    def handle_token(self):
+
+        strategy: Optional[TestBaseOAuth] = None
+
+        try:
+            resource_headers = request.headers.get("X-Auth-Resource")
+            oauth_headers = request.headers.get("X-Auth-Token")
+            if request.args.get("auth"):
+                super(_TestMixin, self).handle_token()
+            # Strategies --------------------------------------------------------- #
+            elif oauth_headers is not None and len(self.strategy_dict.keys()):
+                for s in self.strategy_dict.values():
+                    if s.header_name == "X-Auth-Token":
+                        strategy = s
+                if not strategy:
+                    abort(401)
+                bearer = oauth_headers
+                token = bearer.split("Bearer ")[1]
+                if not token:
+                    abort(401)
+                try:
+                    if not strategy.test_metadata:
+                        raise Exception("You didn't create your test headers with create_test_headers()")
+                    email, entity = strategy.update_test_metadata(token)
+
+                    self.entity.oauth_entity_key = self.config.oauth_entity
+                    if not entity:
+                        if resource_headers:
+                            # If multiple tables are used to look up against incoming oauth users
+                            # then assign the value from the X-Auth-Resource headers as the entity table name.
+                            entity = self.entity.get_entity_from_token_or_tablename(
+                                tablename=resource_headers,
+                                email_value=email,
+                            )
+                            setattr(g, resource_headers, entity)
+                        else:
+                            # This is the normal case without testing tools or resource headers.
+                            # Attach the the entity using the table name as the attribute name to Flask's
+                            # global context object.
+                            entity = self.entity.get_entity_from_token_or_tablename(
+                                tablename=strategy.tablename,
+                                email_value=email,
+                            )
+                            setattr(g, self.entity.get_entity_from_ext().__tablename__, entity)
+                    else:
+                        # Entity from the google testing tools
+                        setattr(g, entity.__tablename__, entity)
+                    setattr(g, "access_token", token)
+                    # Clean up google test util
+                    strategy.tear_down()
+                    return None
+                except InvalidTokenError:
+                    return abort(401)
+                except AttributeError:
+                    return abort(401)
+                except TypeError:
+                    # This is raised from auth_results["email"] not present
+                    abort(401)
+            else:
+                super(_TestMixin, self).handle_token()
+        except AttributeError:
+            return abort(401)
+
+
+class RoutingMixin:
+    routing = Routing()
+
+
+class TestRoutingMixin:
+    routing = _TestMixin()

@@ -5,6 +5,7 @@ from flask_jwt_router.oauth2._exceptions import RequestAttributeError, ClientExc
 from flask_jwt_router.oauth2.google import Google, _FlaskRequestType
 from flask_jwt_router.oauth2.http_requests import HttpRequests
 from flask_jwt_router.oauth2._urls import GOOGLE_OAUTH_URL
+from flask_jwt_router import GoogleTestUtil
 from tests.fixtures.oauth_fixtures import TEST_OAUTH_URL, http_requests
 from tests.fixtures.model_fixtures import MockAOuthModel
 
@@ -115,7 +116,7 @@ class TestGoogle:
           "verified_email": true
         }
         """
-        g = Google(http_requests(GOOGLE_OAUTH_URL))
+        g = GoogleTestUtil(http_requests(GOOGLE_OAUTH_URL))
         g.init(**self.mock_options)
         token = ""
         result = g.authorize(token)
@@ -124,7 +125,7 @@ class TestGoogle:
     def test_create_test_headers(self, http_requests, MockAOuthModel):
 
         mock_user = MockAOuthModel(email="test@email.com")
-        g = Google(http_requests(GOOGLE_OAUTH_URL))
+        g = GoogleTestUtil(http_requests(GOOGLE_OAUTH_URL))
         g.init(**self.mock_options)
 
         result = g.create_test_headers(email="test@email.com")
@@ -147,7 +148,7 @@ class TestGoogle:
 
     def test_tear_down(self, http_requests, MockAOuthModel):
         mock_user = MockAOuthModel(email="test@email.com")
-        g = Google(http_requests(GOOGLE_OAUTH_URL))
+        g = GoogleTestUtil(http_requests(GOOGLE_OAUTH_URL))
         g.init(**self.mock_options)
 
         result = g.create_test_headers(email="test@email.com", entity=mock_user, scope="application")
