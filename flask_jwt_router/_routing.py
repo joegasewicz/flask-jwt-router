@@ -184,17 +184,21 @@ class Routing(BaseRouting):
         :return None:
         """
         strategy: Optional[BaseOAuth] = None
+        oauth_key: str = ""
         try:
             # TODO update docs
             resource_headers = request.headers.get("X-Auth-Resource")
             oauth_headers = request.headers.get("X-Auth-Token")
+            if oauth_headers:
+                # TODO When we have more than one strategy then `oauth_key` should derive the key dynamically
+                oauth_key = "X-Auth-Token"
             if request.args.get("auth"):
                 token = request.args.get("auth")
             # Strategies --------------------------------------------------------- #
 
             elif oauth_headers is not None and len(self.strategy_dict.keys()):
                 for s in self.strategy_dict.values():
-                    if s.header_name == oauth_headers:
+                    if s.header_name == oauth_key:
                         strategy = s
                 if not strategy:
                     abort(401)
@@ -261,6 +265,9 @@ class Routing(BaseRouting):
 
 
 class _TestMixin(Routing):
+    """
+    TODO https://github.com/joegasewicz/flask-jwt-router/issues/224 - Router test mixin should not duplicate any code from the Router class #224
+    """
 
     strategies: List[TestBaseOAuth]
 
@@ -289,7 +296,7 @@ class _TestMixin(Routing):
                     abort(401)
                 try:
                     if not strategy.test_metadata:
-                        raise Exception("You didn't create your test headers with create_test_headers()")
+                        strategy.create_test_headers(email=token)
                     email, entity = strategy.update_test_metadata(token)
 
                     self.entity.oauth_entity_key = self.config.oauth_entity
