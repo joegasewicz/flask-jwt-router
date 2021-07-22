@@ -2,6 +2,11 @@
 
 ### Changed
 
+**Releases 0.2.0** - 2021-07-21
+- 🎁 Remove testing logic from library's `Routing` & `Entity` classes  [Issue #219](https://github.com/joegasewicz/flask-jwt-router/issues/219)
+- 🎁 Testing mixin for Google class  [Issue #220](https://github.com/joegasewicz/flask-jwt-router/issues/220)
+- 🪲 Bug fixes for 0.2.0 release Fixes [Issue #225](https://github.com/joegasewicz/flask-jwt-router/issues/225)
+
 **Releases 0.1.9** - 2021-03-16
 - 🎁 Allow for multiple tablenames for Google OAuth  [Issue #206](https://github.com/joegasewicz/flask-jwt-router/issues/206)
 
@@ -58,7 +63,4 @@
 - 🎁 Add Models to JWTRoutes class & init_app method [Issue #119](https://github.com/joegasewicz/Flask-JWT-Router/issues/119)
 
 ## Unreleased
-**Releases 0.2.0** - 2021-07-21
-- 🎁 Remove testing logic from library's `Routing` & `Entity` classes  [Issue #219](https://github.com/joegasewicz/flask-jwt-router/issues/219)
-- 🎁 Testing mixin for Google class  [Issue #220](https://github.com/joegasewicz/flask-jwt-router/issues/220)
-- 🪲 Bug fixes for 0.2.0 release Fixes [Issue #225](https://github.com/joegasewicz/flask-jwt-router/issues/225)
+
