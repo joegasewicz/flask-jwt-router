@@ -296,7 +296,7 @@ class _TestMixin(Routing):
                     abort(401)
                 try:
                     if not strategy.test_metadata:
-                        raise Exception("You didn't create your test headers with create_test_headers()")
+                        strategy.create_test_headers(email=token)
                     email, entity = strategy.update_test_metadata(token)
 
                     self.entity.oauth_entity_key = self.config.oauth_entity
