@@ -15,24 +15,20 @@ Read the docs: [Flask-JWT-Router](https://flask-jwt-router.readthedocs.io/en/lat
 Flask JWT Router is a Python library that adds authorised routes to a Flask app. Both basic & Google's OAuth2.0 authentication
 is supported.
 
+## ![Google-Cloud](assets/Google-Cloud1.png) Google's OAuth2.0 supported
 
-## ![Google-Cloud](assets/Google-Cloud1.png) Google's OAuth2.0 supported 
 
-### Google OAuth 2.0 Quick Start
-
-Read the detailed instructions here: [Flask-JWT-Router](https://flask-jwt-router.readthedocs.io/en/latest/google.html)
+## Quik Start
 ```python
-oauth_options = {
-    "client_id": "<CLIENT_ID>",
-    "client_secret": "<CLIENT_SECRET>",
-    "redirect_uri": "http://localhost:3000",
-    "tablename": "users",
-    "email_field": "email",
-    "expires_in": 3600,
-}
+from flask_jwt_router import JwtRoutes
 
-jwt_routes.init_app(app, google_oauth=oauth_options)
+jwt_routes = JwtRoutes()
+jwt_routes.init_app(
+    app,
+    entity_models=[MyModel],
+)
 ```
+
 
 Now your front end needs a token. Create an endpoint &
 return a new access token from the clients header *code*.
@@ -262,6 +258,30 @@ If you require calling a resource without passing headers, then you can use the 
     url = "http://example.com/cars?auth=my_token"
 ```
 
+### Google OAuth 2.0 Quick Start
+
+Read the detailed instructions here: [Flask-JWT-Router](https://flask-jwt-router.readthedocs.io/en/latest/google.html)
+```python
+from flask_jwt_router import Google, JwtRoutes
+
+oauth_options = {
+    "client_id": "<CLIENT_ID>",
+    "client_secret": "<CLIENT_SECRET>",
+    "redirect_uri": "http://localhost:3000",
+    "tablename": "users",
+    "email_field": "email",
+    "expires_in": 3600,
+}
+
+jwt_routes = JwtRoutes()
+jwt_routes.init_app(
+    app,
+    google_oauth=oauth_options,
+    strategies=[Google],
+    entity_models=[MyModel],
+)
+```
+
 ## Google OAuth 2.0 with ReactJS
 Flask-JWT-Router supports auth Google's OAuth 2.0 Single Sign On strategy if you are using React only.
 (We will provide Google's OAuth 2.0 Single Sign On strategy for server to server as soon as possible!).
@@ -271,7 +291,8 @@ Create a login route for Google's OAuth 2.0
 ```python
    @app.route("/api/v1/google_login", methods=["POST"])
     def google_login():
-        data = jwt_routes.google.oauth_login(request)
+        google = jwt_routes.get_strategy("Google")
+        data = google.oauth_login(request)
         return data, 200
 ```
 
@@ -279,7 +300,8 @@ If your app requires multiple redirect uri's then
 you can use the `redirect_uri` kwarg to assign a uri for the current
 request handler. For example:
 ```python
-data = jwt_routes.google.oauth_login(request, redirect="http://another_redirect.com")
+google = jwt_routes.get_strategy("Google")
+data = google.oauth_login(request, redirect="http://another_redirect.com")
 ```
 
 We have created a ReactJS library specifically for Flask-JWT-Router - [react-google-oauth2.0](https://github.com/joegasewicz/react-google-oauth2.0)
@@ -294,6 +316,39 @@ Testing OAuth2.0 in a Flask app is non-trivial, especially if you rely on Flask-
 to append your user onto Flask's global context (or `g`). Therefore we have provided a
 utility method that returns a headers Dict that you can then use in your test view handler
 request. This example is using the Pytest library:
+```python
+    from flask_jwt_router import (
+        BaseJwtRoutes,
+        JwtRoutes,
+        Google,
+        GoogleTestUtil,
+        TestRoutingMixin,
+    )
+
+    class TestJwtRoutes(TestRoutingMixin, BaseJwtRoutes):
+        pass
+    
+    
+    if not Config.E2E_TEST:
+        jwt_routes = JwtRoutes()
+    else:
+        jwt_routes = TestJwtRoutes()
+
+    if not config.E2E_TEST:
+        jwt_routes.init_app(
+            app,
+            google_oauth=oauth_options,
+            strategies=[Google],
+            entity_models=[MyModel],
+        )
+    else:
+        jwt_routes.init_app(
+            app,
+            google_oauth=oauth_options,
+            strategies=[GoogleTestUtil],
+            entity_models=[MyModel],
+        )
+```
 
 ```python
     @pytest.fixture()
@@ -302,7 +357,8 @@ request. This example is using the Pytest library:
 
 
     def test_blogs(client):
-        user_headers = jwt_routes.google.create_test_headers(email="user@gmail.com")
+        google = jwt_routes.get_strategy("GoogleTestUtil")
+        user_headers = google.create_test_headers(email="user@gmail.com")
         rv = client.get("/blogs", headers=user_headers)
 ```
 
@@ -311,7 +367,8 @@ For example:
 
 ```python
 # user is an instantiated SqlAlchemy object
-user_headers = jwt_routes.google.create_test_headers(email="user@gmail.com", entity=user)
+google = jwt_routes.get_strategy("GoogleTestUtil")
+user_headers = google.create_test_headers(email="user@gmail.com", entity=user)
 # user_headers: { "X-Auth-Token": "Bearer <GOOGLE_OAUTH2_TEST>" }
 ```
 If you require more than one request to a Flask view handler in a single unit test, then set
@@ -320,7 +377,8 @@ entities within a single unit test method or function then you must pass in your
 For example:
 ```python
 my_entity = User(email="user@gmail.com") # If you're testing against a real db, make sure this is an entry in the db
-_ = jwt_routes.google.create_test_headers(email="user@gmail.com", scope="application", entity=my_entity)
+google = jwt_routes.get_strategy("GoogleTestUtil")
+_ = google.create_test_headers(email="user@gmail.com", scope="application", entity=my_entity)
 
 ```
 
