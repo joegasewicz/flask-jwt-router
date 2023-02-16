@@ -55,5 +55,5 @@ twine==3.2.0
 urllib3==1.26.5
 virtualenv==20.2.1
 webencodings==0.5.1
-Werkzeug==1.0.1
+Werkzeug==2.2.3
 wrapt==1.12.1
