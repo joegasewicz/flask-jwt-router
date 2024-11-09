@@ -10,9 +10,9 @@ from flask_jwt_router._config import Config
 from flask_jwt_router._base import BaseAuthentication
 
 
-class Authentication(BaseAuthentication):
+class RSAAuthentication(BaseAuthentication):
     """
-        Uses SHA-256 hash algorithm
+        Uses RSA-256 hash algorithm
     """
     #: The reference to the entity key. Defaulted to `id`.
     # See :class:`~flask_jwt_router._config` for more information.
@@ -20,53 +20,46 @@ class Authentication(BaseAuthentication):
 
     #: The reference to the entity key.
     #: See :class:`~flask_jwt_router._config` for more information.
-    secret_key: str = None
+    public_key: str = None
+
+    #: The reference to the entity key.
+    #: See :class:`~flask_jwt_router._config` for more information.
+    private_key: str = None
 
     #: The reference to the entity ID.
     entity_id: str = None
 
     def __init__(self):
         # pylint:disable=useless-super-delegation
-        super(Authentication, self).__init__()
+        super(RSAAuthentication, self).__init__()
 
-    def encode_token(self, config: Config, entity_id: Any, exp: int, table_name) -> str:
+    def create_token(self, config: Config, exp: int, **kwargs):
         """
-        :param config: See :class:`~flask_jwt_router._config`
-        :param entity_id: Normally the primary key `id` or `user_id`
-        :param exp: The expiry duration set when encoding a new token
-        :param table_name: The Model Entity `__tablename__`
-        :return: str
+
+        """
+        self.entity_id = kwargs.get("entity_id", None)
+        table_name = kwargs.get("table_name", None)
+        return self.encode_token(config, self.entity_id, exp, table_name)
+
+    def encode_token(self, config: Config, entity_id: Any, exp: int, table_name: str):
+        """
+
         """
         self.entity_key = config.entity_key
         self.secret_key = config.secret_key
-        # pylint: disable=line-too-long
 
         encoded = jwt.encode({
             "table_name": table_name,
             self.entity_key: entity_id,
             # pylint: disable=no-member
             "exp": datetime.utcnow() + relativedelta(days=+exp)
-        }, self.secret_key, algorithm="HS256")
+        }, self.private_key, algorithm="RS256")
         try:
             # Handle < pyJWT==2.0
-            encoded = encoded.decode("utf-8")
+            encoded = encoded.decode("utf-8", self.public_key, algorithms=["RS256"])
         except AttributeError:
             pass
         return encoded
-
-    def create_token(self, config: Config, exp: int, **kwargs) -> str:
-        """
-        kwargs:
-            - entity_id: Represents the entity's primary key
-            - table_name: The table name of the entity
-        :param config: See :class:`~flask_jwt_router._config`
-        :param exp: The expiry duration set when encoding a new token
-        :param kwargs:
-        :return: Union[str, None]
-        """
-        self.entity_id = kwargs.get("entity_id", None)
-        table_name = kwargs.get("table_name", None)
-        return self.encode_token(config, self.entity_id, exp, table_name)
 
     def update_token(self,
                      config: Config,

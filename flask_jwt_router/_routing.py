@@ -32,6 +32,10 @@ class BaseRouting(ABC):
     def init(self, app, config: Config, entity: BaseEntity, strategy_dict: Dict[str, BaseOAuth] = None) -> None:
         pass
 
+    @abstractmethod
+    def before_middleware(self) -> None:
+        pass
+
 
 class Routing(BaseRouting):
     """
