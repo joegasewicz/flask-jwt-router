@@ -178,11 +178,15 @@ from typing import List, Dict, Optional
 from ._config import Config
 from ._entity import BaseEntity, Entity, _ORMType
 from ._routing import BaseRouting, RoutingMixin
-from ._authentication import BaseAuthentication, Authentication
+from ._base import BaseAuthentication
+from ._authentication import Authentication
+from ._rsa_authentication import RSAAuthentication
 from .oauth2.google import Google
 from .oauth2._base import BaseOAuth, TestBaseOAuth
 from .oauth2.http_requests import HttpRequests
 from .oauth2._urls import GOOGLE_OAUTH_URL
+from ._exceptions import AuthenticationError
+
 
 # pylint:disable=invalid-name
 logger = logging.getLogger()
@@ -233,6 +237,9 @@ class BaseJwtRoutes:
     #: Optional. See :class:`~flask_jwt_router.oauth2.google`
     google_oauth: Dict  # TODO needs to be a list
 
+    #: Optional. TODO
+    algorithm: str = "HS256"
+
     #: Optional. A Lust of strategies to be implement in the routing
     strategies: List[BaseOAuth]
 
@@ -243,8 +250,14 @@ class BaseJwtRoutes:
         self.entity_models = kwargs.get("entity_models")
         self.google_oauth = kwargs.get("google_oauth")
         self.strategies = kwargs.get("strategies")
+        self.algorithm = kwargs.get("algorithm")
         self.config = Config()
-        self.auth = Authentication()
+        if self.algorithm == "HS256":
+            self.auth = Authentication()
+        elif self.algorithm == "RS256":
+            self.auth = RSAAuthentication()
+        else:
+            raise AuthenticationError()
         self.app = app
         if app:
             self.init_app(app, entity_models=self.entity_models)
@@ -269,7 +282,10 @@ class BaseJwtRoutes:
         self.config.init_config(app_config, entity_models=entity_models, google_oauth=self.google_oauth)
         self.entity = Entity(self.config)
         self.routing.init(self.app, self.config, self.entity, self.strategy_dict)
-        self.app.before_request(self.routing.before_middleware)
+        try:
+            self.app.before_request(self.routing.before_middleware)
+        except AssertionError:
+            pass # TODO needs updating to use the new API for before request
         if self.config.expire_days:
             self.exp = self.config.expire_days
         else:

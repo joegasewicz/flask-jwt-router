@@ -51,7 +51,7 @@ def request_sub_four():
 
 @flask_app.route("/", methods=["GET"])
 def test_sub_five():
-    return jsonify({"data": "/"})
+    return {"data": "/"}, 200
 
 
 @flask_app.route("/api/v1/test_entity", methods=["POST", "GET"])
