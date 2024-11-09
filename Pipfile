@@ -17,3 +17,5 @@ flask = ">=1.0"
 python-dateutil = ">=2.8.0"
 pyjwt = ">=1.7.1"
 
+[requires]
+python_version = "3.12"
