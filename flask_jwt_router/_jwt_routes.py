@@ -309,8 +309,22 @@ class BaseJwtRoutes:
 
     def create_token(self, **kwargs) -> str:
         """
-        :param kwargs:
-        :return: str
+        Generates a token using the provided configuration.
+
+        Keyword Args:
+            entity_type (str, optional): Deprecated. The old name for 'table_name'. 
+                                        If provided, it will trigger a warning and will be used as 'table_name'.
+            table_name (str): The name of the table/entity for which the token is being generated.
+                            This argument is required.
+
+        Returns:
+            str: The generated token.
+
+        Raises:
+            KeyError: If the 'table_name' keyword argument is missing.
+
+        Warnings:
+            DeprecationWarning: If 'entity_type' is used instead of 'table_name'.
         """
         if 'entity_type' in kwargs:
             warn(("'entity_type' argument name has been deprecated and will be replaced"
